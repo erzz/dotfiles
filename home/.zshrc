@@ -66,9 +66,12 @@ ZSH_THEME="robbyrussell"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
-  git
+  brew
   docker
   fzf
+  git
+  history
+  kubectl
   httpie
   minikube
   zsh-syntax-highlighting
