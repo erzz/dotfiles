@@ -8,45 +8,26 @@ tap 'wagoodman/dive'
 
 # Casks
 
-cask 'dropbox'
-cask '1Password'
 cask 'authy'
 cask 'viscosity'
-
 cask 'firefox'
 cask 'google-chrome'
-
-cask 'veracrypt'
-
 cask 'slack'
-cask 'skype'
 cask 'whatsapp'
-cask 'telegram'
 cask 'gitter'
-cask 'zulip'
-
 cask 'visual-studio-code'
 cask 'sourcetree'
 cask 'iterm2'
 cask 'maccy'
-
 cask 'docker'
 cask 'virtualbox'
 cask 'virtualbox-extension-pack'
-
-cask 'transmission'
-cask 'coconutbattery'
 cask 'disk-inventory-x'
 cask 'appcleaner'
 cask 'the-unarchiver'
-cask 'keepingyouawake'
 cask 'onyx'
-
 cask 'spotify'
 cask 'vlc'
-
-cask 'mactex'
-cask 'skim'
 cask 'adobe-acrobat-reader'
 
 # Fonts
