@@ -59,9 +59,10 @@ cask 'font-cousine'
 cask 'font-handlee'
 cask 'font-redhat'
 cask 'font-cascadia'
+cask 'font-awesome-terminal-fonts'
+cask 'font-hack'
 
 ######### Brews #########
-
 brew 'git'
 brew 'bash'
 brew 'bash-completion'
