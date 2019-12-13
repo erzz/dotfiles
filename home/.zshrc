@@ -2,7 +2,7 @@
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH="/Users/jponge/.oh-my-zsh"
+export ZSH="/Users/ersw/.oh-my-zsh"
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
@@ -66,8 +66,16 @@ ZSH_THEME="robbyrussell"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
-  git
+  brew
   docker
+  fzf
+  git
+  history
+  kubectl
+  httpie
+  minikube
+  zsh-syntax-highlighting
+  zsh-autosuggestions
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -105,4 +113,8 @@ done
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/ersw/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/ersw/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/ersw/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/ersw/google-cloud-sdk/completion.zsh.inc'; fi
