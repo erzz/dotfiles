@@ -8,5 +8,6 @@ jobs:
         uses: actions/checkout@v1
       - name: execute-test
         run: |
+          id #DEBUG
           chmod +x "$GITHUB_WORKSPACE"/install.sh
           "$GITHUB_WORKSPACE"/install.sh
