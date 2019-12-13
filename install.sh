@@ -3,8 +3,8 @@
 set -e
 
 scripts/InstallHomebrew.sh
-scripts/LinkDotfiles.sh
 scripts/InstallOhMyZSH.sh
+scripts/LinkDotfiles.sh
 scripts/tweaks.sh
 
 # ###########################################################
