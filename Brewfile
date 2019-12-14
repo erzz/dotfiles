@@ -1,6 +1,7 @@
 ######### General #########
 
 tap 'homebrew/bundle'
+tap 'homebrew/cask-drivers'
 tap 'homebrew/cask-fonts'
 tap 'buo/cask-upgrade'
 tap 'wagoodman/dive'
