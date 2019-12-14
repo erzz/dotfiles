@@ -1,3 +1,5 @@
+#!/bin/bash
+# shellcheck disable=SC1090
 export PATH="/usr/local/opt/curl/bin:$PATH"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

@@ -1,3 +1,4 @@
+#!/bin/bash
 # Stuff from Homebrew-installed apps
 
 if [ -n "$ZSH_VERSION" ]; then
@@ -9,4 +10,4 @@ elif [ -n "$BASH_VERSION" ]; then
   complete -C aws_completer aws
 fi
 
-if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
+if command -v rbenv > /dev/null; then eval "$(rbenv init -)"; fi

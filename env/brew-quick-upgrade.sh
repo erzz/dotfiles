@@ -1,3 +1,4 @@
+#!/bin/bash
 function upgrade-brews {
   brew update
   brew upgrade
