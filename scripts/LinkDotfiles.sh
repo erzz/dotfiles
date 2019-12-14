@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC2045 
 # Link all dotfiles into ~ using GNU Stow, assuming we are in ~/dotfiles
 set -ex
 for config in $(ls -A home); do

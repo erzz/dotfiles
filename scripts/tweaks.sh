@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/bash
 
 # Disable remote apple events
 sudo systemsetup -f -setremoteappleevents off
