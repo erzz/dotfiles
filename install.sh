@@ -9,7 +9,7 @@ if id -u runner; then
 else
   scripts/InstallHomebrew.sh
 fi
-scripts/brewfile.sh
+#scripts/brewfile.sh #DEBUG
 scripts/InstallOhMyZSH.sh
 scripts/LinkDotfiles.sh
 scripts/tweaks.sh
