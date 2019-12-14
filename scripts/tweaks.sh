@@ -1,11 +1,19 @@
 #!/bin/zsh
 
-# Disable remote apple events
-sudo systemsetup -f -setremoteappleevents off
-# Disable remote login
-sudo systemsetup -f -setremotelogin off
-# Disable Sudden Motion Sensor
-sudo pmset -a sms 0
+# Cant test the sudo commands on github runner
+if id -u runner; then
+  echo "Skipping sudo commands"
+else
+  # Disable remote apple events
+  sudo systemsetup -f -setremoteappleevents off
+  # Disable remote login
+  sudo systemsetup -f -setremotelogin off
+  # Disable Sudden Motion Sensor
+  sudo pmset -a sms 0
+  # Reveal IP, hostname, OS, etc. when clicking clock in login window
+  sudo defaults write /Library/Preferences/com.apple.loginwindow AdminHostInfo HostName
+fi
+
 # Re-enable Desktop icons for various drive types
 defaults write com.apple.finder ShowHardDrivesOnDesktop -bool true
 defaults write com.apple.finder ShowMountedServersOnDesktop -bool true
@@ -21,8 +29,6 @@ defaults write NSGlobalDomain PMPrintingExpandedStateForPrint -bool true
 defaults write NSGlobalDomain PMPrintingExpandedStateForPrint2 -bool true
 # Disable the “Are you sure you want to open this application?” dialog
 defaults write com.apple.LaunchServices LSQuarantine -bool false
-# Reveal IP, hostname, OS, etc. when clicking clock in login window
-sudo defaults write /Library/Preferences/com.apple.loginwindow AdminHostInfo HostName
 # Disable smart quotes as they’re annoying when typing code
 defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
 # Disable smart dashes as they’re annoying when typing code
