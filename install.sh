@@ -5,6 +5,7 @@ set -e
 # Case for running as a test user on a github runner
 if id -u runner; then
   echo "Skipping Homebrew install for Github Workflow"
+  defaults write NSGlobalDomain AppleLanguages "(en-US)"
 else
   scripts/InstallHomebrew.sh
 fi
