@@ -1,5 +1,5 @@
 # Status
-![](https://github.com/erzz/dotfiles/workflows/Test%20Dotfiles/badge.svg?branch=master)
+![](https://github.com/erzz/dotfiles/workflows/Test%20Dotfiles/badge.svg)
 
 # Acknowledgment
 
