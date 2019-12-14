@@ -4,15 +4,19 @@ set -e
 
 # Case for running as a test user on a github runner
 if id -u runner; then
-  echo "Skipping Homebrew install for Github Workflow"
+  echo "Skipping Homebrew install & tweaks for Github Workflow"
   defaults write NSGlobalDomain AppleLanguages "(en-US)"
+  scripts/brewfile.sh
+  scripts/InstallOhMyZSH.sh
+  scripts/LinkDotfiles.sh
 else
   scripts/InstallHomebrew.sh
+  scripts/brewfile.sh
+  scripts/InstallOhMyZSH.sh
+  scripts/LinkDotfiles.sh
+  scripts/tweaks.sh
 fi
-scripts/brewfile.sh
-scripts/InstallOhMyZSH.sh
-scripts/LinkDotfiles.sh
-scripts/tweaks.sh
+
 
 # ###########################################################
 # /etc/hosts -- spyware/ad blocking

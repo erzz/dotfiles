@@ -1,18 +1,13 @@
 #!/bin/zsh
 
-# Cant test the sudo commands on github runner
-if id -u runner; then
-  echo "Skipping sudo commands"
-else
-  # Disable remote apple events
-  sudo systemsetup -f -setremoteappleevents off
-  # Disable remote login
-  sudo systemsetup -f -setremotelogin off
-  # Disable Sudden Motion Sensor
-  sudo pmset -a sms 0
-  # Reveal IP, hostname, OS, etc. when clicking clock in login window
-  sudo defaults write /Library/Preferences/com.apple.loginwindow AdminHostInfo HostName
-fi
+# Disable remote apple events
+sudo systemsetup -f -setremoteappleevents off
+# Disable remote login
+sudo systemsetup -f -setremotelogin off
+# Disable Sudden Motion Sensor
+sudo pmset -a sms 0
+# Reveal IP, hostname, OS, etc. when clicking clock in login window
+sudo defaults write /Library/Preferences/com.apple.loginwindow AdminHostInfo HostName
 
 # Re-enable Desktop icons for various drive types
 defaults write com.apple.finder ShowHardDrivesOnDesktop -bool true
