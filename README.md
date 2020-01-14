@@ -88,7 +88,7 @@
 font-awesome-terminal-fonts font-cascadia font-cousine font-fira-code font-fontawesome font-hack font-handlee font-hasklig font-inconsolata font-open-sans font-open-sans-condensed font-montserrat font-noto-sans font-noto-emoji font-noto-color-emoji font-noto-serif font-pt-mono font-pt-sans font-pt-serif font-roboto font-roboto-condensed font-roboto-mono font-source-code-pro font-source-sans-pro font-source-serif-pro font-ubuntu
 
 # Installation
-1. `cd ~ && curl -L https://github.com/erzz/dotfiles/archive/master.zip | bsdtar -xvf- && mv dotfiles-master dotfiles && rm dotfiles.zip`
+1. `cd ~ && curl -L https://github.com/erzz/dotfiles/archive/master.zip | bsdtar -xvf- && mv dotfiles-master dotfiles && cd dotfiles && chmod +x install.sh && ./install.sh`
 
 # Tests
 ## What cannot be tested
