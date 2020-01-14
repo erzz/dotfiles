@@ -2,20 +2,13 @@
 
 set -e
 # Fix permissions in cases where perhaps re-running under a different user and similar scenarios
-sudo chown -R $(whoami) /usr/local/var/homebrew
-sudo chown -R $(whoami) /usr/local/Homebrew
-sudo chown -R $(whoami) /usr/local/Caskroom
-sudo chown -R $(whoami) /usr/local/Cellar/
-sudo chown -R $(whoami) /usr/local/bin
-sudo chown -R $(whoami) /usr/local/etc
-sudo chown -R $(whoami) /usr/local/lib
-sudo chown -R $(whoami) /usr/local/sbin
-sudo chown -R $(whoami) /usr/local/share/aclocal
-sudo chown -R $(whoami) /usr/local/share/doc
-sudo chown -R $(whoami) /usr/local/share/info
-sudo chown -R $(whoami) /usr/local/share/locale
-sudo chown -R $(whoami) /usr/local/share/man
-sudo chown -R $(whoami) /usr/local/share/zsh
+DIRS="/usr/local/var/homebrew /usr/local/Homebrew /usr/local/Caskroom /usr/local/Cellar /usr/local/bin /usr/local/etc /usr/local/lib /usr/local/sbin /usr/local/share/aclocal /usr/local/share/doc /usr/local/share/info /usr/local/share/locale /usr/local/share/man /usr/local/share/zsh"
+
+for d in DIRS; do
+  if [ -d $d ]; then
+    sudo chown -R $(whoami) $d
+  fi
+done
 
 # Case for running as a test user on a github runner
 if id -u runner; then
