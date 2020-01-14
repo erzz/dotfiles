@@ -6,8 +6,8 @@ sudo systemsetup -f -setremoteappleevents off
 sudo systemsetup -f -setremotelogin off
 # Disable Sudden Motion Sensor
 sudo pmset -a sms 0
-# Reveal IP, hostname, OS, etc. when clicking clock in login window
-sudo defaults write /Library/Preferences/com.apple.loginwindow AdminHostInfo HostName
+# Use old-school login
+defaults write com.apple.loginwindow SHOWFULLNAME -bool true
 
 # Re-enable Desktop icons for various drive types
 defaults write com.apple.finder ShowHardDrivesOnDesktop -bool true
