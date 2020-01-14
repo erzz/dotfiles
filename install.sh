@@ -1,6 +1,21 @@
 #!/bin/zsh
 
 set -e
+# Fix permissions in cases where perhaps re-running under a different user and similar scenarios
+sudo chown -R $(whoami) /usr/local/var/homebrew
+sudo chown -R $(whoami) /usr/local/Homebrew
+sudo chown -R $(whoami) /usr/local/Caskroom
+sudo chown -R $(whoami) /usr/local/Cellar/
+sudo chown -R $(whoami) /usr/local/bin
+sudo chown -R $(whoami) /usr/local/etc
+sudo chown -R $(whoami) /usr/local/lib
+sudo chown -R $(whoami) /usr/local/sbin
+sudo chown -R $(whoami) /usr/local/share/aclocal
+sudo chown -R $(whoami) /usr/local/share/doc
+sudo chown -R $(whoami) /usr/local/share/info
+sudo chown -R $(whoami) /usr/local/share/locale
+sudo chown -R $(whoami) /usr/local/share/man
+sudo chown -R $(whoami) /usr/local/share/zsh
 
 # Case for running as a test user on a github runner
 if id -u runner; then
