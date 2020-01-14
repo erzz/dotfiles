@@ -11,6 +11,7 @@ for d in DIRS; do
 done
 
 # Case for running as a test user on a github runner
+chmod +x scripts/*.sh
 if id -u runner; then
   echo "Skipping Homebrew install & tweaks for Github Workflow"
   defaults write NSGlobalDomain AppleLanguages "(en-US)"
@@ -28,7 +29,7 @@ fi
 # ###########################################################
 # /etc/hosts -- spyware/ad blocking
 # ###########################################################
-if wget -O configs/hosts https://someonewhocares.org/hosts/hosts; then
+if curl -L -O configs/hosts https://someonewhocares.org/hosts/hosts; then
   sudo cp /etc/hosts /etc/hosts.backup
   sudo cp configs/hosts /etc/hosts
 else
