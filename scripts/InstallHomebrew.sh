@@ -25,6 +25,6 @@ if [ -f /usr/local/bin/brew ]; then
   already_installed
 else
   installing "Homebrew"
-  /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 fi
 
