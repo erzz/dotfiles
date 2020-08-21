@@ -5,6 +5,7 @@ tap 'homebrew/cask-drivers'
 tap 'homebrew/cask-fonts'
 tap 'buo/cask-upgrade'
 tap 'wagoodman/dive'
+tap 'derailed/k9s'
 
 ######### Casks #########
 
