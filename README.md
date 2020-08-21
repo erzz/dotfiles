@@ -34,6 +34,7 @@
 * the-unarchiver
 * slack
 * sourcetree
+* svn
 * whatsapp
 * viscosity
 * visual-studio-code
@@ -61,6 +62,7 @@
 * hub
 * imagemagick
 * imapsync
+* k9s
 * kubectl
 * lame
 * moreutils
