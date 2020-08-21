@@ -11,7 +11,6 @@
 * Oh My ZSH configured with the powerlevel10k theme and plugins such as docker, fzf, git, history, kubectl, httpie, minikube, and zsh-syntax-highlighting.
 
 ## Configs
-* Custom hosts file from http://someonewhocares.org/hosts/
 * Global .gitconfig and  .gitignore
 * Too many OS tweaks to list - see `scripts/tweaks.sh` for more info
 
