@@ -18,10 +18,12 @@ if id -u runner; then
   scripts/brewfile.sh
   scripts/InstallOhMyZSH.sh
   scripts/LinkDotfiles.sh
+  scripts/installAppStore.sh
 else
   scripts/InstallHomebrew.sh
   scripts/brewfile.sh
   scripts/InstallOhMyZSH.sh
   scripts/LinkDotfiles.sh
   scripts/tweaks.sh
+  scripts/installAppStore.sh
 fi
