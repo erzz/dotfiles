@@ -25,5 +25,9 @@ if [ -f /usr/local/bin/brew ]; then
   already_installed
 else
   installing "Homebrew"
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  (echo; echo 'eval "$(/usr/local/bin/brew shellenv)"') >> ~/.zprofile
+  eval "$(/usr/local/bin/brew shellenv)"
+  brew update
+  brew upgrade
 fi
