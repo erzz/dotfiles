@@ -26,8 +26,8 @@ if [ -f /usr/local/bin/brew ]; then
 else
   installing "Homebrew"
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-  (echo; echo 'eval "$(/usr/local/bin/brew shellenv)"') >> ~/.zprofile
-  eval "$(/usr/local/bin/brew shellenv)"
+  (echo; echo 'eval "$(/opt/homebrew/bin/brew shellenv)"') >> ~/.zprofile
+  eval "$(/opt/homebrew/bin/brew shellenv)"
   brew update
   brew upgrade
 fi
