@@ -17,15 +17,19 @@ xcode-select --install 2>/dev/null || echo "XCode CLI already_installed"
 title "install.sh: Setting script permissions"
 chmod +x scripts/*.sh && echo "Scripts are executable"
 
+# Important: as it blasts away the current .zshrc 
+# should run before the other scripts
+####################### ZSH & OMZ #########################
+title "install.sh: Installing Oh My ZSH"
+scripts/ohmyzsh.sh
+
 ######################### BREW ############################
 title "install.sh: Installing Homebrew & Brewfile"
 scripts/homebrew.sh
 
-####################### ZSH & OMZ #########################
-title "install.sh: Installing Oh My ZSH"
-scripts/ohmyzsh.sh
-title "install.sh: Linking dotfiles"
-scripts/link.sh
+##################### LINK DOTFILES #######################
+# title "install.sh: Linking dotfiles"
+# scripts/link.sh
 
 ####################### APP STORE #########################
 scripts/appstore.sh

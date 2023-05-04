@@ -1,4 +1,5 @@
-mas install 602550970   # Gistpal
+#!/bin/bash
+
 mas install 1176895641  # Spark
 mas install 1025822138  # iStatistica
 mas install 441258766   # Magnet
