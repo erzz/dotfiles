@@ -1,0 +1,100 @@
+format = """
+[](#33658A)\
+[](bg:#ec773e fg:#33658A)\
+$directory\
+[](bg:#debc9c fg:#ec773e)\
+$git_branch\
+$git_status\
+[](fg:#debc9c bg:#40b1e1)\
+$bun\
+$golang\
+$java\
+$nodejs\
+$python\
+$rust\
+[](fg:#40b1e1 bg:#33658A)\
+$docker_context\
+[ ](fg:#33658A)\
+"""
+
+right_format = """
+[](fg:#33658A)\
+$cmd_duration\
+[](fg:#484848 bg:#33658A)\
+$terraform\
+[](fg:#5cc27c bg:#484848)\
+$time\
+[](#5cc27c)\
+"""
+
+[bun]
+symbol = "🍞 "
+style = "bg:#40b1e1"
+format = '[ $symbol ($version) ]($style)'
+
+[cmd_duration]
+min_time = 500
+style = "bg:#33658A"
+format = '[  $duration ]($style)'
+
+[directory]
+style = "bg:#ec773e"
+format = "[ $path ]($style)"
+truncation_length = 2
+truncation_symbol = "…/"
+truncate_to_repo = true
+
+[directory.substitutions]
+"Documents" = " "
+"Downloads" = " "
+"Music" = " "
+"Pictures" = " "
+
+[docker_context]
+symbol = " "
+style = "bg:#5cc27c"
+format = '[ $symbol $context ]($style) $path'
+
+[git_branch]
+symbol = ""
+style = "bg:#debc9c"
+format = '[ $symbol $branch ]($style)'
+
+[git_status]
+style = "bg:#debc9c"
+format = '[$all_status$ahead_behind ]($style)'
+
+[golang]
+symbol = " "
+style = "bg:#40b1e1"
+format = '[ $symbol($version) ]($style)'
+
+[gcloud]
+symbol = "󱇶"
+style = "bg:#484848"
+format = '[ $symbol $project ]($style)'
+
+[java]
+symbol = " "
+style = "bg:#40b1e1"
+format = '[ $symbol ($version) ]($style)'
+
+[nodejs]
+symbol = ""
+style = "bg:#40b1e1"
+format = '[ $symbol ($version) ]($style)'
+
+[python]
+style = "bg:#40b1e1"
+format = '[ $symbol($version) ]($style)'
+
+[terraform]
+symbol = "💠"
+style = "bg:#484848"
+format = '[$symbol $workspace ]($style)'
+
+[time]
+disabled = false
+time_format = "%R" # Hour:Minute Format
+style = "bg:#5cc27c"
+format = '[$time]($style)'
