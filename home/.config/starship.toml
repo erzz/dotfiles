@@ -13,11 +13,11 @@ $nodejs\
 $python\
 $rust\
 [](fg:#40b1e1 bg:#33658A)\
-$docker_context\
 [ ](fg:#33658A)\
 """
 
 right_format = """
+$status\
 [](fg:#33658A)\
 $cmd_duration\
 [](fg:#484848 bg:#33658A)\
@@ -67,6 +67,7 @@ format = '[$all_status$ahead_behind ]($style)'
 [golang]
 symbol = " "
 style = "bg:#40b1e1"
+version_format = "v${major}.${minor}"
 format = '[ $symbol($version) ]($style)'
 
 [gcloud]
@@ -77,15 +78,18 @@ format = '[ $symbol $project ]($style)'
 [java]
 symbol = " "
 style = "bg:#40b1e1"
+version_format = "v${major}.${minor}"
 format = '[ $symbol ($version) ]($style)'
 
 [nodejs]
 symbol = ""
 style = "bg:#40b1e1"
+version_format = "v${major}.${minor}"
 format = '[ $symbol ($version) ]($style)'
 
 [python]
 style = "bg:#40b1e1"
+version_format = "v${major}.${minor}"
 format = '[ $symbol($version) ]($style)'
 
 [terraform]
