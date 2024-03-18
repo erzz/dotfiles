@@ -1,0 +1,40 @@
+[alias]
+  co = checkout
+  cob = checkout -b
+  d = diff
+  hist = log --pretty=format:'%C(dim blue)[%ad]%C(reset) %C(bold normal)[%h]%C(reset) | %C(blue)%s %C(bold normal)[%an]%C(reset)%C(bold white)%d%C(reset)' --graph --date=short
+  last = log -1 HEAD --stat
+  pl = pull-rebase
+  rs = reset --soft
+  s = status
+
+[color]
+  ui = true
+
+[core]
+  excludesfile = ~/.git/.gitignore_global
+
+[credential]
+  helper = store
+
+[delta]
+  features = side-by-side line-numbers
+
+[diff]
+  colorMoved = default
+
+[interactive]
+  diffFilter = delta --color-only --dark
+
+[pull]
+  rebase = true
+
+[push]
+	autoSetupRemote = true
+
+[rebase]
+  autoStash = true
+
+[user]
+  name = Sean Erswell-Liljefelt
+  email = sean@erzz.com

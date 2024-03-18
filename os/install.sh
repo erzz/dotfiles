@@ -1,9 +1,19 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-source scripts/outputFormat.sh
+# Many of these cannot run in the github runner used for tests
+# last time I checked, so we skip them in CI
+# if ! id -u runner 2>/dev/null; then
+#   echo "Running on real machine, executing OS tweaks!"
+# else
+#   echo "Running in CI, skipping tweaks & setting locale"
+#   defaults write NSGlobalDomain AppleLanguages "(en-US)"
+#   exit 0
+# fi
 
-title "Configuring Activity Monitor"
+echo "Configuring macOS..."
+
 ###################### ACTIVITY MONITOR ###################
+echo "Configuring Activity Monitor"
 defaults write com.apple.ActivityMonitor OpenMainWindow -bool true
 defaults write com.apple.ActivityMonitor IconType -int 5
 defaults write com.apple.ActivityMonitor ShowCategory -int 100
@@ -24,12 +34,12 @@ defaults write com.apple.ActivityMonitor UserColumnSortPerTab -dict \
 defaults write com.apple.ActivityMonitor UpdatePeriod -int 2
 
 ################ DIRECTORY SPRING LOADING #################
-title "Directory Spring Loading"
+echo "Directory Spring Loading"
 defaults write NSGlobalDomain com.apple.springing.enabled -bool true
 defaults write NSGlobalDomain com.apple.springing.delay -float 0
 
 ####################### DOCK ##############################
-title "Configuring Dock"
+echo "Configuring Dock"
 defaults write com.apple.dock tilesize -int 48
 defaults write com.apple.dock minimize-to-application -bool true
 defaults write com.apple.dock show-process-indicators -bool true
@@ -37,13 +47,13 @@ defaults write com.apple.dock hide-mirror -bool true
 
 ######################## DS_STORE #########################
 # Avoid creating .DS_Store files on network or USB volumes
-title "Configuring DS_STORE"
+echo "Configuring DS_STORE"
 defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
 defaults write com.apple.desktopservices DSDontWriteUSBStores -bool true
 
 ######################### FINDER ##########################
 # Finder: open everything in list view.
-title "Configuring Finder"
+echo "Configuring Finder"
 defaults write com.apple.Finder FXPreferredViewStyle Nlsv
 
 # Finder: show the ~/Library folder.
@@ -92,12 +102,13 @@ defaults write com.apple.finder FXDefaultSearchScope -string "SCev"
 defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
 
 ################### IMAGE VERIFICATION ####################
+echo "Configuring image verification"
 defaults write com.apple.frameworks.diskimages skip-verify -bool true
 defaults write com.apple.frameworks.diskimages skip-verify-locked -bool true
 defaults write com.apple.frameworks.diskimages skip-verify-remote -bool true
 
 ######################## LOGIN ############################
-title "Configuring Login"
+echo "Configuring Login"
 # Disable remote login
 sudo systemsetup -f -setremotelogin off
 
@@ -105,49 +116,52 @@ sudo systemsetup -f -setremotelogin off
 defaults write com.apple.loginwindow SHOWFULLNAME -bool true
 
 #################### NETWORK BROWSING #####################
-title "Configuring Network Browsing"
+echo "Configuring Network Browsing"
 defaults write com.apple.NetworkBrowser BrowseAllInterfaces -bool true
 
 ####################### SCREENSHOTS ########################
-title "Configuring Screenshots"
+echo "Configuring Screenshots"
 defaults write com.apple.screencapture location -string "${HOME}/Pictures"
 defaults write com.apple.screencapture type -string "png"
 
 ################### SECURE TRASH EMPTY ####################
-title "Configuring Secure Trash Empty"
+echo "Configuring Secure Trash Empty"
 defaults write com.apple.finder EmptyTrashSecurely -bool true
 
 ###################### TERMINAL ###########################
-title "Configuring Terminal"
+echo "Configuring Terminal"
 defaults write com.apple.terminal StringEncodings -array 4
 
 ###################### TIME MACHINE #######################
-title "Configuring Time Machine"
+echo "Configuring Time Machine"
 defaults write com.apple.TimeMachine DoNotOfferNewDisksForBackup -bool true
 
-######################### MISC ############################
-title "Configuring Other Stuff"
-# Disable Sudden Motion Sensor
+############### THINGS TO SKIP IN CI TESTS ################
+
+echo "Configuring Other Stuff"
+
+echo "Disabling Sudden Motion Sensor"
 sudo pmset -a sms 0
-# Disable the “Are you sure you want to open this application?” dialog
+
+echo "Disable the 'Are you sure you want to open this application?' dialog"
 defaults write com.apple.LaunchServices LSQuarantine -bool false
-# Disable smart quotes as they’re annoying when typing code
+
+echo "Disable smart quotes as they’re annoying when typing code"
 defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
-# Disable smart dashes as they’re annoying when typing code
+
+echo "Disable smart dashes as they’re annoying when typing code"
 defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
-# Fix the scrolling direction
+
+echo "Fix the scrolling direction"
 defaults write NSGlobalDomain com.apple.swipescrolldirection -bool false
-# Better bluetooth sound
+
+echo "Better bluetooth sound"
 defaults write com.apple.BluetoothAudioAgent "Apple Bitpool Min (editable)" -int 40
-# Repeating keystrokes config
+
+echo "Repeating keystrokes config"
 defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
 
+echo "Set font smoothing"
 defaults write NSGlobalDomain AppleFontSmoothing -int 2
-sudo defaults write /Library/Preferences/com.apple.windowserver DisplayResolutionEnabled -bool true
 
-###################### KILL APPS ##########################
-for app in "Activity Monitor" "Address Book" "Calendar" "Contacts" "cfprefsd" \
-  "Dock" "Finder" "Mail" "Messages" "Safari" "SizeUp" "SystemUIServer" \
-  "iCal" "Terminal"; do
-  killall "${app}" > /dev/null 2>&1
-done
+echo "YOU WILL NEED TO REBOOT FOR CHANGES TO TAKE EFFECT"
