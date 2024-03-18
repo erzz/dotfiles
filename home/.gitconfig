@@ -1,9 +1,0 @@
-[user]
-	name = Sean Erswell-Liljefelt
-	email = sean@erzz.com
-
-[color]
-	ui = true
-
-[core]
-  excludesfile = ~/.gitignore
