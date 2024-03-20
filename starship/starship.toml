@@ -26,6 +26,7 @@ $terraform\
 $time\
 [](#5cc27c)\
 """
+command_timeout = 1000
 
 [bun]
 symbol = "🍞 "
