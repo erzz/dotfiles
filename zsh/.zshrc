@@ -32,6 +32,9 @@ if ! zplug check; then
 fi
 zplug load
 
+# Check for dotfile drift
+~/dotfiles/drift/detect.sh
+
 # zsh-autosuggestions
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=10"
 # shellcheck disable=SC1091
