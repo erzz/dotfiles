@@ -1,6 +1,3 @@
-# Status
-![](https://github.com/erzz/dotfiles/workflows/Test%20Dotfiles/badge.svg)
-
 ## Acknowledgments
 
 * The inspiration of this repo is https://github.com/pkissling/dotfiles/
@@ -21,14 +18,10 @@ cd ~ \
 
 ### Do it all
 
-Just run `make`
-
-### Xcode CLI
-
-Needed for brew - part of brew target too
+Runs everything
 
 ```bash
-make xcode
+make
 ```
 
 ### Homebrew
@@ -47,20 +40,28 @@ Does what it says
 make git
 ```
 
+### Iterm2
+
+Configure Iterm profile and colors
+
+```bash
+make iterm
+```
+
+### Languages
+
+Uses the various `<lang>env` tools to bootstrap the latest Go, Node, Python, Terraform etc
+
+```
+make languages
+```
+
 ### OS Tweaks
 
 Ever evolving OS tweaks to Finder, Activity Monitor, etc
 
 ```bash
 make os
-```
-
-### SDKMan
-
-The day I don't need Java any more will make me a happy man
-
-```bash
-make sdkman
 ```
 
 ### Starship config
@@ -77,6 +78,14 @@ Some experimental thing with Warp, not even sure I like it
 
 ```bash
 make warp
+```
+
+### Xcode CLI
+
+Needed for brew - part of `brew-install` target too
+
+```bash
+make xcode
 ```
 
 ### ZSH
