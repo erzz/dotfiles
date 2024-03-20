@@ -1,8 +1,0 @@
-#!/bin/bash
-# shellcheck disable=SC1090
-export PATH="/usr/local/opt/curl/bin:$PATH"
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-export BAT_THEME="ansi-dark"
-export BAT_STYLE="plain"
