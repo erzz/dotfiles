@@ -7,6 +7,6 @@ if ! command -v direnv version &>/dev/null; then
 fi
 
 echo "Configuring direnv..."
-# create symlinks for starship.toml config file
+# create symlinks for direnv.toml config file
 mkdir -p "${HOME}/.config/direnv"
 ln -sfv "${HOME}/dotfiles/direnv/direnv.toml" "${HOME}/.config/direnv/direnv.toml"

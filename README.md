@@ -4,8 +4,7 @@
   the job done without it being a full time job!
 * Covers homebrew, git, iterm, various programming language installs, OS tweaks, starship and ZSH
 * Option to only apply various sections in a scoped way
-* Coming soon (cos I haven't decided yet) one of devtools, flox or something similar for dev
-  environments
+* Devbox and direnv initial installs and config
 * Detection of drift in dotfiles included
 
 ## Installation
@@ -57,6 +56,22 @@ Whole bunch of clis, fonts, apps and vscode extensions etc
 
 ```bash
 make brew
+```
+
+### Devbox
+
+Automated and isolated dev environments of any configuration (nix underneath)
+
+```
+make devbox
+```
+
+### Direnv
+
+Pairs beautifully with devbox/nix to automatically enable environments when you enter the directory.
+
+```
+make direnv
 ```
 
 ### Global git config
