@@ -1,45 +1,55 @@
 format = """
-[](#33658A)\
-[](bg:#ec773e fg:#33658A)\
+[](darkblue)\
+[](fg:darkblue bg:orange)\
 $directory\
-[](bg:#debc9c fg:#ec773e)\
+[](fg:orange bg:skin)\
 $git_branch\
 $git_status\
-[](fg:#debc9c bg:#40b1e1)\
+[](fg:skin bg:skyblue)\
 $bun\
 $golang\
 $java\
 $nodejs\
 $python\
 $rust\
-[](fg:#40b1e1 bg:#33658A)\
-[ ](fg:#33658A)\
+[](fg:skyblue bg:darkblue)\
+[ ](fg:darkblue)\
 """
 
 right_format = """
 $status\
-[](fg:#33658A)\
+[](fg:darkblue)\
 $cmd_duration\
-[](fg:#484848 bg:#33658A)\
+[](fg:blackish bg:darkblue)\
 $terraform\
-[](fg:#5cc27c bg:#484848)\
+[](fg:green bg:blackish)\
 $time\
-[](#5cc27c)\
+[](green)\
 """
 command_timeout = 1000
 
+palette = "skapa"
+
+[palettes.skapa]
+darkblue = "#33658A"
+skyblue = "#40B1E1"
+orange = "#EC773E"
+skin = "#DEBC9C"
+blackish = "#484848"
+green = "#5CC27C"
+
 [bun]
 symbol = "🍞 "
-style = "bg:#40b1e1"
+style = "bg:skyblue"
 format = '[ $symbol ($version) ]($style)'
 
 [cmd_duration]
 min_time = 500
-style = "bg:#33658A"
+style = "bg:darkblue"
 format = '[  $duration ]($style)'
 
 [directory]
-style = "bg:#ec773e"
+style = "bg:orange"
 format = "[ $path ]($style)"
 truncation_length = 2
 truncation_symbol = "…/"
@@ -53,53 +63,53 @@ truncate_to_repo = true
 
 [docker_context]
 symbol = " "
-style = "bg:#5cc27c"
+style = "bg:green"
 format = '[ $symbol $context ]($style) $path'
 
 [git_branch]
 symbol = ""
-style = "bg:#debc9c"
+style = "bg:skin"
 format = '[ $symbol $branch ]($style)'
 
 [git_status]
-style = "bg:#debc9c"
+style = "bg:skin"
 format = '[$all_status$ahead_behind ]($style)'
 
 [golang]
 symbol = " "
-style = "bg:#40b1e1"
+style = "bg:skyblue"
 version_format = "v${major}.${minor}"
 format = '[ $symbol($version) ]($style)'
 
 [gcloud]
 symbol = "󱇶"
-style = "bg:#484848"
+style = "bg:blackish"
 format = '[ $symbol $project ]($style)'
 
 [java]
 symbol = " "
-style = "bg:#40b1e1"
+style = "bg:skyblue"
 version_format = "v${major}.${minor}"
 format = '[ $symbol ($version) ]($style)'
 
 [nodejs]
 symbol = ""
-style = "bg:#40b1e1"
+style = "bg:skyblue"
 version_format = "v${major}.${minor}"
 format = '[ $symbol ($version) ]($style)'
 
 [python]
-style = "bg:#40b1e1"
+style = "bg:skyblue"
 version_format = "v${major}.${minor}"
 format = '[ $symbol($version) ]($style)'
 
 [terraform]
 symbol = "💠"
-style = "bg:#484848"
+style = "bg:blackish"
 format = '[$symbol $workspace ]($style)'
 
 [time]
 disabled = false
 time_format = "%R" # Hour:Minute Format
-style = "bg:#5cc27c"
+style = "bg:green"
 format = '[$time]($style)'
