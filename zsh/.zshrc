@@ -1,4 +1,5 @@
 # shellcheck disable=SC2148
+# <---------------------- PLUGINS ------------------------>
 # shellcheck disable=SC2034
 plugins=(
   brew
@@ -9,12 +10,13 @@ plugins=(
   terraform
 )
 
-# Extend with vars we dont want to share
+# <------------------ PRIVATE INCLUDES ------------------->
 if [ -f ~/.zshrc.vars ]; then
   # shellcheck disable=SC1090
   source ~/.zshrc.vars
 fi
 
+# <--------------------- OH-MY-ZSH ----------------------->
 # init zsh
 export ZSH=~/.oh-my-zsh
 export ZSH_THEME=""
@@ -22,6 +24,7 @@ export ZSH_THEME=""
 source $ZSH/oh-my-zsh.sh
 export ZSH_COMPDUMP=$ZSH/cache/.zcompdump-$HOST
 
+# <----------------------- ZPLUG ------------------------->
 # zplug
 export ZPLUG_HOME="${HOMEBREW_PREFIX}/opt/zplug"
 # shellcheck disable=SC1091
@@ -32,9 +35,10 @@ if ! zplug check; then
 fi
 zplug load
 
-# Check for dotfile drift
+# <----------------------- DRIFT ------------------------->
 ~/dotfiles/drift/detect.sh
 
+# <---------------------- HELPERS ------------------------>
 # zsh-autosuggestions
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=10"
 # shellcheck disable=SC1091
@@ -44,34 +48,38 @@ source "${HOMEBREW_PREFIX}/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
 # shellcheck disable=SC1091
 source "${HOMEBREW_PREFIX}/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 
-# brew
+# <---------------------- ALIASES ------------------------>
+alias gnb="git checkout main && git pull --rebase && git checkout -b"
+
+# XDG
+export XDG_CONFIG_HOME="$HOME/.config"
+
+# <----------------------- TOOLS ------------------------->
+# HOMEBREW
 export PATH="${HOMEBREW_PREFIX}/sbin:/sbin:/usr/local/bin:$PATH"
 
-# nvm
+# NVM
 export NVM_DIR="$HOME/.nvm"
 # shellcheck disable=SC2027 disable=SC2086 disable=1091
 [ -s ""${HOMEBREW_PREFIX}"/opt/nvm/nvm.sh" ] && . ""${HOMEBREW_PREFIX}"/opt/nvm/nvm.sh"  # This loads nvm
 # shellcheck disable=SC2027 disable=SC2086 disable=1091
 [ -s ""${HOMEBREW_PREFIX}"/opt/nvm/etc/bash_completion.d/nvm" ] && . ""${HOMEBREW_PREFIX}"/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
 
-# ALIASES
-alias gnb="git checkout main && git pull --rebase && git checkout -b"
-
-# XDG
-export XDG_CONFIG_HOME="$HOME/.config"
-
-# TOOLS
-### direnv
+### DIRENV
 eval "$(direnv hook zsh)"
-### neovim
+
+### NEOVIM
 export EDITOR="nvim"
-### pyenv
+
+### PYENV
 export PYENV_ROOT="$HOME/.pyenv"
 command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
-### starship
+
+### STARSHIP
 export STARSHIP_CONFIG="${HOME}/.starship/starship.toml"
 eval "$(starship init zsh)"
-### sdkman (Keep it last!)
+
+### SDKMAN (Keep it last!)
 # shellcheck disable=SC1091
 [[ -s "${HOME}/.sdkman/bin/sdkman-init.sh" ]] && source "${HOME}/.sdkman/bin/sdkman-init.sh"

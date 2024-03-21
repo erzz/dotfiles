@@ -1,4 +1,4 @@
-# Registries
+# <--------------------- REGISTRIES ---------------------->
 tap "buo/cask-upgrade"
 tap "dart-lang/dart"
 tap "goodwithtech/r"
@@ -7,7 +7,7 @@ tap "homebrew/cask-fonts"
 tap "homebrew/services"
 tap "sass/sass"
 
-# CLIs, Libs and Fonts
+# <------------------ CLI, LIBS & FONTS ------------------>
 brew "act"
 brew "adr-tools"
 brew "xz"
@@ -96,7 +96,7 @@ brew "zsh-syntax-highlighting"
 brew "goodwithtech/r/dockle"
 brew "sass/sass/sass"
 
-# Apps
+# <------------------------ APPS ------------------------->
 cask "1password"
 cask "appcleaner"
 cask "authy"
@@ -149,7 +149,7 @@ cask "warp"
 cask "webex"
 cask "whatsapp"
 
-# Mac App Store
+# <---------------------- APP STORE ---------------------->
 mas "ColorSlurp", id: 1287239339
 mas "Divvy", id: 413857545
 mas "Email", id: 1489591003
@@ -160,7 +160,7 @@ mas "Telegram", id: 747648890
 mas "Things", id: 904280696
 mas "WhatsApp", id: 1147396723
 
-# VSCode Extensions
+# <----------------- VSCODE EXTENSIONS ------------------->
 vscode "adam-bender.commit-message-editor"
 vscode "akamud.vscode-theme-onedark"
 vscode "azemoh.one-monokai"
