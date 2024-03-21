@@ -12,7 +12,7 @@
 
 echo "Configuring macOS..."
 
-###################### ACTIVITY MONITOR ###################
+# <------------------ ACTIVITY MONITOR ------------------->
 echo "Configuring Activity Monitor"
 defaults write com.apple.ActivityMonitor OpenMainWindow -bool true
 defaults write com.apple.ActivityMonitor IconType -int 5
@@ -33,25 +33,25 @@ defaults write com.apple.ActivityMonitor UserColumnSortPerTab -dict \
     '4' '{ direction = 0; sort = txBytes; }'
 defaults write com.apple.ActivityMonitor UpdatePeriod -int 2
 
-################ DIRECTORY SPRING LOADING #################
+# <-------------- DIRECTORY SPRING LOADING --------------->
 echo "Directory Spring Loading"
 defaults write NSGlobalDomain com.apple.springing.enabled -bool true
 defaults write NSGlobalDomain com.apple.springing.delay -float 0
 
-####################### DOCK ##############################
+# <------------------------ DOCK ------------------------->
 echo "Configuring Dock"
 defaults write com.apple.dock tilesize -int 48
 defaults write com.apple.dock minimize-to-application -bool true
 defaults write com.apple.dock show-process-indicators -bool true
 defaults write com.apple.dock hide-mirror -bool true
 
-######################## DS_STORE #########################
+# <---------------------- DS_STORE ----------------------->
 # Avoid creating .DS_Store files on network or USB volumes
 echo "Configuring DS_STORE"
 defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
 defaults write com.apple.desktopservices DSDontWriteUSBStores -bool true
 
-######################### FINDER ##########################
+# <----------------------- FINDER ------------------------>
 # Finder: open everything in list view.
 echo "Configuring Finder"
 defaults write com.apple.Finder FXPreferredViewStyle Nlsv
@@ -101,13 +101,13 @@ defaults write com.apple.finder FXDefaultSearchScope -string "SCev"
 # Finder: disable warning when changing file extension
 defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
 
-################### IMAGE VERIFICATION ####################
+# <----------------- IMAGE VERIFICATION ------------------>
 echo "Configuring image verification"
 defaults write com.apple.frameworks.diskimages skip-verify -bool true
 defaults write com.apple.frameworks.diskimages skip-verify-locked -bool true
 defaults write com.apple.frameworks.diskimages skip-verify-remote -bool true
 
-######################## LOGIN ############################
+# <----------------------- LOGIN ------------------------->
 echo "Configuring Login"
 # Disable remote login
 sudo systemsetup -f -setremotelogin off
@@ -115,29 +115,28 @@ sudo systemsetup -f -setremotelogin off
 # Use old-school login
 defaults write com.apple.loginwindow SHOWFULLNAME -bool true
 
-#################### NETWORK BROWSING #####################
+# <------------------ NETWORK BROWSING ------------------->
 echo "Configuring Network Browsing"
 defaults write com.apple.NetworkBrowser BrowseAllInterfaces -bool true
 
-####################### SCREENSHOTS ########################
+# <-------------------- SCREENSHOTS ---------------------->
 echo "Configuring Screenshots"
 defaults write com.apple.screencapture location -string "${HOME}/Pictures"
 defaults write com.apple.screencapture type -string "png"
 
-################### SECURE TRASH EMPTY ####################
+# <-------------------- SECURE TRASH --------------------->
 echo "Configuring Secure Trash Empty"
 defaults write com.apple.finder EmptyTrashSecurely -bool true
 
-###################### TERMINAL ###########################
+# <---------------------- TERMINAL ----------------------->
 echo "Configuring Terminal"
 defaults write com.apple.terminal StringEncodings -array 4
 
-###################### TIME MACHINE #######################
+# <-------------------- TIME MACHINE --------------------->
 echo "Configuring Time Machine"
 defaults write com.apple.TimeMachine DoNotOfferNewDisksForBackup -bool true
 
-############### THINGS TO SKIP IN CI TESTS ################
-
+# <----------------------- OTHER ------------------------->
 echo "Configuring Other Stuff"
 
 echo "Disabling Sudden Motion Sensor"
