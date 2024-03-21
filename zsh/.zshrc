@@ -11,9 +11,10 @@ plugins=(
 )
 
 # <------------------ PRIVATE INCLUDES ------------------->
-if [ -f ~/.zshrc.vars ]; then
+# Keep secrets in `.localrc`
+if [[ -a ~/.localrc ]] then
   # shellcheck disable=SC1090
-  source ~/.zshrc.vars
+  source ~/.localrc
 fi
 
 # <--------------------- OH-MY-ZSH ----------------------->
