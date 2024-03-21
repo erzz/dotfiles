@@ -61,6 +61,8 @@ alias gnb="git checkout main && git pull --rebase && git checkout -b"
 export XDG_CONFIG_HOME="$HOME/.config"
 
 # TOOLS
+### direnv
+eval "$(direnv hook zsh)"
 ### neovim
 export EDITOR="nvim"
 ### pyenv

@@ -9,6 +9,10 @@ brew: brew-install
 	@chmod +x brew/bundle.sh
 	@./brew/bundle.sh
 
+devbox:
+	@chmod +x devbox/install.sh
+	@./devbox/install.sh
+
 git:
 	@chmod +x git/install.sh
 	@./git/install.sh
