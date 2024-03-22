@@ -51,11 +51,13 @@ source "${HOMEBREW_PREFIX}/share/zsh-syntax-highlighting/zsh-syntax-highlighting
 
 # <---------------------- ALIASES ------------------------>
 alias gnb="git checkout main && git pull --rebase && git checkout -b"
+alias vim="nvim"
+alias vi="nvim"
 
+# <----------------------- TOOLS ------------------------->
 # XDG
 export XDG_CONFIG_HOME="$HOME/.config"
 
-# <----------------------- TOOLS ------------------------->
 # HOMEBREW
 export PATH="${HOMEBREW_PREFIX}/sbin:/sbin:/usr/local/bin:$PATH"
 
