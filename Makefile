@@ -1,4 +1,4 @@
-.PHONY: brew brew-install devbox direnv git iterm languages os starship warp xcode zsh
+.PHONY: brew brew-install devbox direnv git iterm languages nvim os starship warp xcode zsh
 default: .PHONY
 
 brew-install: xcode
@@ -31,6 +31,10 @@ languages: brew-install
 	@./languages/sdkman.sh
 	@chmod +x languages/other.sh
 	@./languages/other.sh
+
+nvim:
+	@chmod +x nvim/install.sh
+	@./nvim/install.sh
 
 os:
 	@chmod +x os/install.sh
