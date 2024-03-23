@@ -12,7 +12,7 @@ plugins=(
 
 # <------------------ PRIVATE INCLUDES ------------------->
 # Keep secrets in `.localrc`
-if [[ -a ~/.localrc ]] then
+if [[ -a ~/.localrc ]]; then
   # shellcheck disable=SC1090
   source ~/.localrc
 fi
