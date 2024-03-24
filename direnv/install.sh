@@ -8,5 +8,4 @@ fi
 
 echo "Configuring direnv..."
 # create symlinks for direnv.toml config file
-mkdir -p "${HOME}/.config/direnv"
-ln -sfv "${HOME}/dotfiles/direnv/direnv.toml" "${HOME}/.config/direnv/direnv.toml"
+stow -v -t "${HOME}" direnv
