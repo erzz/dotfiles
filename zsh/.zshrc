@@ -80,7 +80,7 @@ command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
 
 ### STARSHIP
-export STARSHIP_CONFIG="${HOME}/.starship/starship.toml"
+#export STARSHIP_CONFIG="${HOME}/.starship/starship.toml"
 eval "$(starship init zsh)"
 
 ### SDKMAN (Keep it last!)
