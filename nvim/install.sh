@@ -8,5 +8,4 @@ else
     echo "nvim already installed, skipping..."
 fi
 
-# create symlinks for nvim config directory
-ln -sfv "${HOME}/dotfiles/nvim/" "${HOME}/.config/nvim"
+stow -v -t "${HOME}" nvim
