@@ -20,16 +20,6 @@ jobs:
         run: |
           make brew-install
 
-  git:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Git
-        run: |
-          make git
-
   iterm2:
     runs-on: macos-latest
     steps:
@@ -49,28 +39,3 @@ jobs:
       - name: OS
         run: |
           make os
-
-  starship:
-    runs-on: macos-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Starship
-        run: |
-          make starship
-
-  warp:
-    runs-on: macos-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Simulate home
-        run: |
-          mkdir -p "${HOME}/dotfiles/warp/"
-          cp warp/settings.plist "${HOME}/dotfiles/warp/settings.plist"
-
-      - name: Warp
-        run: |
-          make warp
