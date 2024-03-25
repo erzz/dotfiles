@@ -17,9 +17,8 @@ direnv: brew-install stow
 	@chmod +x direnv/install.sh
 	@./direnv/install.sh
 
-git:
-	@chmod +x git/install.sh
-	@./git/install.sh
+git: stow
+	stow git
 
 iterm: brew-install
 	@chmod +x iterm/install.sh
