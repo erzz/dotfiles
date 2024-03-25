@@ -49,10 +49,23 @@ source "${HOMEBREW_PREFIX}/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
 # shellcheck disable=SC1091
 source "${HOMEBREW_PREFIX}/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 
+# Eza shell completion
+if type brew &>/dev/null; then
+    FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
+    autoload -Uz compinit
+    compinit
+fi
+
 # <---------------------- ALIASES ------------------------>
 alias gnb="git checkout main && git pull --rebase && git checkout -b"
 alias vim="nvim"
 alias vi="nvim"
+alias ld="eza -lD"
+alias lf="eza -lf --color=always | grep -v /"
+alias lh="eza -dl .* --group-directories-first"
+alias ll="eza -al --group-directories-first"
+alias ls="eza -alf --color=always --sort=size | grep -v /"
+alias lt="eza -al --sort=modified"
 
 # <----------------------- TOOLS ------------------------->
 # XDG
