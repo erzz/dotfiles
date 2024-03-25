@@ -5,7 +5,7 @@ return {
     keys = {
       {
         "<leader>bt",
-        "<cmd>ToggleTerm size=40 direction=horizontal dir=git_dir<cr>",
+        "<cmd>ToggleTerm size=20 direction=horizontal dir=git_dir<cr>",
         desc = "Open a horizontal terminal",
       },
     },
