@@ -1,11 +1,11 @@
-## Summary
+# Summary
 
-* Powered with `make`, cos honestly I have played with all the things like nix - but this just gets
+- Powered with `make`, cos honestly I have played with all the things like nix - but this just gets
   the job done without it being a full time job!
-* Covers homebrew, git, iterm, various programming language installs, OS tweaks, starship and ZSH
-* Option to only apply various sections in a scoped way
-* Devbox and direnv initial installs and config
-* Detection of drift in dotfiles included
+- Covers homebrew, git, iterm, various programming language installs, OS tweaks, starship and ZSH
+- Option to only apply various sections in a scoped way
+- Devbox and direnv initial installs and config
+- Detection of drift in dotfiles included
 
 ## Installation
 
@@ -62,7 +62,7 @@ make brew
 
 Automated and isolated dev environments of any configuration (nix underneath)
 
-```
+```bash
 make devbox
 ```
 
@@ -70,7 +70,7 @@ make devbox
 
 Pairs beautifully with devbox/nix to automatically enable environments when you enter the directory.
 
-```
+```bash
 make direnv
 ```
 
@@ -94,7 +94,7 @@ make iterm
 
 Uses the various `<lang>env` tools to bootstrap the latest Go, Node, Python, Terraform etc
 
-```
+```bash
 make languages
 ```
 
@@ -140,4 +140,4 @@ make zsh
 
 ## Acknowledgements
 
-* The inspiration of this repo is https://github.com/pkissling/dotfiles/
+- The inspiration of this repo is [pkissling](https://github.com/pkissling/dotfiles/)
