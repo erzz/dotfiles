@@ -37,79 +37,80 @@ orange = "#EC773E"
 skin = "#DEBC9C"
 blackish = "#484848"
 green = "#5CC27C"
+white = "#FFFFFF"
 
 [bun]
 symbol = "🍞 "
-style = "bg:skyblue"
+style = "bg:skyblue fg:blackish"
 format = '[ $symbol ($version) ]($style)'
 
 [cmd_duration]
 min_time = 500
-style = "bg:darkblue"
+style = "bg:darkbluei fg:white"
 format = '[  $duration ]($style)'
 
 [directory]
-style = "bg:orange"
+style = "bg:orange fg:blackish"
 format = "[ $path ]($style)"
 truncation_length = 2
 truncation_symbol = "…/"
 truncate_to_repo = true
 
 [directory.substitutions]
-"Documents" = " "
-"Downloads" = " "
-"Music" = " "
-"Pictures" = " "
+"Documents" = "󰲂"
+"Downloads" = "󰉍"
+"Music" = "󱍙"
+"Pictures" = "󰋩"
 
 [docker_context]
 symbol = " "
-style = "bg:green"
+style = "bg:green fg:blackish"
 format = '[ $symbol $context ]($style) $path'
 
 [git_branch]
 symbol = ""
-style = "bg:skin"
+style = "bg:skin fg:blackish"
 format = '[ $symbol $branch ]($style)'
 
 [git_status]
-style = "bg:skin"
+style = "bg:skin fg:blackish"
 format = '[$all_status$ahead_behind ]($style)'
 
 [golang]
 symbol = " "
-style = "bg:skyblue"
+style = "bg:skyblue fg:blackish"
 version_format = "v${major}.${minor}"
 format = '[ $symbol($version) ]($style)'
 
 [gcloud]
 symbol = "󱇶"
-style = "bg:blackish"
+style = "bg:blackish fg:white"
 format = '[ $symbol $project ]($style)'
 
 [java]
 symbol = " "
-style = "bg:skyblue"
+style = "bg:skyblue fg:blackish"
 version_format = "v${major}.${minor}"
 format = '[ $symbol ($version) ]($style)'
 
 [nodejs]
 symbol = ""
-style = "bg:skyblue"
+style = "bg:skyblue fg:blackish"
 version_format = "v${major}.${minor}"
 format = '[ $symbol ($version) ]($style)'
 
 [python]
-style = "bg:skyblue"
+style = "bg:skyblue fg:blackish"
 version_format = "v${major}.${minor}"
 format = '[ $symbol($version) ]($style)'
 
 [terraform]
 symbol = "💠"
-style = "bg:blackish"
+style = "bg:blackish fg:white"
 format = '[$symbol $workspace ]($style)'
 
 [time]
 disabled = false
 time_format = "%R" # Hour:Minute Format
-style = "bg:green"
+style = "bg:green fg:blackish"
 format = '[$time]($style)'
