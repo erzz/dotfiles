@@ -14,4 +14,3 @@ if [ ! -d "${HOME}/.config/nvim" ]; then
 else
 	echo "nvim already stowed, skipping..."
 fi
-
