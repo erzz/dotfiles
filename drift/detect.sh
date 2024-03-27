@@ -7,5 +7,5 @@ cd ~/dotfiles || return
 # Alerts based on unstaged changes to dotfiles directory
 git fetch
 if [ -n "$(git status --porcelain)" ]; then
-  echo -e "${COLOUR}Changes detected in dotfiles, consider commiting them${NC}"
+	echo -e "${COLOUR}Changes detected in dotfiles, consider commiting them${NC}"
 fi

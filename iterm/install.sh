@@ -2,8 +2,8 @@
 set -ex
 
 if [ ! -d "/Applications/iTerm.app" ]; then
-  echo "iTerm not found, installing iTerm..."
-  brew install --cask iterm2
+	echo "iTerm not found, installing iTerm..."
+	brew install --cask iterm2
 fi
 
 echo "Configuring iTerm..."
