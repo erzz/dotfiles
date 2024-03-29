@@ -1,0 +1,24 @@
+[font]
+size = 16
+
+[font.normal]
+family = "JetBrainsMono Nerd Font"
+style = "ExtraLight"
+
+[font.bold]
+family = "JetBrainsMono Nerd Font"
+style = "Light"
+
+[font.italic]
+family = "JetBrainsMono Nerd Font"
+style = "Extrai Light Italic"
+
+[font.bold_italic]
+family = "JetBrainsMono Nerd Font"
+style = "Light Italic"
+
+[window]
+decorations = "Full"
+opacity = 1
+dynamic_title = true
+
