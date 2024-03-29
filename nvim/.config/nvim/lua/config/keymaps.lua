@@ -15,3 +15,10 @@ keymap.set("n", "<leader>sv", ":vsplit<CR>", opts) -- split vertically
 keymap.set("n", "<leader>sh", ":split<CR>", opts) -- split horizontally
 keymap.set("n", "<leader>sm", ":MaximizerToggle<CR>", opts) -- toggle minimize
 
+-- Indenting 
+keymap.set("v", "<", "<gv")
+keymap.set("v", ">", ">gv")
+
+-- Comments
+vim.api.nvim_set_keymap("n", "<C-_>", "gcc", {noremap = false})
+vim.api.nvim_set_keymap("v", "<C-_>", "gcc", {noremap = false})
