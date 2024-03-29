@@ -1,5 +1,9 @@
-.PHONY: brew brew-install devbox direnv git iterm languages nvim os starship stow warp xcode zsh
+.PHONY: alacritty brew brew-install devbox direnv git iterm languages nvim os starship stow warp xcode zsh
 default: .PHONY
+
+alacritty::
+	@chmod +x alacritty/install.sh
+	@./alacritty/install.sh
 
 brew-install: xcode
 	@chmod +x brew/install.sh

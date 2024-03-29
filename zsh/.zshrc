@@ -84,13 +84,13 @@ export NVM_DIR="$HOME/.nvm"
 ### DIRENV
 eval "$(direnv hook zsh)"
 
-### ITERM
+### TERM
 
 DISABLE_AUTO_TITLE="true"
 
 precmd() {
   # sets the tab title to current dir
-  echo -ne "\e]1;${PWD##*/}\a"
+  echo -ne "\e]2;${PWD##*/}\a"
 }
 
 ### NEOVIM
