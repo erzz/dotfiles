@@ -46,7 +46,7 @@ format = '[ $symbol ($version) ]($style)'
 
 [cmd_duration]
 min_time = 500
-style = "bg:darkbluei fg:white"
+style = "bg:darkblue fg:white"
 format = '[  $duration ]($style)'
 
 [directory]
