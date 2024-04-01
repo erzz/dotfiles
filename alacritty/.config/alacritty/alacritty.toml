@@ -1,3 +1,10 @@
+[colors.primary]
+background = "#484848"
+
+[cursor.style]
+shape = "Block"
+blinking = "On"
+
 [font]
 size = 16
 
@@ -17,8 +24,15 @@ style = "Extrai Light Italic"
 family = "JetBrainsMono Nerd Font"
 style = "Light Italic"
 
+[terminal]
+osc52 = "CopyPaste"
+
 [window]
 decorations = "Full"
-opacity = 1
+opacity = 0.95
 dynamic_title = true
+blur = true
 
+[window.dimensions]
+columns = 140
+lines = 80
