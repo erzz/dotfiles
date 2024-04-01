@@ -1,5 +1,6 @@
-[colors.primary]
-background = "#484848"
+import = [
+  "~/.config/alacritty/themes/tokyonight_moon.toml"
+]
 
 [cursor.style]
 shape = "Block"
@@ -29,9 +30,7 @@ osc52 = "CopyPaste"
 
 [window]
 decorations = "Full"
-opacity = 0.95
 dynamic_title = true
-blur = true
 
 [window.dimensions]
 columns = 140
