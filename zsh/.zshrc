@@ -96,6 +96,9 @@ precmd() {
 ### NEOVIM
 export EDITOR="nvim"
 
+### PRETTIERD
+export PRETTIERD_DEFAULT_CONFIG=~/.config/prettierd/global.json 
+
 ### PYENV
 export PYENV_ROOT="$HOME/.pyenv"
 command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"

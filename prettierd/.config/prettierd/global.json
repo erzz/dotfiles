@@ -1,0 +1,25 @@
+{
+  "overrides": [
+    { "files": ["*.js"], "options": { "singleQuote": true } },
+    { "files": ["*.yml, *.yaml"], "options": { "singleQuote": false } },
+    {
+      "files": ["*.md, *.mdx"],
+      "options": {
+        "embeddedLanguageFormatting": "off",
+        "parser": "mdx"
+      }
+    }
+  ],
+  "bracketSameLine": false,
+  "bracketSpacing": false,
+  "embeddedLanguageFormatting": "auto",
+  "endOfLine": "lf",
+  "htmlWhitespaceSensitivity": "css",
+  "printWidth": 100,
+  "proseWrap": "always",
+  "singleAttributePerLine": false,
+  "singleQuote": false,
+  "trailingComma": "es5",
+  "tabWidth": 2,
+  "useTabs": false
+}
