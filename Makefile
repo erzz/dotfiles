@@ -1,4 +1,4 @@
-.PHONY: alacritty brew brew-install devbox direnv git iterm languages nvim os prettierd starship stow warp xcode zsh
+.PHONY: alacritty brew brew-install devbox direnv git iterm languages nvim os prettierd starship stow tmux warp xcode zsh
 default: .PHONY
 
 alacritty: brew-install
@@ -52,6 +52,9 @@ starship: brew-install stow
 
 stow: brew-install
 	stow stow
+
+tmux: brew-install stow
+	stow tmux
 
 warp: brew-install
 	@chmod +x warp/install.sh
