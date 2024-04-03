@@ -1,19 +1,19 @@
 .PHONY: alacritty brew brew-install devbox direnv git iterm languages nvim os prettierd starship stow warp xcode zsh
 default: .PHONY
 
-alacritty::
+alacritty: brew-install
 	@chmod +x alacritty/install.sh
 	@./alacritty/install.sh
-
-brew-install: xcode
-	@chmod +x brew/install.sh
-	@./brew/install.sh
 
 brew: brew-install
 	@chmod +x brew/bundle.sh
 	@./brew/bundle.sh
 
-devbox: stow
+brew-install: xcode
+	@chmod +x brew/install.sh
+	@./brew/install.sh
+
+devbox: 
 	@chmod +x devbox/install.sh
 	@./devbox/install.sh
 
@@ -35,7 +35,7 @@ languages: brew-install
 	@chmod +x languages/other.sh
 	@./languages/other.sh
 
-nvim stow:
+nvim: brew-install stow
 	@chmod +x nvim/install.sh
 	@./nvim/install.sh
 
@@ -43,7 +43,7 @@ os:
 	@chmod +x os/install.sh
 	@./os/install.sh
 
-prettierd:
+prettierd: stow
 	stow prettierd 
 
 starship: brew-install stow
@@ -61,6 +61,6 @@ xcode:
 	echo "Installing Xcode (takes a while)..."
 	@xcode-select --install || true
 
-zsh: brew stow
+zsh: stow
 	@chmod +x zsh/install.sh
 	@./zsh/install.sh
