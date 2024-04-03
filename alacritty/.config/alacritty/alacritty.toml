@@ -8,7 +8,7 @@ shape = "Block"
 blinking = "On"
 
 [font]
-size = 16
+size = 18 
 
 [font.normal]
 family = "JetBrainsMono Nerd Font"
