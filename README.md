@@ -2,8 +2,9 @@
 
 - Powered with `make`, cos honestly I have played with all the things like nix - but this just gets
   the job done without it being a full time job!
-- Covers homebrew, git, iterm, various programming language installs, OS tweaks, starship and ZSH
-- Option to only apply various sections in a scoped way
+- Covers homebrew, git, terminal, various programming language installs, NVIM (Lazy), OS tweaks,
+  starship and ZSH and more
+- Can be applied in totality or individual components can be applied in a scoped way
 - Devbox and direnv initial installs and config
 - Detection of drift in dotfiles included
 
@@ -11,9 +12,9 @@
 
 Imagine a brand spanking new laptop!
 
-Dotfiles will be perfect to get me up and running **except**
-for the fact that git is not yet installed, yet I need git to fetch and run my dotfiles, which, in
-turn would be the thing to install and configure git :cry:
+Dotfiles will be perfect to get me up and running **except** for the fact that git is not yet
+installed, yet I need git to fetch and run my dotfiles, which, in turn would be the thing to install
+and configure git :cry:
 
 Well fear not - on MacOS, just typing the word git in a terminal will prompt you to install xcode
 cli tools including git.
@@ -40,27 +41,92 @@ cd ~ \
   && make
 ```
 
-## Contents
+## Do it all
 
-### Do it all
-
-Runs everything
+Run everything
 
 ```bash
 make
 ```
 
+## Basics
+
 ### Homebrew
 
-Whole bunch of clis, fonts, apps and vscode extensions etc
+Whole bunch of clis, fonts, apps and vscode extensions etc. Subtargets `make xcode` and
+`make brew-install` to ensure the pre-requisites are installed.
 
 ```bash
 make brew
 ```
 
+### Stow
+
+Important as it drives creation of all symlinks to configuration files
+
+```bash
+make stow
+```
+
+### Global git config
+
+Does what it says
+
+```bash
+make git
+```
+
+### ZSH
+
+The random configs of .zshrc that makes the magic happen
+
+```bash
+make zsh
+```
+
+## Terminal Emulators
+
+Yes there is currently three of them! I am in a state of flux with this one but Alacritty is my
+current favourite.
+
+### Alacritty
+
+Fast and small with some colours etc
+
+```bash
+make alacritty
+```
+
+### Iterm2
+
+Clunkier but comprehensive.
+
+```bash
+make iterm
+```
+
+### Warp
+
+Some experimental thing with Warp, not even sure I like it
+
+```bash
+make warp
+```
+
+## Programming & Dev environments
+
+### Languages
+
+Uses the various `<lang>env` tools to bootstrap the latest Go, Node, Python, Terraform etc
+
+```bash
+make languages
+```
+
 ### Devbox
 
-Automated and isolated dev environments of any configuration (nix underneath)
+Automated and isolated dev environments of any configuration (powered by nix). Unfortunately they do
+not provide a brew package yet, so this will prompt a little bit for sudo rights.
 
 ```bash
 make devbox
@@ -74,31 +140,7 @@ Pairs beautifully with devbox/nix to automatically enable environments when you 
 make direnv
 ```
 
-### Global git config
-
-Does what it says
-
-```bash
-make git
-```
-
-### Iterm2
-
-Configure Iterm profile and colors
-
-```bash
-make iterm
-```
-
-### Languages
-
-Uses the various `<lang>env` tools to bootstrap the latest Go, Node, Python, Terraform etc
-
-```bash
-make languages
-```
-
-### OS Tweaks
+## OS Tweaks
 
 Ever evolving OS tweaks to Finder, Activity Monitor, etc
 
@@ -106,7 +148,17 @@ Ever evolving OS tweaks to Finder, Activity Monitor, etc
 make os
 ```
 
-### Starship config
+## Other
+
+### NVIM
+
+Based on LazyVIM with various tweaks, themes etc
+
+```bash
+make nvim
+```
+
+### Starship
 
 My pretty (I think) Starship config cos no-one likes writing TOML unless they have to!
 
@@ -114,28 +166,12 @@ My pretty (I think) Starship config cos no-one likes writing TOML unless they ha
 make starship
 ```
 
-### Warp
+### prettierd
 
-Some experimental thing with Warp, not even sure I like it
-
-```bash
-make warp
-```
-
-### Xcode CLI
-
-Needed for brew - part of `brew-install` target too
+A global configuration for prettier for any projects that do not have it installed or configured
 
 ```bash
-make xcode
-```
-
-### ZSH
-
-The random configs of .zshrc that makes the magic happen
-
-```bash
-make zsh
+make prettierd
 ```
 
 ## Acknowledgements
