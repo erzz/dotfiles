@@ -54,7 +54,8 @@ stow: brew-install
 	stow stow
 
 tmux: brew-install stow
-	stow tmux
+	@chmod +x tmux/install.sh
+	@./tmux/install.sh
 
 warp: brew-install
 	@chmod +x warp/install.sh
