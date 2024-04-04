@@ -9,7 +9,3 @@ Things that I need / want to fix / investigate
 ## OS
 
 - [ ] Change keybinding for dictation to something that doesn't constantly trigger (double ctrl)
-
-## Iterm2
-
-- [ ] Probably remove once I am happy with Alacritty

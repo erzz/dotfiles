@@ -84,10 +84,7 @@ The random configs of .zshrc that makes the magic happen
 make zsh
 ```
 
-## Terminal Emulators
-
-Yes there is currently three of them! I am in a state of flux with this one but Alacritty is my
-current favourite.
+## Terminal
 
 ### Alacritty
 
@@ -97,20 +94,12 @@ Fast and small with some colours etc
 make alacritty
 ```
 
-### Iterm2
+### tmux
 
-Clunkier but comprehensive.
-
-```bash
-make iterm
-```
-
-### Warp
-
-Some experimental thing with Warp, not even sure I like it
+General tmux setup including keymaps, plugins and nvim integration
 
 ```bash
-make warp
+make tmux
 ```
 
 ## Programming & Dev environments
@@ -156,14 +145,6 @@ Based on LazyVIM with various tweaks, themes etc
 
 ```bash
 make nvim
-```
-
-### tmux
-
-General tmux setup including keymaps, plugins and nvim integration
-
-```bash
-make tmux
 ```
 
 ### Starship
