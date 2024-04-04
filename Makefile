@@ -1,4 +1,4 @@
-.PHONY: alacritty brew brew-install devbox direnv git iterm languages nvim os prettierd starship stow tmux warp xcode zsh
+.PHONY: alacritty brew brew-install devbox direnv git languages nvim os prettierd starship stow tmux xcode zsh
 default: .PHONY
 
 alacritty: brew-install
@@ -23,10 +23,6 @@ direnv: brew-install stow
 
 git: stow
 	stow git
-
-iterm: brew-install
-	@chmod +x iterm/install.sh
-	@./iterm/install.sh
 
 languages: brew-install
 	echo "Installing SDKMAN..."
@@ -56,10 +52,6 @@ stow: brew-install
 tmux: brew-install stow
 	@chmod +x tmux/install.sh
 	@./tmux/install.sh
-
-warp: brew-install
-	@chmod +x warp/install.sh
-	@./warp/install.sh
 
 xcode:
 	echo "Installing Xcode (takes a while)..."
