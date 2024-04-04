@@ -158,6 +158,14 @@ Based on LazyVIM with various tweaks, themes etc
 make nvim
 ```
 
+### tmux
+
+General tmux setup including keymaps, plugins and nvim integration
+
+```bash
+make tmux
+```
+
 ### Starship
 
 My pretty (I think) Starship config cos no-one likes writing TOML unless they have to!
