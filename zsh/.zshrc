@@ -73,6 +73,7 @@ export XDG_CONFIG_HOME="$HOME/.config"
 
 # HOMEBREW
 export PATH="${HOMEBREW_PREFIX}/sbin:/sbin:/usr/local/bin:$PATH"
+export HOMEBREW_AUTO_UPDATE_SECS=2629746
 
 # NVM
 export NVM_DIR="$HOME/.nvm"
