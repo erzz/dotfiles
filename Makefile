@@ -1,4 +1,4 @@
-.PHONY: alacritty brew brew-install devbox direnv git languages nvim obsidian os prettierd starship stow tmux xcode zsh
+.PHONY: alacritty brew brew-install devbox direnv git languages nvim obsidian os prettierd starship stow tmux xcode zed zsh
 default: .PHONY
 
 alacritty: brew-install
@@ -60,6 +60,9 @@ tmux: brew-install stow
 xcode:
 	echo "Installing Xcode (takes a while)..."
 	@xcode-select --install || true
+
+zed: brew
+	stow zed
 
 zsh: stow
 	@chmod +x zsh/install.sh

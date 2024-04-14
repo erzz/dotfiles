@@ -157,6 +157,7 @@ cask "visual-studio-code"
 cask "vlc"
 cask "webex"
 cask "whatsapp"
+cask "zed"
 
 # <---------------------- APP STORE ---------------------->
 mas "ColorSlurp", id: 1287239339
