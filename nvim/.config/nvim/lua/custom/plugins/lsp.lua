@@ -164,7 +164,6 @@ return {
       'shellcheck',
       -- Spelling
       'cspell',
-      'typos-lsp',
       -- Terraform
       'terraformls',
       'tflint',
