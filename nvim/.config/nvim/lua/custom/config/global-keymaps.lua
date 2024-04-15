@@ -26,3 +26,6 @@ map('n', '<leader>qq', '<cmd>qa<cr>', { desc = 'Quit All' })
 
 -- exit terminal mode with an easier shortcut
 map('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
+
+-- alternative to esc for leaving insert mode
+map('i', 'jj', '<Esc>')
