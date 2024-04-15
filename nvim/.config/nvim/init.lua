@@ -32,6 +32,9 @@ vim.opt.smartcase = true
 -- Keep signcolumn on by default
 vim.opt.signcolumn = 'yes'
 
+-- Show marker at my preferred line length
+vim.opt.colorcolumn = '100'
+
 -- Decrease update time
 vim.opt.updatetime = 250
 
@@ -59,6 +62,13 @@ vim.opt.scrolloff = 10
 -- Set highlight on search, but clear on pressing <Esc> in normal mode
 vim.opt.hlsearch = true
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
+
+-- Treat MDX files as markdown
+vim.filetype.add {
+  extension = {
+    mdx = 'markdown',
+  },
+}
 
 -- [[ Install `lazy.nvim` plugin manager ]]
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
