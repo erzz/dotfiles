@@ -1,5 +1,5 @@
 -- GENERIC VIM OPTIONS
-require 'custom/config/options'
+require 'config/options'
 
 -- INSTALL LAZY.NVIM PLUGIN MANAGER
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -18,7 +18,7 @@ require('lazy').setup({
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
   -- Custom Plugins
-  { import = 'custom.plugins' },
+  { import = 'plugins' },
 }, {
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the
@@ -41,7 +41,7 @@ require('lazy').setup({
   },
 })
 
-require 'custom/config/autocommands'
-require 'custom/config/global-keymaps'
+require 'config/autocommands'
+require 'config/global-keymaps'
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
