@@ -2,7 +2,12 @@ return {
   'hrsh7th/nvim-cmp',
   event = 'InsertEnter',
   dependencies = {
-    -- Snippet Engine & its associated nvim-cmp source
+    {
+      'zbirenbaum/copilot-cmp',
+      config = function()
+        require('copilot_cmp').setup()
+      end,
+    },
     {
       'L3MON4D3/LuaSnip',
       build = (function()
@@ -95,6 +100,7 @@ return {
         --    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
       },
       sources = {
+        { name = 'copilot' },
         { name = 'nvim_lsp' },
         { name = 'luasnip' },
         { name = 'path' },
