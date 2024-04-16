@@ -57,10 +57,10 @@ truncation_symbol = "…/"
 truncate_to_repo = true
 
 [directory.substitutions]
-"Documents" = "󰲂"
-"Downloads" = "󰉍"
-"Music" = "󱍙"
-"Pictures" = "󰋩"
+"Documents" = " 󰲂 "
+"Downloads" = " 󰉍 "
+"Music" = " 󱍙 "
+"Pictures" = " 󰋩 "
 
 [docker_context]
 symbol = " "
