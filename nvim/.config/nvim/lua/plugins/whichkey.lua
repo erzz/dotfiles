@@ -11,6 +11,7 @@ return {
       ['<leader>e'] = { name = '[E]rror Diagnostics', _ = 'which_key_ignore' },
       ['<leader>f'] = { name = '[F]ind', _ = 'which_key_ignore' },
       ['<leader>g'] = { name = 'Lazy[G]it', _ = 'which_key_ignore' },
+      ['<leader>m'] = { name = '[M]arkdown', _ = 'which_key_ignore' },
       ['<leader>r'] = { name = '[R]ename', _ = 'which_key_ignore' },
       ['<leader>t'] = { name = '[T]rouble', _ = 'which_key_ignore' },
       ['<leader>w'] = { name = '[W]orkspace', _ = 'which_key_ignore' },
