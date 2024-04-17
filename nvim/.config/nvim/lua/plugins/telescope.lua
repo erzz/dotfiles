@@ -25,6 +25,10 @@ return {
     -- See `:help telescope` and `:help telescope.setup()`
     require('telescope').setup {
       pickers = {
+        buffers = {
+          ignore_current_buffer = true,
+          sort_lastused = true,
+        },
         live_grep = {
           file_ignore_patterns = { 'node_modules', '.git/', '.venv' },
           additional_args = function(_)
