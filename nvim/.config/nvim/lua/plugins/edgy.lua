@@ -45,6 +45,8 @@ return {
           return vim.b[buf].neo_tree_source == 'filesystem'
         end,
         size = { height = 0.5 },
+        pinned = true,
+        open = 'Neotree position=left filesystem',
       },
       {
         title = 'Buffers',
@@ -66,13 +68,23 @@ return {
         pinned = true,
         open = 'Neotree position=right git_status',
       },
-      -- {
-      --   ft = 'Outline',
-      --   pinned = true,
-      --   open = 'SymbolsOutlineOpen',
-      -- },
-      -- -- any other neo-tree windows
       'neo-tree',
+    },
+  },
+  keys = {
+    {
+      '<leader>ee',
+      function()
+        require('edgy').toggle 'left'
+      end,
+      desc = 'Toggle [E]xplorer',
+    },
+    {
+      '<leader>es',
+      function()
+        require('edgy').select 'left'
+      end,
+      desc = '[S]elect window',
     },
   },
 }
