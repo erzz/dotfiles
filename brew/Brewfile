@@ -140,12 +140,9 @@ cask "font-ubuntu"
 cask "garmin-express"
 cask "google-chrome"
 cask "google-cloud-sdk"
-cask "marta"
 cask "microsoft-auto-update"
 cask "microsoft-office"
 cask "microsoft-teams"
-cask "notion"
-cask "obsidian"
 cask "postman"
 cask "slack"
 cask "sourcetree"
@@ -153,7 +150,6 @@ cask "spotify"
 cask "textmate"
 cask "the-unarchiver"
 cask "via"
-cask "viscosity"
 cask "visual-studio-code"
 cask "vlc"
 cask "webex"
@@ -161,6 +157,7 @@ cask "whatsapp"
 cask "zed"
 
 # <---------------------- APP STORE ---------------------->
+mas "Bear", id: 1091189122
 mas "ColorSlurp", id: 1287239339
 mas "Divvy", id: 413857545
 mas "Email", id: 1489591003
