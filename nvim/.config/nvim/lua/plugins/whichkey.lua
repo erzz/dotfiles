@@ -14,6 +14,8 @@ return {
       ['<leader>q'] = { name = '[Q]uit', _ = 'which_key_ignore' },
       ['<leader>r'] = { name = '[R]ename', _ = 'which_key_ignore' },
       ['<leader>t'] = { name = '[T]rouble', _ = 'which_key_ignore' },
+      ['<leader>u'] = { name = '[U]i', _ = 'which_key_ignore' },
+      ['<leader>un'] = { name = '[N]otifications', _ = 'which_key_ignore' },
       ['<leader>v'] = { name = '[V]im', _ = 'which_key_ignore' },
     }
   end,
