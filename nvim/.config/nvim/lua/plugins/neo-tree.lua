@@ -51,8 +51,13 @@ return {
         hide_dotfiles = false,
         hide_by_name = { '.git' },
       },
+      follow_current_file = { enabled = true },
+      use_libuv_file_watcher = true,
     },
     window = {
+      mappings = {
+        ['<space>'] = 'none',
+      },
       width = 35,
     },
   },
