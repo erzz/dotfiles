@@ -1,11 +1,11 @@
 {
-  "theme": "Rosé Pine",
+  "theme": "Andromeda",
   "context": "Dock",
   "bindings": {
-    "ctrl-w h": ["workspace::ActivatePaneInDirection", "Left"],
-    "ctrl-w l": ["workspace::ActivatePaneInDirection", "Right"],
-    "ctrl-w k": ["workspace::ActivatePaneInDirection", "Up"],
-    "ctrl-w j": ["workspace::ActivatePaneInDirection", "Down"]
+    "ctrl-h": ["workspace::ActivatePaneInDirection", "Left"],
+    "ctrl-l": ["workspace::ActivatePaneInDirection", "Right"],
+    "ctrl-k": ["workspace::ActivatePaneInDirection", "Up"],
+    "ctrl-j": ["workspace::ActivatePaneInDirection", "Down"]
   },
   "vim_mode": true,
   "vim": {
@@ -15,12 +15,18 @@
   "relative_line_numbers": true,
   "ui_font_size": 16,
   "buffer_font_size": 16,
-  "buffer_font_family": "JetBrainsMono Nerd Font",
+  "buffer_font_family": "JetBrainsMono Nerd Font Mono",
   "inlay_hints": {
     "enabled": true,
     "show_type_hints": true,
     "show_parameter_hints": true,
     "show_other_hints": true
   },
-  "preferred_line_length": 100
+  "preferred_line_length": 100,
+  "scrollbar": {
+    "show": "never"
+  },
+  "terminal": {
+    "font_size": 16
+  }
 }
