@@ -1,3 +1,7 @@
 # Just in case it lands in dotfiles by accident
 .localrc
+
+# Random stuff I don't want to commit
 tmux/.tmux/plugins/
+zed/.config/zed/.tmp*
+zed/.config/zed/conversations
