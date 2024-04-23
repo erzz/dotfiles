@@ -1,12 +1,6 @@
 {
   "theme": "Andromeda",
   "context": "Dock",
-  "bindings": {
-    "ctrl-h": ["workspace::ActivatePaneInDirection", "Left"],
-    "ctrl-l": ["workspace::ActivatePaneInDirection", "Right"],
-    "ctrl-k": ["workspace::ActivatePaneInDirection", "Up"],
-    "ctrl-j": ["workspace::ActivatePaneInDirection", "Down"]
-  },
   "vim_mode": true,
   "vim": {
     "use_system_clipboard": "always",
@@ -28,5 +22,15 @@
   },
   "terminal": {
     "font_size": 16
+  },
+  "language_overrides": {
+    "Markdown": {
+      "format_on_save": {
+        "external": {
+          "command": "/opt/homebrew/bin/prettierd",
+          "arguments": ["--stdin-filepath", "{buffer_path}"]
+        }
+      }
+    }
   }
 }
