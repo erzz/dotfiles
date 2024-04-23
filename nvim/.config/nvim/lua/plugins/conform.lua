@@ -30,6 +30,7 @@ return {
       markdown = { { 'prettierd', 'prettier', 'markdown' } },
       mdx = { { 'prettierd', 'prettier', 'mdx', 'markdown' } },
       python = { 'isort', 'black' },
+      yaml = { 'prettier', 'prettierd' },
     },
     ft_parsers = {
       ['markdown.mdx'] = 'mdx',
