@@ -30,7 +30,13 @@ return {
           sort_lastused = true,
         },
         live_grep = {
-          file_ignore_patterns = { 'node_modules', '.git/', '.venv' },
+          file_ignore_patterns = {
+            'yarn.lock',
+            '.yarn',
+            'node_modules',
+            '.git/',
+            '.venv',
+          },
           additional_args = function(_)
             return { '--hidden' }
           end,
