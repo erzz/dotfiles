@@ -13,6 +13,7 @@ return { -- Highlight, edit, and navigate code
       'markdown_inline',
       'python',
       'regex',
+      'toml',
       'tsx',
       'typescript',
       'vim',
