@@ -1,4 +1,4 @@
-.PHONY: alacritty brew brew-install devbox direnv git languages nvim obsidian os prettierd starship stow tmux xcode zed zsh
+.PHONY: alacritty brew brew-install devbox direnv git languages nvim os prettierd starship stow tmux xcode zed zsh
 default: .PHONY
 
 alacritty: brew-install
@@ -13,7 +13,7 @@ brew-install: xcode
 	@chmod +x brew/install.sh
 	@./brew/install.sh
 
-devbox: 
+devbox:
 	@chmod +x devbox/install.sh
 	@./devbox/install.sh
 
@@ -35,16 +35,12 @@ nvim: brew-install stow
 	@chmod +x nvim/install.sh
 	@./nvim/install.sh
 
-obsidian: brew-install
-	@chmod +x obsidian/install.sh
-	@./obsidian/install.sh
-
 os:
 	@chmod +x os/install.sh
 	@./os/install.sh
 
 prettierd: stow
-	stow prettierd 
+	stow prettierd
 
 starship: brew-install stow
 	@chmod +x starship/install.sh
