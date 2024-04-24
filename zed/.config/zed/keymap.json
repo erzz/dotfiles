@@ -23,9 +23,15 @@
     }
   },
   // Editor VIM Bindings
+  // NORMAL and VISUAL modes
   {
     "context": "Editor && (vim_mode == normal || vim_mode == visual) && !VimWaiting && !menu",
     "bindings": {
+      "space e e": "workspace::ToggleLeftDock",
+      "space f f": "file_finder::Toggle",
+      "space f g": "pane::DeploySearch",
+      "space g d": "editor::GoToDefinition",
+      "space t t": "diagnostics::Deploy",
       "shift-k": "editor::Hover",
       "shift-h": "pane::ActivatePrevItem",
       "shift-l": "pane::ActivateNextItem",
@@ -35,14 +41,14 @@
       "ctrl-j": ["workspace::ActivatePaneInDirection", "Down"]
     }
   },
+  // Only NORMAL mode
   {
     "context": "Editor && vim_mode == normal && !VimWaiting && !menu",
     "bindings": {
-      // put key-bindings here if you want them to work only in normal mode
-      // "down": ["workspace::SendKeystrokes", "4 j"]
-      // "up": ["workspace::SendKeystrokes", "4 k"]
+      "space c f": "editor::Format"
     }
   },
+  // Only VISUAL mode
   {
     "context": "Editor && vim_mode == visual && !VimWaiting && !menu",
     "bindings": {
