@@ -1,5 +1,5 @@
 import = [
-  "~/.config/alacritty/themes/tokyonight_moon.toml"
+  "~/.config/alacritty/themes/tokyonight_moon.toml",
   #"~/.config/alacritty/themes/skapa_dark.toml"
 ]
 
@@ -8,23 +8,24 @@ shape = "Block"
 blinking = "On"
 
 [font]
-size = 18 
+size = 16
+offset = { x = 0, y = 3 }
 
 [font.normal]
-family = "JetBrainsMono Nerd Font"
-style = "ExtraLight"
+family = "Hack Nerd Font Mono"
+style = "Regular"
 
 [font.bold]
-family = "JetBrainsMono Nerd Font"
-style = "Light"
+family = "Hack Nerd Font Mono"
+style = "Bold"
 
 [font.italic]
-family = "JetBrainsMono Nerd Font"
-style = "Extrai Light Italic"
+family = "Hack Nerd Font Mono"
+style = "Italic"
 
 [font.bold_italic]
-family = "JetBrainsMono Nerd Font"
-style = "Light Italic"
+family = "Hack Nerd Font Mono"
+style = "Bold Italic"
 
 [terminal]
 osc52 = "CopyPaste"
