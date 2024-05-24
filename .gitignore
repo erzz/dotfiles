@@ -5,3 +5,4 @@
 tmux/.tmux/plugins/
 zed/.config/zed/.tmp*
 zed/.config/zed/conversations
+zed/.config/zed/embeddings/semantic-index-db.0.mdb
