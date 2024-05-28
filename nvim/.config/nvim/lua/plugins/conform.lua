@@ -22,7 +22,7 @@ return {
     end,
     formatters_by_ft = {
       go = { 'goimports', 'gofmt' },
-      html = { { 'prettier', 'prettierd' } },
+      html = { { 'prettier', 'prettierd', 'htmlbeautifier' } },
       javascript = { { 'prettier', 'prettierd' } },
       lua = { 'stylua' },
       markdown = { { 'prettier', 'prettierd', 'markdown' } },
