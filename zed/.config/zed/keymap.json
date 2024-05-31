@@ -1,4 +1,11 @@
 [
+  // Tasks
+  {
+    "context": "Workspace",
+    "bindings": {
+      "space g g": ["task::Spawn", { "lazygit": "Open lazygit" }]
+    }
+  },
   // ProjectPanel is the file tree view on the left
   {
     "context": "ProjectPanel",
