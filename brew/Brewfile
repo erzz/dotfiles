@@ -166,6 +166,9 @@ cask "zed"
 mas "ColorSlurp", id: 1287239339
 mas "Divvy", id: 413857545
 mas "iStatistica", id: 1025822138
+# mas "NordPass", id: 2146016822
+mas "NordVPN", id: 905953485
+mas "OneAuth", id: 1142928979
 mas "OneDrive", id: 823766827
 mas "Pastel", id: 413897608
 mas "Telegram", id: 747648890
