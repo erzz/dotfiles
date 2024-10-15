@@ -175,7 +175,7 @@ mas "Pastel", id: 413897608
 mas "Step Two", id: 1448916662
 mas "Telegram", id: 747648890
 mas "Things", id: 904280696
-mas "WhatsApp", id: 1147396723
+mas "WhatsApp", id: 310633997
 
 # <----------------- VSCODE EXTENSIONS ------------------->
 vscode "adam-bender.commit-message-editor"
