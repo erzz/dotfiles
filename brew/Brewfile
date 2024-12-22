@@ -152,6 +152,7 @@ cask "microsoft-office"
 cask "microsoft-teams"
 cask "nordpass"
 cask "postman"
+cask "raycast"
 cask "shottr"
 cask "slack"
 cask "sourcetree"
@@ -167,7 +168,8 @@ cask "zed"
 
 # <---------------------- APP STORE ---------------------->
 mas "ColorSlurp", id: 1287239339
-mas "Divvy", id: 413857545
+# Replaced by raycast
+# mas "Divvy", id: 413857545
 mas "iStatistica", id: 1025822138
 mas "NordPass Safari Ext", id: 6443917910
 mas "NordVPN", id: 905953485
