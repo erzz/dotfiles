@@ -21,6 +21,10 @@ direnv: brew-install stow
 	@chmod +x direnv/install.sh
 	@./direnv/install.sh
 
+ghostty: brew-install
+	@chmod +x ghostty/install.sh
+	@./ghostty/install.sh
+
 git: stow
 	stow git
 
