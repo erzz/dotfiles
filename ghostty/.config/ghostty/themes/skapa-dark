@@ -1,0 +1,57 @@
+palette = 0=#111111
+palette = 1=#ED5A51
+palette = 2=#7FC76D
+palette = 3=#FFDB01
+palette = 4=#007CC1
+palette = 5=#EC773F
+palette = 6=#489CE3
+palette = 7=#DFDFDF
+palette = 8=#767676
+palette = 9=#FB6579
+palette = 10=#5CC27C
+palette = 11=#DEBC9C
+palette = 12=#007CC1
+palette = 13=#EC773F
+palette = 14=#3FB1E1
+palette = 15=#EEEEEE
+
+background = #242424
+foreground = #EEEEEE
+cursor-color = #EEEEEE
+selection-background = #828282
+selection-foreground = #EEEEEE
+
+# #DEBC9C
+# #FFDB01
+# #003E72
+# #004F93
+# #0058A3
+# #0161B4
+# #007CC1
+# #489CE3
+# #3FB1E1
+# #111111
+# #242424
+# #333333
+# #545454
+# #767676
+# #828282
+# #8C8C8C
+# #B7B7B7
+# #CCCCCC
+# #DFDFDF
+# #EEEEEE
+# #F5F5F5
+# #FFFFFF
+# #B90029
+# #CC0106
+# #CC013D
+# #DF0951
+# #ED5A51
+# #FB6579
+# #EC773F
+# #7FC76D
+# #5CC27C
+
+
+
