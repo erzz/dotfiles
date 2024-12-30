@@ -1,1 +1,51 @@
-theme = "JetBrains Darcula"
+# theme="Atom"
+unfocused-split-opacity        = 1
+theme                          = dark:skapa-dark,light:skapa-dark
+
+# Font
+font-family                    = Hack Nerd Font Mono
+font-feature                   = calt
+font-feature                   = dlig
+font-feature                   = ss05
+
+font-thicken                   = false
+font-size                      = 14
+window-inherit-font-size       = true
+
+# Look and Feel
+adjust-cursor-thickness        = 3
+adjust-underline-position      = 3
+#background-opacity             = 0.9
+bold-is-bright                 = true
+cursor-style                   = block
+cursor-style-blink             = true
+cursor-click-to-move           = true
+link-url                       = true
+mouse-hide-while-typing        = true
+window-vsync                   = true
+window-height                  = 44
+window-width                   = 168
+
+# Other
+clipboard-paste-protection     = true
+clipboard-trim-trailing-spaces = true
+copy-on-select                 = true
+macos-auto-secure-input        = true
+macos-secure-input-indication  = true
+quit-after-last-window-closed  = false
+scrollback-limit               = 4200
+shell-integration              = zsh
+
+# Key bindings
+keybind                        = ctrl+h=goto_split:left
+keybind                        = ctrl+j=goto_split:bottom
+keybind                        = ctrl+k=goto_split:top
+keybind                        = ctrl+l=goto_split:right
+keybind                        = ctrl+shift+h=new_split:left
+keybind                        = ctrl+shift+j=new_split:down
+keybind                        = ctrl+shift+k=new_split:up
+keybind                        = ctrl+shift+l=new_split:right
+keybind                        = super+shift+enter=new_split:auto
+keybind                        = super+shift+i=inspector:toggle
+keybind                        = super+shift+r=reload_config
+keybind                        = super+t=new_tab
