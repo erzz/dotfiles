@@ -1,5 +1,5 @@
 # theme="Atom"
-unfocused-split-opacity        = 1
+#unfocused-split-opacity        = 1
 theme                          = dark:skapa-dark,light:skapa-dark
 
 # Font
