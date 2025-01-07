@@ -9,8 +9,8 @@ font-feature                   = dlig
 font-feature                   = ss05
 
 font-thicken                   = false
-font-size                      = 14
-window-inherit-font-size       = true
+font-size                      = 18
+#window-inherit-font-size       = true
 
 # Look and Feel
 adjust-cursor-thickness        = 3
@@ -41,11 +41,11 @@ keybind                        = ctrl+h=goto_split:left
 keybind                        = ctrl+j=goto_split:bottom
 keybind                        = ctrl+k=goto_split:top
 keybind                        = ctrl+l=goto_split:right
-keybind                        = ctrl+shift+h=new_split:left
-keybind                        = ctrl+shift+j=new_split:down
-keybind                        = ctrl+shift+k=new_split:up
-keybind                        = ctrl+shift+l=new_split:right
-keybind                        = super+shift+enter=new_split:auto
-keybind                        = super+shift+i=inspector:toggle
-keybind                        = super+shift+r=reload_config
+keybind                        = ctrl+super+h=new_split:left
+keybind                        = ctrl+super+j=new_split:down
+keybind                        = ctrl+super+k=new_split:up
+keybind                        = ctrl+super+l=new_split:right
+keybind                        = ctrl+super+n=new_split:auto
+keybind                        = ctrl+super+shift+i=inspector:toggle
+keybind                        = ctrl+super+shift+r=reload_config
 keybind                        = super+t=new_tab
