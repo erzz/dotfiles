@@ -112,3 +112,5 @@ eval "$(starship init zsh)"
 ### SDKMAN (Keep it last!)
 # shellcheck disable=SC1091
 [[ -s "${HOME}/.sdkman/bin/sdkman-init.sh" ]] && source "${HOME}/.sdkman/bin/sdkman-init.sh"
+
+. "$HOME/.grit/bin/env"

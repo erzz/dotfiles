@@ -1,13 +1,11 @@
 [
   {
-    "label": "Open lazygit",
+    "label": "lazygit",
     "command": "lazygit",
     "use_new_terminal": true,
     // Whether to allow multiple instances of the same task to be run, or rather wait for the existing ones to finish, defaults to `false`.
     "allow_concurrent_runs": false,
-    // What to do with the terminal pane and tab, after the command was started:
-    // * `always` — always show the terminal pane, add and focus the corresponding task's tab in it (default)
-    // * `never` — avoid changing current terminal pane focus, but still add/reuse the task's tab there
-    "reveal": "always"
+    "hide": "on_success",
+    "working_directory": "${ZED_WORKTREE_ROOT}"
   }
 ]
