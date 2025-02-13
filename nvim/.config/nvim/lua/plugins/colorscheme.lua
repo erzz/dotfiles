@@ -1,10 +1,10 @@
 return {
-  -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-  'ayu-theme/ayu-vim',
-  priority = 1000,
-  init = function()
-    -- vim.g.sonokai_style = 'andromeda'
+  { "folke/tokyonight.nvim" },
 
-    vim.cmd.colorscheme 'ayu'
-  end,
+  {
+    "LazyVim/LazyVim",
+    opts = {
+      colorscheme = "tokyonight-night",
+    },
+  },
 }
