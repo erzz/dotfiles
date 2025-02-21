@@ -3,7 +3,7 @@
 theme                          = dark:skapa-dark,light:skapa-dark
 
 # Font
-font-family                    = Hack Nerd Font Mono
+font-family                    = Iosevka NF 
 font-feature                   = calt
 font-feature                   = dlig
 font-feature                   = ss05
