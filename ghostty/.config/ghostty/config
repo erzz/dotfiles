@@ -3,7 +3,8 @@
 theme                          = dark:skapa-dark,light:skapa-dark
 
 # Font
-font-family                    = Iosevka NF 
+#font-family                    = Iosevka NF 
+font-family                   = Fira Mono 
 font-feature                   = calt
 font-feature                   = dlig
 font-feature                   = ss05
