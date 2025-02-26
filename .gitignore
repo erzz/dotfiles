@@ -7,3 +7,4 @@ zed/.config/zed/.tmp*
 zed/.config/zed/conversations
 zed/.config/zed/embeddings/semantic-index-db.0.mdb
 zed/.config/zed/prompts/index.json
+zed/.config/zed/prompts/prompts-library-db.0.mdb
