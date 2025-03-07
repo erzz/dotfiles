@@ -110,6 +110,9 @@ eval "$(pyenv init -)"
 #export STARSHIP_CONFIG="${HOME}/.starship/starship.toml"
 eval "$(starship init zsh)"
 
+### Zoxide
+eval "$(zoxide init zsh)"
+
 ### SDKMAN (Keep it last!)
 # shellcheck disable=SC1091
 [[ -s "${HOME}/.sdkman/bin/sdkman-init.sh" ]] && source "${HOME}/.sdkman/bin/sdkman-init.sh"
