@@ -1,0 +1,114 @@
+[
+  // Tasks
+  {
+    "context": "Editor && vim_mode == normal && !VimWaiting && !menu",
+    "bindings": {
+      "space g g": [
+        "task::Spawn",
+        {
+          "lazygit": "lazygit",
+          "target": "center"
+        }
+      ]
+    }
+  },
+  // ProjectPanel is the file tree view on the left
+  {
+    "context": "ProjectPanel",
+    "bindings": {
+      "ctrl-h": [
+        "workspace::ActivatePaneInDirection",
+        "Left"
+      ],
+      "ctrl-l": [
+        "workspace::ActivatePaneInDirection",
+        "Right"
+      ],
+      "ctrl-k": [
+        "workspace::ActivatePaneInDirection",
+        "Up"
+      ],
+      "ctrl-j": [
+        "workspace::ActivatePaneInDirection",
+        "Down"
+      ]
+    }
+  },
+  // Terminal is the persistent terminal at the bottom
+  {
+    "context": "Terminal",
+    "bindings": {
+      // terminals cannot yet be split, only new ones added. We at least replicate the editor tab navigation for now
+      "shift-h": "pane::ActivatePrevItem",
+      "shift-l": "pane::ActivateNextItem",
+      "ctrl-h": [
+        "workspace::ActivatePaneInDirection",
+        "Left"
+      ],
+      "ctrl-l": [
+        "workspace::ActivatePaneInDirection",
+        "Right"
+      ],
+      "ctrl-k": [
+        "workspace::ActivatePaneInDirection",
+        "Up"
+      ],
+      "ctrl-j": [
+        "workspace::ActivatePaneInDirection",
+        "Down"
+      ]
+    }
+  },
+  // Editor VIM Bindings
+  // NORMAL and VISUAL modes
+  {
+    "context": "Editor && (vim_mode == normal || vim_mode == visual) && !VimWaiting && !menu",
+    "bindings": {
+      "space e e": "workspace::ToggleLeftDock",
+      "space f f": "file_finder::Toggle",
+      "space f g": "pane::DeploySearch",
+      "space g d": "editor::GoToDefinition",
+      "space t t": "diagnostics::Deploy",
+      "shift-k": "editor::Hover",
+      "shift-h": "pane::ActivatePrevItem",
+      "shift-l": "pane::ActivateNextItem",
+      "ctrl-h": [
+        "workspace::ActivatePaneInDirection",
+        "Left"
+      ],
+      "ctrl-l": [
+        "workspace::ActivatePaneInDirection",
+        "Right"
+      ],
+      "ctrl-k": [
+        "workspace::ActivatePaneInDirection",
+        "Up"
+      ],
+      "ctrl-j": [
+        "workspace::ActivatePaneInDirection",
+        "Down"
+      ]
+    }
+  },
+  // Only NORMAL mode
+  {
+    "context": "Editor && vim_mode == normal && !VimWaiting && !menu",
+    "bindings": {
+      "space c f": "editor::Format"
+    }
+  },
+  // Only VISUAL mode
+  {
+    "context": "Editor && vim_mode == visual && !VimWaiting && !menu",
+    "bindings": {
+      // visual, visual line & visual block modes
+    }
+  },
+  {
+    "context": "Editor && vim_mode == insert && !menu",
+    "bindings": {
+      // wierd to need to add space between, but whatever!
+      "j j": "vim::NormalBefore" // remap jj in insert mode to escape.
+    }
+  }
+]
