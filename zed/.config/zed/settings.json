@@ -1,4 +1,10 @@
 {
+  "experimental.theme_overrides": {
+    "border": "#373745",
+    "tab_bar.background": "#1E1E2E",
+    "tab.inactive_background": "#373745"
+  },
+  "preferred_line_length": 100,
   "git_panel": {
     "dock": "right"
   },
@@ -138,6 +144,7 @@
     "git_status": true
   },
   "tab_bar": {
+    "git_status": true,
     "show": true,
     "show_nav_history_buttons": false
   },
