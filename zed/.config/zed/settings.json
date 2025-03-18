@@ -1,82 +1,112 @@
 {
+  "assistant": {
+    "default_model": {
+      "model": "claude-3-7-sonnet",
+      "provider": "copilot_chat"
+    },
+    "version": "2"
+  },
+  "buffer_font_family": "JetBrainsMono Nerd Font",
+  "buffer_font_size": 18.5,
+  "centered_layout": {
+    "left_padding": 0.15,
+    "right_padding": 0.15
+  },
+  "chat_panel": {
+    "button": "when_in_call"
+  },
+  "collaboration_panel": {
+    "button": false
+  },
+  "diagnostics": {
+    "include_warnings": false
+  },
+  "edit_predictions": {
+    "disabled_globs": [
+      ".env",
+      "test.go",
+      ".md",
+      "diagram.dsl"
+    ]
+  },
   "experimental.theme_overrides": {
     "border": "#373745",
     "tab_bar.background": "#1E1E2E",
     "tab.inactive_background": "#373745"
   },
-  "preferred_line_length": 100,
+  "features": {
+    "edit_prediction_provider": "zed"
+  },
+  "file_finder": {
+    "modal_width": "medium"
+  },
+  "file_types": {
+    "Dockerfile": [
+      "Dockerfile",
+      "Dockerfile.*"
+    ],
+    "Helm": [
+      "**/templates/*.yaml",
+      "**/templates/*.yml"
+    ],
+    "JSON": [
+      "json",
+      "jsonc",
+      "*.code-snippets"
+    ]
+  },
+  "format_on_save": "on",
+  "formatter": "language_server",
+  "git": {
+    "git_gutter": "tracked_files",
+    "inline_blame": {
+      "enabled": false
+    }
+  },
   "git_panel": {
     "dock": "right"
   },
-  "buffer_font_family": "JetBrainsMono Nerd Font",
-  "tabs": {
-    "file_icons": true,
-    "git_status": true,
-    "show_diagnostics": "errors"
+  "gutter": {
+    "code_actions": false,
+    "folds": true,
+    "line_numbers": true,
+    "runnables": false
   },
+  "hard_tabs": false,
   "indent_guides": {
-    "enabled": true,
-    "coloring": "indent_aware"
+    "coloring": "indent_aware",
+    "enabled": true
+  },
+  "inlay_hints": {
+    "enabled": true
   },
   "languages": {
+    "Go": {
+      "hard_tabs": true
+    },
     "JavaScript": {
-      "tab_size": 2,
       "formatter": {
         "external": {
-          "command": "prettier",
           "arguments": [
             "--stdin-filepath",
             "{buffer_path}"
-          ]
+          ],
+          "command": "prettier"
         }
-      }
+      },
+      "tab_size": 2
     },
     "Markdown": {
       "format_on_save": "on",
       "formatter": {
         "external": {
-          "command": "/opt/homebrew/bin/prettierd",
           "arguments": [
             "--stdin-filepath",
             "{buffer_path}"
-          ]
+          ],
+          "command": "/opt/homebrew/bin/prettierd"
         }
       }
-    },
-    "Shell Script": {
-      "format_on_save": "on",
-      "formatter": {
-        "external": {
-          "command": "shfmt",
-          "arguments": [
-            "--filename",
-            "{buffer_path}",
-            "--indent",
-            "2"
-          ]
-        }
-      }
-    },
-    "TypeScript": {
-      "tab_size": 2,
-      "formatter": {
-        "external": {
-          "command": "prettier",
-          "arguments": [
-            "--stdin-filepath",
-            "{buffer_path}"
-          ]
-        }
-      },
-      "inlay_hints": {
-        "enabled": true,
-        "show_parameter_hints": false,
-        "show_other_hints": true,
-        "show_type_hints": true
-      }
-    },
-    "Go": {
-      "hard_tabs": true
     },
     "Python": {
       "format_on_save": {
@@ -93,8 +123,41 @@
         "pyright",
         "ruff"
       ]
+    },
+    "Shell Script": {
+      "format_on_save": "on",
+      "formatter": {
+        "external": {
+          "arguments": [
+            "--filename",
+            "{buffer_path}",
+            "--indent",
+            "2"
+          ],
+          "command": "shfmt"
+        }
+      }
+    },
+    "TypeScript": {
+      "formatter": {
+        "external": {
+          "arguments": [
+            "--stdin-filepath",
+            "{buffer_path}"
+          ],
+          "command": "prettier"
+        }
+      },
+      "inlay_hints": {
+        "enabled": true,
+        "show_other_hints": true,
+        "show_parameter_hints": false,
+        "show_type_hints": true
+      },
+      "tab_size": 2
     }
   },
+  "line_indicator_format": "short",
   "lsp": {
     "tailwindcss-language-server": {
       "settings": {
@@ -109,170 +172,94 @@
     "yaml-language-server": {
       "settings": {
         "yaml": {
-          "keyOrdering": false,
           "format": {
             "singleQuote": false
           },
+          "keyOrdering": false,
           "schemas": {}
         }
       }
     }
   },
-  "file_types": {
-    "Dockerfile": [
-      "Dockerfile",
-      "Dockerfile.*"
-    ],
-    "JSON": [
-      "json",
-      "jsonc",
-      "*.code-snippets"
-    ],
-    "Helm": [
-      "**/templates/*.yaml",
-      "**/templates/*.yml"
-    ]
+  "notification_panel": {
+    "button": false
   },
-  "hard_tabs": false,
-  "formatter": "language_server",
-  "format_on_save": "on",
+  "outline_panel": {
+    "button": false
+  },
+  "preferred_line_length": 100,
+  "preview_tabs": {
+    "enable_preview_from__file_finder": false,
+    "enable_preview_from_code_navigation": false,
+    "enabled": false
+  },
   "project_panel": {
-    "indent_size": 20,
     "auto_fold_dirs": true,
     "button": true,
     "dock": "left",
-    "git_status": true
+    "git_status": true,
+    "indent_size": 20
+  },
+  "relative_line_numbers": true,
+  "scrollbar": {
+    "diagnostics": "none",
+    "git_diff": true,
+    "search_results": false,
+    "selected_symbol": false
   },
   "tab_bar": {
     "git_status": true,
     "show": true,
     "show_nav_history_buttons": false
   },
-  "centered_layout": {
-    "left_padding": 0.15,
-    "right_padding": 0.15
+  "tabs": {
+    "file_icons": true,
+    "git_status": true,
+    "show_diagnostics": "errors"
   },
-  "inlay_hints": {
-    "enabled": true
-  },
-  "features": {
-    "edit_prediction_provider": "zed"
-  },
-  "edit_predictions": {
-    "disabled_globs": [
-      ".env",
-      "test.go",
-      ".md",
-      "diagram.dsl"
-    ]
-  },
-  "scrollbar": {
-    "git_diff": true,
-    "search_results": false,
-    "selected_symbol": false,
-    "diagnostics": "none"
+  "task": {
+    "show_status_indicator": true
   },
   "telemetry": {
     "diagnostics": false,
     "metrics": false
   },
-  "diagnostics": {
-    // Whether to show warnings or not by default.
-    "include_warnings": false
-  },
-  "gutter": {
-    // Whether to show line numbers in the gutter.
-    "line_numbers": true,
-    // Whether to show code action buttons in the gutter.
-    "code_actions": false,
-    // Whether to show runnables buttons in the gutter.
-    "runnables": false,
-    // Whether to show fold buttons in the gutter.
-    "folds": true
-  },
-  "vim_mode": true,
-  "vim": {
-    "enable_vim_sneak": true
-  },
-  "relative_line_numbers": true,
-  "ui_font_size": 18,
-  "buffer_font_size": 18.5,
-  "theme": {
-    "mode": "system",
-    "light": "Catppuccin Mocha",
-    "dark": "Catppuccin Mocha"
-  },
-  "file_finder": {
-    "modal_width": "medium"
-  },
-  "preview_tabs": {
-    "enabled": false,
-    "enable_preview_from__file_finder": false,
-    "enable_preview_from_code_navigation": false
-  },
-  "git": {
-    "git_gutter": "tracked_files",
-    "inline_blame": {
-      "enabled": false
-    }
-  },
-  "toolbar": {
-    // Whether to show breadcrumbs.
-    "breadcrumbs": false,
-    // Whether to show quick action buttons.
-    "quick_actions": false,
-    // Whether to show the Selections menu in the editor toolbar
-    "selections_menu": false
-  },
-  "outline_panel": {
-    "button": false
-  },
-  "collaboration_panel": {
-    // Whether to show the collaboration panel button in the status bar.
-    "button": false
-  },
-  "chat_panel": {
-    // Whether to show the chat panel button in the status bar.
-    "button": "when_in_call"
-  },
-  "notification_panel": {
-    // Whether to show the notification panel button in the status bar.
-    "button": false
-  },
-  "task": {
-    "show_status_indicator": true
-  },
-  "line_indicator_format": "short",
-  "assistant": {
-    "default_model": {
-      "provider": "copilot_chat",
-      "model": "claude-3-7-sonnet"
-    },
-    "version": "2"
-  },
   "terminal": {
-    "shell": {
-      "program": "zsh"
-    },
-    "dock": "bottom",
-    // Default width when the terminal is docked to the left or right.
-    "default_width": 640,
-    // Default height when the terminal is docked to the bottom.
+    "alternate_scroll": "off",
+    "blinking": "terminal_controlled",
+    "button": true,
+    "copy_on_select": true,
+    "cursor_shape": null,
     "default_height": 320,
+    "default_width": 640,
+    "dock": "bottom",
     "env": {
       "EDITOR": "zed --wait"
     },
-    "working_directory": "current_project_directory",
-    "blinking": "terminal_controlled",
-    "cursor_shape": null,
-    "alternate_scroll": "off",
-    "option_as_meta": false,
-    "copy_on_select": true,
-    "button": true,
     "line_height": "comfortable",
+    "option_as_meta": false,
+    "shell": {
+      "program": "zsh"
+    },
     "toolbar": {
-      "title": false,
-      "breadcrumbs": false
-    }
-  }
+      "breadcrumbs": false,
+      "title": false
+    },
+    "working_directory": "current_project_directory"
+  },
+  "theme": {
+    "dark": "Catppuccin Mocha",
+    "light": "Catppuccin Mocha",
+    "mode": "system"
+  },
+  "toolbar": {
+    "breadcrumbs": false,
+    "quick_actions": false,
+    "selections_menu": false
+  },
+  "ui_font_size": 18,
+  "vim": {
+    "enable_vim_sneak": true
+  },
+  "vim_mode": true
 }
