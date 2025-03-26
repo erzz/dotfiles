@@ -113,7 +113,11 @@
       // Open file finder
       "space space": "file_finder::Toggle",
       // Open recent project
-      "space f p": "projects::OpenRecent"
+      "space f p": "projects::OpenRecent",
+      "ctrl-h": "workspace::ActivatePaneLeft",
+      "ctrl-l": "workspace::ActivatePaneRight",
+      "ctrl-k": "workspace::ActivatePaneUp",
+      "ctrl-j": "workspace::ActivatePaneDown"
     }
   },
   // Comment code
