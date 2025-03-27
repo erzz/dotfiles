@@ -28,7 +28,7 @@
       // Git
       "space g h d": "editor::ToggleSelectedDiffHunks",
       "space g h r": "git::Restore",
-      "space g s": "git_panel::ToggleFocus",
+      "space g g": "git_panel::ToggleFocus",
       // Toggle inlay hints
       "space t i": "editor::ToggleInlayHints",
       // Toggle soft wrap
