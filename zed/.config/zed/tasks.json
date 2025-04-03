@@ -1,11 +1,9 @@
 [
   {
     "label": "lazygit",
-    "command": "lazygit",
-    "use_new_terminal": true,
-    // Whether to allow multiple instances of the same task to be run, or rather wait for the existing ones to finish, defaults to `false`.
+    "command": "lazygit -p $ZED_WORKTREE_ROOT",
+    "hide": "always",
     "allow_concurrent_runs": false,
-    "hide": "on_success",
-    "working_directory": "${ZED_WORKTREE_ROOT}"
+    "use_new_terminal": false
   }
 ]
