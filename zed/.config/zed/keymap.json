@@ -1,26 +1,4 @@
 [
-  // GIT PANEL ONLY
-  // https://github.com/zed-industries/zed/blob/5615be51cc2cfbac71d01a0f446b9e2174fe7b34/assets/keymaps/default-macos.json#L802C3-L816C5
-  {
-    "context": "GitPanel",
-    "use_key_equivalents": true,
-    "bindings": {
-      "a": "git::StageAll",
-      //"A": "git::CommitAmend",
-      "b": "git::Branch",
-      "c": "git::Commit",
-      "d": "git::Diff",
-      "f": "git::Fetch",
-      "p": "git::Pull",
-      "P": "git::Push",
-      "T": "git::TrashUntrackedFiles",
-      "u": "git::UnstageAll",
-      "ctrl-h": "workspace::ActivatePaneLeft",
-      "ctrl-l": "workspace::ActivatePaneRight",
-      "ctrl-k": "workspace::ActivatePaneUp",
-      "ctrl-j": "workspace::ActivatePaneDown"
-    }
-  },
   {
     // put key-bindings here if you want them to work in normal & visual mode
     "context": "Editor && (vim_mode == normal || vim_mode == visual) && !VimWaiting && !menu",
@@ -28,7 +6,12 @@
       // Git
       "space g h d": "editor::ToggleSelectedDiffHunks",
       "space g h r": "git::Restore",
-      "space g g": "git_panel::ToggleFocus",
+      "space g g": [
+        "task::Spawn",
+        {
+          "task_name": "lazygit"
+        }
+      ],
       // Toggle inlay hints
       "space t i": "editor::ToggleInlayHints",
       // Toggle soft wrap
@@ -232,6 +215,28 @@
       ]
     }
   }
+  // GIT PANEL ONLY - Reverted to lazygit task but keeping for future reference
+  // https://github.com/zed-industries/zed/blob/5615be51cc2cfbac71d01a0f446b9e2174fe7b34/assets/keymaps/default-macos.json#L802C3-L816C5
+  // {
+  //   "context": "GitPanel",
+  //   "use_key_equivalents": true,
+  //   "bindings": {
+  //     "a": "git::StageAll",
+  //     //"A": "git::CommitAmend",
+  //     "b": "git::Branch",
+  //     "c": "git::Commit",
+  //     "d": "git::Diff",
+  //     "f": "git::Fetch",
+  //     "p": "git::Pull",
+  //     "P": "git::Push",
+  //     "T": "git::TrashUntrackedFiles",
+  //     "u": "git::UnstageAll",
+  //     "ctrl-h": "workspace::ActivatePaneLeft",
+  //     "ctrl-l": "workspace::ActivatePaneRight",
+  //     "ctrl-k": "workspace::ActivatePaneUp",
+  //     "ctrl-j": "workspace::ActivatePaneDown"
+  //   }
+  // },
   // Subword motion is not working really nice with `ciw`, disable for now
   // {
   //   "context": "VimControl && !menu",
