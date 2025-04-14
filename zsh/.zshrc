@@ -118,3 +118,4 @@ eval "$(zoxide init zsh)"
 [[ -s "${HOME}/.sdkman/bin/sdkman-init.sh" ]] && source "${HOME}/.sdkman/bin/sdkman-init.sh"
 
 . "$HOME/.grit/bin/env"
+eval "$(goenv init -)"
