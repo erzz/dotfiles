@@ -1,7 +1,7 @@
 {
   "assistant": {
     "default_model": {
-      "model": "gpt-4o",
+      "model": "claude-3.5-sonnet",
       "provider": "copilot_chat"
     },
     "version": "2"
@@ -35,7 +35,7 @@
     "tab.inactive_background": "#373745"
   },
   "features": {
-    "edit_prediction_provider": "zed"
+    "edit_prediction_provider": "copilot"
   },
   "file_finder": {
     "modal_width": "medium"
