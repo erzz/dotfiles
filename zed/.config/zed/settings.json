@@ -1,5 +1,5 @@
 {
-  "assistant": {
+  "agent": {
     "default_model": {
       "model": "claude-3.5-sonnet",
       "provider": "copilot_chat"
@@ -180,6 +180,9 @@
         }
       }
     }
+  },
+  "minimap": {
+    "show": "auto"
   },
   "notification_panel": {
     "button": false
