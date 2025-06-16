@@ -50,3 +50,4 @@ keybind                        = ctrl+super+n=new_split:auto
 keybind                        = ctrl+super+shift+i=inspector:toggle
 keybind                        = ctrl+super+shift+r=reload_config
 keybind                        = super+t=new_tab
+keybind = shift+enter=text:\n
