@@ -58,6 +58,7 @@ fi
 
 # <---------------------- ALIASES ------------------------>
 alias gnb="git checkout main && git pull --rebase && git checkout -b"
+alias gg="lazygit"
 alias vim="nvim"
 alias vi="nvim"
 alias ld="eza -lD--icons "
