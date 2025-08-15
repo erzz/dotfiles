@@ -1,10 +1,10 @@
 {
   "agent": {
+    "always_allow_tool_actions": false,
     "default_model": {
-      "model": "claude-3.5-sonnet",
+      "model": "claude-sonnet-4",
       "provider": "copilot_chat"
-    },
-    "version": "2"
+    }
   },
   "buffer_font_family": "JetBrainsMono Nerd Font",
   "buffer_font_size": 18.5,
@@ -38,7 +38,7 @@
     "edit_prediction_provider": "copilot"
   },
   "file_finder": {
-    "modal_width": "medium"
+    "modal_max_width": "medium"
   },
   "file_types": {
     "Dockerfile": [
@@ -67,7 +67,6 @@
     "dock": "right"
   },
   "gutter": {
-    "code_actions": false,
     "folds": true,
     "line_numbers": true,
     "runnables": false
@@ -192,7 +191,7 @@
   },
   "preferred_line_length": 100,
   "preview_tabs": {
-    "enable_preview_from__file_finder": false,
+    "enable_preview_from_file_finder": false,
     "enable_preview_from_code_navigation": false,
     "enabled": false
   },
@@ -211,7 +210,6 @@
     "selected_symbol": false
   },
   "tab_bar": {
-    "git_status": true,
     "show": true,
     "show_nav_history_buttons": false
   },
@@ -219,9 +217,6 @@
     "file_icons": true,
     "git_status": true,
     "show_diagnostics": "errors"
-  },
-  "task": {
-    "show_status_indicator": true
   },
   "telemetry": {
     "diagnostics": false,
@@ -245,8 +240,7 @@
       "program": "zsh"
     },
     "toolbar": {
-      "breadcrumbs": false,
-      "title": false
+      "breadcrumbs": false
     },
     "working_directory": "current_project_directory"
   },
@@ -261,8 +255,5 @@
     "selections_menu": false
   },
   "ui_font_size": 18,
-  "vim": {
-    "enable_vim_sneak": true
-  },
   "vim_mode": true
 }
