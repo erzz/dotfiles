@@ -2,7 +2,7 @@
   "agent": {
     "always_allow_tool_actions": false,
     "default_model": {
-      "model": "claude-sonnet-4",
+      "model": "gemini-2.5-pro",
       "provider": "copilot_chat"
     }
   },
