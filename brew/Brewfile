@@ -18,6 +18,7 @@ brew "bat"
 brew "betterdisplay"
 brew "bfg"
 brew "binutils"
+brew "bruno"
 brew "btop"
 brew "ccache"
 brew "colima", restart_service: true
