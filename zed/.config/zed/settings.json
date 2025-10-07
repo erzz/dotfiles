@@ -53,6 +53,11 @@
       "json",
       "jsonc",
       "*.code-snippets"
+    ],
+    "YAML": [
+      "yml",
+      "yaml",
+      "*.cm"
     ]
   },
   "format_on_save": "on",
