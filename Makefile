@@ -1,4 +1,4 @@
-.PHONY: alacritty brew brew-install devbox direnv git languages nvim os prettierd starship stow tmux xcode zed zellij zsh
+.PHONY: alacritty brew brew-install devbox direnv gh-dash git languages nvim os prettierd starship stow tmux xcode zed zellij zsh
 default: .PHONY
 
 alacritty: brew-install
@@ -24,6 +24,10 @@ direnv: brew-install stow
 ghostty: brew-install
 	@chmod +x ghostty/install.sh
 	@./ghostty/install.sh
+
+gh-dash: brew-install
+	@chmod +x gh-dash/install.sh
+	@./gh-dash/install.sh
 
 git: stow
 	stow git
