@@ -19,7 +19,21 @@
       "ctrl-h": "workspace::ActivatePaneLeft",
       "ctrl-l": "workspace::ActivatePaneRight",
       "ctrl-k": "workspace::ActivatePaneUp",
-      "ctrl-j": "workspace::ActivatePaneDown"
+      "ctrl-j": "workspace::ActivatePaneDown",
+      // gh dash
+      "space g h": [
+        "task::Spawn",
+        {
+          "task_name": "gh-dash"
+        }
+      ],
+      // Lazygit
+      "space g g": [
+        "task::Spawn",
+        {
+          "task_name": "lazygit"
+        }
+      ]
     }
   },
   {
