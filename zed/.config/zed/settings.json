@@ -1,8 +1,38 @@
 {
+  "agent_servers": {
+    "opencode": {
+      "type": "registry"
+    }
+  },
+  "context_servers": {
+    "linearb": {
+      "enabled": true,
+      "command": "~/.config/zed/linearb-mcp.sh",
+      "args": [],
+      "env": {}
+    },
+    "skapa-design-system": {
+      "env": {},
+      "enabled": true,
+      "command": "npx",
+      "args": [
+        "@ingka-group-digital/skapa-design-system-mcp@v0.5.5"
+      ]
+    },
+    "playwright": {
+      "enabled": true,
+      "command": "npx",
+      "args": [
+        "@playwright/mcp@latest"
+      ]
+    }
+  },
   "agent": {
-    "always_allow_tool_actions": false,
+    "default_profile": "write",
+    "use_modifier_to_send": true,
+    "always_allow_tool_actions": true,
     "default_model": {
-      "model": "gemini-2.5-pro",
+      "model": "claude-opus-4.6",
       "provider": "copilot_chat"
     }
   },
@@ -22,10 +52,10 @@
     "include_warnings": false
   },
   "edit_predictions": {
+    "provider": "copilot",
     "disabled_globs": [
       ".env",
       "test.go",
-      ".md",
       "diagram.dsl"
     ]
   },
@@ -33,9 +63,6 @@
     "border": "#373745",
     "tab_bar.background": "#1E1E2E",
     "tab.inactive_background": "#373745"
-  },
-  "features": {
-    "edit_prediction_provider": "copilot"
   },
   "file_finder": {
     "modal_max_width": "medium"
@@ -56,8 +83,7 @@
     ],
     "YAML": [
       "yml",
-      "yaml",
-      "*.cm"
+      "yaml"
     ]
   },
   "format_on_save": "on",
@@ -65,7 +91,7 @@
   "git": {
     "git_gutter": "tracked_files",
     "inline_blame": {
-      "enabled": false
+      "enabled": true
     }
   },
   "git_panel": {
@@ -82,7 +108,7 @@
     "enabled": true
   },
   "inlay_hints": {
-    "enabled": true
+    "enabled": false
   },
   "languages": {
     "Go": {
@@ -113,11 +139,7 @@
       }
     },
     "Python": {
-      "format_on_save": {
-        "language_server": {
-          "name": "ruff"
-        }
-      },
+      "format_on_save": "on",
       "formatter": {
         "language_server": {
           "name": "ruff"
@@ -176,11 +198,27 @@
     "yaml-language-server": {
       "settings": {
         "yaml": {
+          "validate": true,
+          "disableAdditionalProperties": false,
+          "customTags": [
+            "!reference sequence",
+            "scalar",
+            "mapping"
+          ],
+          "schemaStore": {
+            "enable": true,
+            "url": "https://www.schemastore.org/api/json/catalog.json"
+          },
           "format": {
             "singleQuote": false
           },
           "keyOrdering": false,
-          "schemas": {}
+          "schemas": {
+            "https://json.schemastore.org/github-workflow.json": [
+              "**/.github/workflows/*.yml",
+              "**/.github/workflows/*.yaml"
+            ]
+          }
         }
       }
     }
@@ -196,9 +234,9 @@
   },
   "preferred_line_length": 100,
   "preview_tabs": {
-    "enable_preview_from_file_finder": false,
-    "enable_preview_from_code_navigation": false,
-    "enabled": false
+    "enable_preview_from_file_finder": true,
+    "enable_keep_preview_on_code_navigation": false,
+    "enabled": true
   },
   "project_panel": {
     "auto_fold_dirs": true,
@@ -207,7 +245,7 @@
     "git_status": true,
     "indent_size": 20
   },
-  "relative_line_numbers": true,
+  "relative_line_numbers": "enabled",
   "scrollbar": {
     "diagnostics": "none",
     "git_diff": true,
@@ -241,9 +279,7 @@
     },
     "line_height": "comfortable",
     "option_as_meta": false,
-    "shell": {
-      "program": "zsh"
-    },
+    "shell": "system",
     "toolbar": {
       "breadcrumbs": false
     },
@@ -255,7 +291,7 @@
     "mode": "system"
   },
   "toolbar": {
-    "breadcrumbs": false,
+    "breadcrumbs": true,
     "quick_actions": false,
     "selections_menu": false
   },
