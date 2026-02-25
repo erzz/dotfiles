@@ -12,7 +12,7 @@
   ui = true
 
 [credential]
-  helper = store
+  helper = osxkeychain
 
 [delta]
   features = side-by-side line-numbers

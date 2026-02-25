@@ -1,5 +1,6 @@
-.PHONY: brew brew-install direnv fnox ghostty gh-dash git mise nvim os prettierd starship stow tmux xcode zed zellij zsh
-default: .PHONY
+.PHONY: all brew brew-install direnv fnox ghostty gh-dash git mise nvim os prettierd starship stow tmux xcode zed zellij zsh
+
+all: os brew stow git zsh mise fnox direnv starship ghostty tmux nvim zed zellij gh-dash prettierd
 
 brew: brew-install
 	@chmod +x brew/bundle.sh
