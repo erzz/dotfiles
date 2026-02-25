@@ -73,13 +73,6 @@ export XDG_CONFIG_HOME="$HOME/.config"
 export PATH="${HOMEBREW_PREFIX}/sbin:/sbin:/usr/local/bin:$PATH"
 export HOMEBREW_AUTO_UPDATE_SECS=2629746
 
-# NVM
-export NVM_DIR="$HOME/.nvm"
-# shellcheck disable=SC2027 disable=SC2086 disable=1091
-[ -s ""${HOMEBREW_PREFIX}"/opt/nvm/nvm.sh" ] && . ""${HOMEBREW_PREFIX}"/opt/nvm/nvm.sh"  # This loads nvm
-# shellcheck disable=SC2027 disable=SC2086 disable=1091
-[ -s ""${HOMEBREW_PREFIX}"/opt/nvm/etc/bash_completion.d/nvm" ] && . ""${HOMEBREW_PREFIX}"/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
-
 ### DIRENV
 eval "$(direnv hook zsh)"
 
@@ -98,23 +91,12 @@ export EDITOR="zed --wait"
 ### PRETTIERD
 export PRETTIERD_DEFAULT_CONFIG=~/.config/prettierd/global.json 
 
-### PYENV
-export PYENV_ROOT="$HOME/.pyenv"
-command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
-
 ### STARSHIP
 #export STARSHIP_CONFIG="${HOME}/.starship/starship.toml"
 eval "$(starship init zsh)"
 
 ### Zoxide
 eval "$(zoxide init zsh)"
-
-### SDKMAN (Keep it last!)
-# shellcheck disable=SC1091
-[[ -s "${HOME}/.sdkman/bin/sdkman-init.sh" ]] && source "${HOME}/.sdkman/bin/sdkman-init.sh"
-
-. "$HOME/.grit/bin/env"
 
 eval "$(mise activate zsh)"
 
