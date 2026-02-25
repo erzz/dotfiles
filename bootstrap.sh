@@ -35,23 +35,28 @@ warn() { printf '\033[1;33m  WARN: %s\033[0m\n' "$1"; }
 # ---------------------------------------------------------------------------
 info "Stage 1: Prerequisites"
 
-# Xcode Command Line Tools
-if xcode-select -p &>/dev/null; then
-	ok "Xcode CLT already installed"
-else
-	echo "Installing Xcode Command Line Tools (this takes a while)..."
-	xcode-select --install
-	echo "Press any key once the Xcode CLT install has completed..."
-	read -r -n 1
-fi
+# In CI (e.g. GitHub Actions), git and brew are pre-installed — skip interactive installs
+if [ "${CI:-}" != "true" ]; then
+	# Xcode Command Line Tools
+	if xcode-select -p &>/dev/null; then
+		ok "Xcode CLT already installed"
+	else
+		echo "Installing Xcode Command Line Tools (this takes a while)..."
+		xcode-select --install
+		echo "Press any key once the Xcode CLT install has completed..."
+		read -r -n 1
+	fi
 
-# Homebrew
-if command -v brew &>/dev/null; then
-	ok "Homebrew already installed"
+	# Homebrew
+	if command -v brew &>/dev/null; then
+		ok "Homebrew already installed"
+	else
+		echo "Installing Homebrew..."
+		/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+		eval "$(/opt/homebrew/bin/brew shellenv)"
+	fi
 else
-	echo "Installing Homebrew..."
-	/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-	eval "$(/opt/homebrew/bin/brew shellenv)"
+	ok "CI detected — skipping Xcode CLT and Homebrew install"
 fi
 
 brew analytics off
