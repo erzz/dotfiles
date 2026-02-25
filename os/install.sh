@@ -1,16 +1,8 @@
 #!/usr/bin/env bash
 
-# Many of these cannot run in the github runner used for tests
-# last time I checked, so we skip them in CI
-# if ! id -u runner 2>/dev/null; then
-#   echo "Running on real machine, executing OS tweaks!"
-# else
-#   echo "Running in CI, skipping tweaks & setting locale"
-#   defaults write NSGlobalDomain AppleLanguages "(en-US)"
-#   exit 0
-# fi
-
 echo "Configuring macOS..."
+echo "NOTE: Some settings require sudo — you may be prompted for your password."
+echo ""
 
 # <------------------ ACTIVITY MONITOR ------------------->
 echo "Configuring Activity Monitor"
@@ -43,7 +35,6 @@ echo "Configuring Dock"
 defaults write com.apple.dock tilesize -int 48
 defaults write com.apple.dock minimize-to-application -bool true
 defaults write com.apple.dock show-process-indicators -bool true
-defaults write com.apple.dock hide-mirror -bool true
 
 # <---------------------- DS_STORE ----------------------->
 # Avoid creating .DS_Store files on network or USB volumes
@@ -54,7 +45,7 @@ defaults write com.apple.desktopservices DSDontWriteUSBStores -bool true
 # <----------------------- FINDER ------------------------>
 # Finder: open everything in list view.
 echo "Configuring Finder"
-defaults write com.apple.Finder FXPreferredViewStyle Nlsv
+defaults write com.apple.finder FXPreferredViewStyle Nlsv
 
 # Finder: show the ~/Library folder.
 chflags nohidden ~/Library
@@ -92,9 +83,6 @@ defaults write com.apple.finder _FXSortFoldersFirst -bool true
 # Finder: default new window location to home
 defaults write com.apple.finder NewWindowTarget -string "PfHm"
 
-# Finder: enable copy/select text in quick look
-defaults write com.apple.finder QLEnableTextSelection -bool true
-
 # Finder: set default search scope to "this mac"
 defaults write com.apple.finder FXDefaultSearchScope -string "SCev"
 
@@ -124,10 +112,6 @@ echo "Configuring Screenshots"
 defaults write com.apple.screencapture location -string "${HOME}/Pictures"
 defaults write com.apple.screencapture type -string "png"
 
-# <-------------------- SECURE TRASH --------------------->
-echo "Configuring Secure Trash Empty"
-defaults write com.apple.finder EmptyTrashSecurely -bool true
-
 # <---------------------- TERMINAL ----------------------->
 echo "Configuring Terminal"
 defaults write com.apple.terminal StringEncodings -array 4
@@ -138,9 +122,6 @@ defaults write com.apple.TimeMachine DoNotOfferNewDisksForBackup -bool true
 
 # <----------------------- OTHER ------------------------->
 echo "Configuring Other Stuff"
-
-echo "Disabling Sudden Motion Sensor"
-sudo pmset -a sms 0
 
 echo "Disable the 'Are you sure you want to open this application?' dialog"
 defaults write com.apple.LaunchServices LSQuarantine -bool false
@@ -154,13 +135,14 @@ defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
 echo "Fix the scrolling direction"
 defaults write NSGlobalDomain com.apple.swipescrolldirection -bool false
 
-echo "Better bluetooth sound"
-defaults write com.apple.BluetoothAudioAgent "Apple Bitpool Min (editable)" -int 40
-
 echo "Repeating keystrokes config"
 defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
 
-echo "Set font smoothing"
-defaults write NSGlobalDomain AppleFontSmoothing -int 2
+# <----------------- RESTART AFFECTED APPS ----------------->
+echo ""
+echo "Restarting Dock and Finder to apply changes..."
+killall Dock
+killall Finder
 
-echo "YOU WILL NEED TO REBOOT FOR CHANGES TO TAKE EFFECT"
+echo ""
+echo "Done! Some settings may still require a logout or reboot to take effect."
