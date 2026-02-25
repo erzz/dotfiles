@@ -1,9 +1,9 @@
 {
   "overrides": [
     { "files": ["*.js"], "options": { "singleQuote": true } },
-    { "files": ["*.yml, *.yaml"], "options": { "singleQuote": false } },
+    { "files": ["*.yml", "*.yaml"], "options": { "singleQuote": false } },
     {
-      "files": ["*.md, *.mdx"],
+      "files": ["*.md", "*.mdx"],
       "options": {
         "embeddedLanguageFormatting": "off",
         "parser": "mdx"

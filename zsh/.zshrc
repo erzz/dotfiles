@@ -57,7 +57,7 @@ alias gnb="git checkout main && git pull --rebase && git checkout -b"
 alias gg="lazygit"
 alias vim="nvim"
 alias vi="nvim"
-alias ld="eza -lD--icons "
+alias ld="eza -lD --icons"
 alias lf="eza -lf --icons --color=always | grep -v /"
 alias lh="eza -dl .* --icons --group-directories-first"
 alias ll="eza -al --icons --group-directories-first"
@@ -91,7 +91,7 @@ precmd() {
   fi
 }
 
-### NEOVIM
+### EDITOR
 export EDITOR="zed --wait"
 
 ### PRETTIERD
