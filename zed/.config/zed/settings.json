@@ -10,7 +10,7 @@
       "command": "bash",
       "args": [
         "-c",
-        "$HOME/.nvm/versions/node/v22.13.1/bin/node $HOME/.nvm/versions/node/v22.13.1/bin/mcp-remote https://mcp.linearb.io/mcp --header \"x-api-key: $(/opt/homebrew/bin/op read 'op://Employee/Dev Tokens/LINEARB_API_KEY')\""
+        "$HOME/.local/share/mise/shims/mcp-remote https://mcp.linearb.io/mcp --header \"x-api-key: $(/opt/homebrew/bin/op read 'op://Employee/Dev Tokens/LINEARB_API_KEY')\""
       ],
       "env": {}
     },
@@ -133,7 +133,7 @@
             "--stdin-filepath",
             "{buffer_path}"
           ],
-          "command": "/opt/homebrew/bin/prettierd"
+          "command": "prettierd"
         }
       }
     },
