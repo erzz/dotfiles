@@ -10,22 +10,12 @@ jobs:
       - name: ShellCheck
         uses: ludeeus/action-shellcheck@2.0.0
 
-  install-brew:
-    runs-on: macos-latest
+  test-all:
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Homebrew
+      - name: Run tests
         run: |
-          make brew-install
-
-  os:
-    runs-on: macos-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: OS
-        run: |
-          make os
+          ./bootstrap.sh
