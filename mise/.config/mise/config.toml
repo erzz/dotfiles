@@ -1,0 +1,5 @@
+[tools]
+fnox = "latest"
+node = "24"
+"npm:@ingka-group-digital/skapa-design-system-mcp" = "0.5.5"
+"npm:@playwright/mcp" = "latest"
