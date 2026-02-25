@@ -55,11 +55,20 @@ if [ "${CI:-}" != "true" ]; then
 		/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 		eval "$(/opt/homebrew/bin/brew shellenv)"
 	fi
+
+	brew analytics off
 else
 	ok "CI detected — skipping Xcode CLT and Homebrew install"
+	# Ensure brew is on PATH in CI (macOS runners use /opt/homebrew or /usr/local)
+	if ! command -v brew &>/dev/null; then
+		for prefix in /opt/homebrew /usr/local; do
+			if [ -x "${prefix}/bin/brew" ]; then
+				eval "$("${prefix}/bin/brew" shellenv)"
+				break
+			fi
+		done
+	fi
 fi
-
-brew analytics off
 
 # Brew bundle - installs everything declared in the Brewfile
 info "Running brew bundle (this may take a while on first run)..."
