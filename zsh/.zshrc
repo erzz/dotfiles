@@ -11,11 +11,7 @@ plugins=(
 )
 
 # <------------------ PRIVATE INCLUDES ------------------->
-# Keep secrets in `.localrc`
-if [[ -a ~/.localrc ]]; then
-  # shellcheck disable=SC1090
-  source ~/.localrc
-fi
+# Secrets managed by fnox + 1Password (loaded after mise activation below)
 
 # <--------------------- OH-MY-ZSH ----------------------->
 # init zsh
@@ -97,7 +93,7 @@ precmd() {
 }
 
 ### NEOVIM
-export EDITOR="nvim"
+export EDITOR="zed --wait"
 
 ### PRETTIERD
 export PRETTIERD_DEFAULT_CONFIG=~/.config/prettierd/global.json 
@@ -119,4 +115,8 @@ eval "$(zoxide init zsh)"
 [[ -s "${HOME}/.sdkman/bin/sdkman-init.sh" ]] && source "${HOME}/.sdkman/bin/sdkman-init.sh"
 
 . "$HOME/.grit/bin/env"
-eval "$(goenv init -)"
+
+eval "$(mise activate zsh)"
+
+### FNOX (secrets via 1Password - must be after mise activation)
+eval "$(fnox activate zsh -c ~/.config/fnox/config.toml)"
