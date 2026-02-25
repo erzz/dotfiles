@@ -33,7 +33,7 @@ fi
 zplug load
 
 # <----------------------- DRIFT ------------------------->
-~/dotfiles/drift/detect.sh
+~/dotfiles/drift/detect.sh &>/dev/null &
 
 # <---------------------- HELPERS ------------------------>
 # zsh-autosuggestions
@@ -83,6 +83,12 @@ DISABLE_AUTO_TITLE="true"
 precmd() {
   # sets the tab title to current dir
   echo -ne "\e]2;${PWD##*/}\a"
+
+  # One-shot drift notification (written by background detect.sh)
+  if [[ -f /tmp/dotfiles-drift ]]; then
+    cat /tmp/dotfiles-drift
+    rm -f /tmp/dotfiles-drift
+  fi
 }
 
 ### NEOVIM
