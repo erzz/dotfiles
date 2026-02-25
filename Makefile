@@ -1,6 +1,17 @@
-.PHONY: all brew brew-install direnv fnox ghostty gh-dash git mise nvim opencode os prettierd starship stow tmux xcode zed zellij zsh
+.PHONY: all bootstrap brew brew-install direnv fnox ghostty gh-dash git mise mise-install nvim opencode os prettierd starship stow tmux xcode zed zellij zsh
 
-all: os brew stow git zsh mise fnox direnv starship ghostty tmux nvim zed zellij gh-dash prettierd opencode
+# Full setup via bootstrap script
+all: bootstrap
+
+bootstrap:
+	@chmod +x bootstrap.sh
+	@./bootstrap.sh
+
+# ---------------------------------------------------------------------------
+# Individual targets (for "temporary machine" use or standalone setup)
+# Each target is idempotent and can be run independently.
+# Prerequisites: brew & stow must be available (run `make brew` first).
+# ---------------------------------------------------------------------------
 
 brew: brew-install
 	@chmod +x brew/bundle.sh
@@ -10,63 +21,76 @@ brew-install: xcode
 	@chmod +x brew/install.sh
 	@./brew/install.sh
 
-direnv: brew-install stow
-	@chmod +x direnv/install.sh
-	@./direnv/install.sh
+xcode:
+	@xcode-select -p &>/dev/null || xcode-select --install
 
-fnox: stow
-	stow fnox
+# Config-only targets (stow --restow for convergence)
+direnv:
+	stow --restow direnv
 
-ghostty: brew-install
-	@chmod +x ghostty/install.sh
-	@./ghostty/install.sh
+drift:
+	stow --restow drift
 
-gh-dash: brew-install
-	@chmod +x gh-dash/install.sh
-	@./gh-dash/install.sh
+fnox:
+	stow --restow fnox
 
-git: stow
-	stow git
+ghostty:
+	stow --restow ghostty
 
-mise: stow
-	stow mise
+gh-dash:
+	stow --restow gh-dash
+	@if command -v gh &>/dev/null && ! gh extension list 2>/dev/null | grep -q "dlvhdr/gh-dash"; then \
+		gh extension install dlvhdr/gh-dash; \
+	fi
 
-nvim: brew-install stow
-	@chmod +x nvim/install.sh
-	@./nvim/install.sh
+git:
+	stow --restow git
 
-opencode: stow
-	stow opencode
+mise:
+	stow --restow mise
+
+mise-install: mise
+	@command -v mise &>/dev/null && mise install --yes || echo "mise not found - run 'make brew' first"
+
+nvim:
+	stow --restow nvim
+
+opencode:
+	stow --restow opencode
 
 os:
 	@chmod +x os/install.sh
 	@./os/install.sh
 
-prettierd: stow
-	stow prettierd
+prettierd:
+	stow --restow prettierd
 
-starship: brew-install stow
-	@chmod +x starship/install.sh
-	@./starship/install.sh
+starship:
+	stow --restow starship
 
-stow: brew-install
-	stow stow
+stow:
+	stow --restow stow
 
-tmux: brew-install stow
-	@chmod +x tmux/install.sh
-	@./tmux/install.sh
+tmux:
+	stow --restow tmux
+	@if [ ! -d "$(HOME)/.tmux/plugins/tpm" ]; then \
+		git clone https://github.com/tmux-plugins/tpm "$(HOME)/.tmux/plugins/tpm"; \
+	fi
+	@if [ -x "$(HOME)/.tmux/plugins/tpm/bin/install_plugins" ]; then \
+		"$(HOME)/.tmux/plugins/tpm/bin/install_plugins"; \
+	fi
 
-xcode:
-	echo "Installing Xcode (takes a while)..."
-	@xcode-select --install || true
+zed:
+	stow --restow zed
 
-zed: brew
-	stow zed
+zellij:
+	stow --restow zellij
 
-zellij: brew-install stow
-	@chmod +x zellij/install.sh
-	@./zellij/install.sh
-
-zsh: stow
-	@chmod +x zsh/install.sh
-	@./zsh/install.sh
+zsh:
+	stow --restow zsh
+	@if [ ! -d "$(HOME)/.oh-my-zsh" ]; then \
+		sh -c "$$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc; \
+	fi
+	@if [ "$$(dscl . -read /Users/$$(whoami) UserShell | awk '{print $$2}')" != "/bin/zsh" ]; then \
+		chsh -s /bin/zsh; \
+	fi
