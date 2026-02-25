@@ -62,7 +62,7 @@ brew analytics off
 
 # Brew bundle - installs everything declared in the Brewfile
 info "Running brew bundle (this may take a while on first run)..."
-brew bundle --file "${DOTFILES}/brew/Brewfile" --no-lock
+brew bundle --file "${DOTFILES}/brew/Brewfile"
 brew cleanup
 
 # ---------------------------------------------------------------------------
