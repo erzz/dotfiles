@@ -1,6 +1,6 @@
-.PHONY: all brew brew-install direnv fnox ghostty gh-dash git mise nvim os prettierd starship stow tmux xcode zed zellij zsh
+.PHONY: all brew brew-install direnv fnox ghostty gh-dash git mise nvim opencode os prettierd starship stow tmux xcode zed zellij zsh
 
-all: os brew stow git zsh mise fnox direnv starship ghostty tmux nvim zed zellij gh-dash prettierd
+all: os brew stow git zsh mise fnox direnv starship ghostty tmux nvim zed zellij gh-dash prettierd opencode
 
 brew: brew-install
 	@chmod +x brew/bundle.sh
@@ -34,6 +34,9 @@ mise: stow
 nvim: brew-install stow
 	@chmod +x nvim/install.sh
 	@./nvim/install.sh
+
+opencode: stow
+	stow opencode
 
 os:
 	@chmod +x os/install.sh
