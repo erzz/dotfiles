@@ -5,3 +5,4 @@ onepass = { type = "1password", vault = "Employee", account = "ikea.1password.co
 GH_TOKEN = { provider = "onepass", value = "Dev Tokens/GH_TOKEN" }
 ARTIFACTORY_AUTH_TOKEN = { provider = "onepass", value = "Dev Tokens/ARTIFACTORY_AUTH_TOKEN" }
 NPM_TOKEN = { provider = "onepass", value = "Dev Tokens/NPM_TOKEN" }
+LINEARB_API_KEY = { provider = "onepass", value = "Dev Tokens/LINEARB_API_KEY" }
