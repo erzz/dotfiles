@@ -152,12 +152,15 @@ cask "microsoft-auto-update"
 cask "microsoft-office"
 cask "microsoft-teams"
 cask "nordpass"
+cask "nordvpn"
+cask "onedrive"
 cask "postman"
 cask "raycast"
 cask "shottr"
 cask "slack"
 cask "sourcetree"
 cask "spotify"
+cask "telegram"
 cask "textmate"
 cask "the-unarchiver"
 cask "via"
@@ -172,14 +175,10 @@ mas "ColorSlurp", id: 1287239339
 # mas "Divvy", id: 413857545
 mas "iStatistica", id: 1025822138
 mas "NordPass Safari Ext", id: 6443917910
-mas "NordVPN", id: 905953485
 mas "OneAuth", id: 1142928979
-mas "OneDrive", id: 823766827
 mas "Pastel", id: 413897608
 mas "Step Two", id: 1448916662
-mas "Telegram", id: 747648890
 mas "Things", id: 904280696
-mas "WhatsApp", id: 310633997
 
 # <----------------- VSCODE EXTENSIONS ------------------->
 vscode "adam-bender.commit-message-editor"
