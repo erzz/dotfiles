@@ -1,4 +1,4 @@
-.PHONY: alacritty brew brew-install devbox direnv gh-dash git languages nvim os prettierd starship stow tmux xcode zed zellij zsh
+.PHONY: alacritty brew brew-install devbox direnv fnox gh-dash git languages mise nvim os prettierd starship stow tmux xcode zed zellij zsh
 default: .PHONY
 
 alacritty: brew-install
@@ -21,6 +21,9 @@ direnv: brew-install stow
 	@chmod +x direnv/install.sh
 	@./direnv/install.sh
 
+fnox: stow
+	stow fnox
+
 ghostty: brew-install
 	@chmod +x ghostty/install.sh
 	@./ghostty/install.sh
@@ -38,6 +41,9 @@ languages: brew-install
 	@./languages/sdkman.sh
 	@chmod +x languages/other.sh
 	@./languages/other.sh
+
+mise: stow
+	stow mise
 
 nvim: brew-install stow
 	@chmod +x nvim/install.sh

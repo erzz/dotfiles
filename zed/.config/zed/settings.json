@@ -17,17 +17,13 @@
     "skapa-design-system": {
       "env": {},
       "enabled": true,
-      "command": "npx",
-      "args": [
-        "@ingka-group-digital/skapa-design-system-mcp@v0.5.5"
-      ]
+      "command": "/Users/sean.erswell-liljefelt/.local/share/mise/shims/skapa-design-system-mcp",
+      "args": []
     },
     "playwright": {
       "enabled": true,
-      "command": "npx",
-      "args": [
-        "@playwright/mcp@latest"
-      ]
+      "command": "/Users/sean.erswell-liljefelt/.local/share/mise/shims/playwright-mcp",
+      "args": []
     }
   },
   "agent": {
