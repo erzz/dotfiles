@@ -35,9 +35,8 @@ warn() { printf '\033[1;33m  WARN: %s\033[0m\n' "$1"; }
 # ---------------------------------------------------------------------------
 info "Stage 1: Prerequisites"
 
-# In CI (e.g. GitHub Actions), git and brew are pre-installed — skip interactive installs
+# Xcode Command Line Tools (skip in CI — runners have CLT pre-installed)
 if [ "${CI:-}" != "true" ]; then
-	# Xcode Command Line Tools
 	if xcode-select -p &>/dev/null; then
 		ok "Xcode CLT already installed"
 	else
@@ -46,29 +45,20 @@ if [ "${CI:-}" != "true" ]; then
 		echo "Press any key once the Xcode CLT install has completed..."
 		read -r -n 1
 	fi
-
-	# Homebrew
-	if command -v brew &>/dev/null; then
-		ok "Homebrew already installed"
-	else
-		echo "Installing Homebrew..."
-		/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-		eval "$(/opt/homebrew/bin/brew shellenv)"
-	fi
-
-	brew analytics off
 else
-	ok "CI detected — skipping Xcode CLT and Homebrew install"
-	# Ensure brew is on PATH in CI (macOS runners use /opt/homebrew or /usr/local)
-	if ! command -v brew &>/dev/null; then
-		for prefix in /opt/homebrew /usr/local; do
-			if [ -x "${prefix}/bin/brew" ]; then
-				eval "$("${prefix}/bin/brew" shellenv)"
-				break
-			fi
-		done
-	fi
+	ok "CI detected — skipping Xcode CLT install"
 fi
+
+# Homebrew
+if command -v brew &>/dev/null; then
+	ok "Homebrew already installed"
+else
+	echo "Installing Homebrew..."
+	/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+	eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
+
+brew analytics off
 
 # Brew bundle - installs everything declared in the Brewfile
 info "Running brew bundle (this may take a while on first run)..."
