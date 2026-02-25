@@ -2,6 +2,9 @@
 .localrc
 
 # Runtime artifacts
+opencode/.config/opencode/node_modules/
+opencode/.config/opencode/package.json
+opencode/.config/opencode/bun.lock
 tmux/.tmux/plugins/
 zed/.config/zed/.tmp*
 zed/.config/zed/conversations/
