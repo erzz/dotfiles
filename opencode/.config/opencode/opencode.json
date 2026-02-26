@@ -7,11 +7,11 @@
   "mcp": {
     "skapa": {
       "type": "local",
-      "command": ["npx", "@ingka-group-digital/skapa-design-system-mcp@v0.5.5"]
+      "command": ["/opt/homebrew/bin/mise", "exec", "--", "skapa-design-system-mcp"]
     },
     "workflows": {
       "type": "local",
-      "command": ["workflows-mcp"]
+      "command": ["/opt/homebrew/bin/mise", "exec", "--", "workflows-mcp"]
     }
   }
 }
