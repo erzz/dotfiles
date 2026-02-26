@@ -5,8 +5,21 @@ DRIFT_FLAG="/tmp/dotfiles-drift"
 
 cd ~/dotfiles || return
 
-# Alerts based on unstaged changes to dotfiles directory
 git fetch -q
+
+MESSAGES=()
+
+# Local uncommitted changes
 if [ -n "$(git status --porcelain)" ]; then
-	echo -e "${COLOUR}Changes detected in dotfiles, consider committing them${NC}" >"$DRIFT_FLAG"
+	MESSAGES+=("${COLOUR}Dotfiles have uncommitted changes${NC}")
+fi
+
+# Local branch behind remote
+BEHIND=$(git rev-list --count HEAD..@{u} 2>/dev/null)
+if [ -n "$BEHIND" ] && [ "$BEHIND" -gt 0 ]; then
+	MESSAGES+=("${COLOUR}Dotfiles are ${BEHIND} commit(s) behind remote${NC}")
+fi
+
+if [ ${#MESSAGES[@]} -gt 0 ]; then
+	printf '%b\n' "${MESSAGES[@]}" >"$DRIFT_FLAG"
 fi
