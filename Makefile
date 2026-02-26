@@ -1,4 +1,4 @@
-.PHONY: all bootstrap brew brew-install direnv fnox ghostty gh-dash git mise mise-install nvim opencode os prettierd starship stow tmux xcode zed zellij zsh
+.PHONY: all bootstrap test brew brew-install direnv fnox ghostty gh-dash git mise mise-install nvim opencode os prettierd starship stow tmux xcode zed zellij zsh
 
 # Full setup via bootstrap script
 all: bootstrap
@@ -6,6 +6,10 @@ all: bootstrap
 bootstrap:
 	@chmod +x bootstrap.sh
 	@./bootstrap.sh
+
+test:
+	@chmod +x test.sh
+	@./test.sh
 
 # ---------------------------------------------------------------------------
 # Individual targets (for "temporary machine" use or standalone setup)

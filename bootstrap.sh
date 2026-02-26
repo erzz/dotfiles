@@ -5,6 +5,7 @@
 # Usage:
 #   ./bootstrap.sh            # Full setup (skips macOS preferences)
 #   ./bootstrap.sh --macos    # Full setup + macOS preferences (requires reboot)
+#   ./bootstrap.sh --ci       # CI mode: formulae only, skip auth-dependent steps
 #
 # Safe to run repeatedly - every step is guarded or convergent.
 #
@@ -12,10 +13,12 @@ set -euo pipefail
 
 DOTFILES="$(cd "$(dirname "$0")" && pwd)"
 MACOS=false
+CI_MODE=false
 
 for arg in "$@"; do
 	case "$arg" in
 	--macos) MACOS=true ;;
+	--ci) CI_MODE=true ;;
 	*)
 		echo "Unknown option: $arg"
 		exit 1
@@ -61,8 +64,13 @@ fi
 brew analytics off
 
 # Brew bundle - installs everything declared in the Brewfile
+# In CI mode, only install taps and formulae (skip casks, MAS apps, VSCode extensions)
 info "Running brew bundle (this may take a while on first run)..."
-brew bundle --file "${DOTFILES}/brew/Brewfile"
+if [ "${CI_MODE}" = true ]; then
+	grep -E '^(tap|brew) ' "${DOTFILES}/brew/Brewfile" | brew bundle --file=-
+else
+	brew bundle --file "${DOTFILES}/brew/Brewfile"
+fi
 brew cleanup
 
 # ---------------------------------------------------------------------------
@@ -135,16 +143,20 @@ else
 	warn "mise not found (should have been installed by brew bundle)"
 fi
 
-# gh-dash extension (guarded)
-if command -v gh &>/dev/null; then
-	if gh extension list 2>/dev/null | grep -q "dlvhdr/gh-dash"; then
-		ok "gh-dash extension already installed"
+# gh-dash extension (guarded, skip in CI — requires auth)
+if [ "${CI_MODE}" != true ]; then
+	if command -v gh &>/dev/null; then
+		if gh extension list 2>/dev/null | grep -q "dlvhdr/gh-dash"; then
+			ok "gh-dash extension already installed"
+		else
+			echo "Installing gh-dash extension..."
+			gh extension install dlvhdr/gh-dash
+		fi
 	else
-		echo "Installing gh-dash extension..."
-		gh extension install dlvhdr/gh-dash
+		warn "gh not found (should have been installed by brew bundle)"
 	fi
 else
-	warn "gh not found (should have been installed by brew bundle)"
+	ok "CI mode — skipping gh-dash extension (requires auth)"
 fi
 
 # TPM (Tmux Plugin Manager)
