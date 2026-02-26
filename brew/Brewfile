@@ -3,8 +3,6 @@ tap "buo/cask-upgrade"
 tap "dart-lang/dart"
 tap "fsouza/prettierd"
 tap "goodwithtech/r"
-tap "homebrew/bundle"
-tap "homebrew/services"
 tap "sass/sass"
 
 # <------------------ CLI, LIBS & FONTS ------------------>
