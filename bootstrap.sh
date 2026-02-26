@@ -150,7 +150,10 @@ fi
 info "Stage 4: Tool activation"
 
 # mise - install all tools declared in ~/.config/mise/config.toml
-if command -v mise &>/dev/null; then
+# Skip in CI — some tools require private registry auth (NPM_TOKEN)
+if [ "${CI_MODE}" = true ]; then
+	ok "CI mode — skipping mise install (requires auth for private packages)"
+elif command -v mise &>/dev/null; then
 	echo "Installing mise-managed tools..."
 	mise install --yes
 	ok "mise tools installed"
