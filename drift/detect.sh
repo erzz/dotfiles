@@ -15,7 +15,7 @@ if [ -n "$(git status --porcelain)" ]; then
 fi
 
 # Local branch behind remote
-BEHIND=$(git rev-list --count HEAD..@{u} 2>/dev/null)
+BEHIND=$(git rev-list --count 'HEAD..@{u}' 2>/dev/null)
 if [ -n "$BEHIND" ] && [ "$BEHIND" -gt 0 ]; then
 	MESSAGES+=("${COLOUR}Dotfiles are ${BEHIND} commit(s) behind remote${NC}")
 fi
