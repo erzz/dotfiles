@@ -38,6 +38,7 @@ Include a scope when it adds clarity (e.g., `feat(auth): add OAuth2 support`). U
 
 ### Branching
 
+- Before creating a new branch, **always pull the latest changes from the default branch** (`main` or `master`) first: `git checkout main && git pull`.
 - When changes are ready to be pushed, check if the current branch is `main` or `master`.
 - If it is, **suggest creating a new branch** with a descriptive name following the pattern `<type>-<short-description>` (e.g., `feat-add-user-auth`, `fix-null-pointer-dashboard`).
 - Only proceed on `main`/`master` if the user explicitly insists after being warned.
