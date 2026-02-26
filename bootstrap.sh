@@ -134,9 +134,10 @@ else
 	sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc
 fi
 
-# Set zsh as default shell (guarded)
-current_shell="$(dscl . -read /Users/"$(whoami)" UserShell | awk '{print $2}')"
-if [ "${current_shell}" = "/bin/zsh" ]; then
+# Set zsh as default shell (guarded, skip in CI — requires password)
+if [ "${CI_MODE}" = true ]; then
+	ok "CI mode — skipping chsh"
+elif [ "$(dscl . -read /Users/"$(whoami)" UserShell | awk '{print $2}')" = "/bin/zsh" ]; then
 	ok "Default shell is already zsh"
 else
 	echo "Changing default shell to zsh..."
