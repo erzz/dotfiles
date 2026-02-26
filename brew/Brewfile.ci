@@ -1,0 +1,23 @@
+# Minimal Brewfile for CI — just enough to test the bootstrap flow.
+# The full Brewfile is at brew/Brewfile and used for real machines.
+
+# Core to bootstrap
+brew "stow"
+brew "mise"
+
+# Config verification targets
+brew "git"
+brew "git-delta"
+brew "starship"
+brew "direnv"
+
+# Representative CLI tools
+brew "bat"
+brew "eza"
+brew "fd"
+brew "fzf"
+brew "jq"
+brew "ripgrep"
+brew "shellcheck"
+brew "tmux"
+brew "zsh"
