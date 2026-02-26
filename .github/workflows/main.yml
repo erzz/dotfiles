@@ -12,10 +12,13 @@ jobs:
 
   test-all:
     runs-on: macos-latest
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Run tests
-        run: |
-          ./bootstrap.sh
+      - name: Bootstrap (CI mode)
+        run: ./bootstrap.sh --ci
+
+      - name: Verify outcome
+        run: ./test.sh
