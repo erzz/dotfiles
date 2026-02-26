@@ -14,12 +14,14 @@ plugins=(
 # Secrets managed by fnox + 1Password (loaded after mise activation below)
 
 # <--------------------- OH-MY-ZSH ----------------------->
+# Eza completions (must be on FPATH before OMZ runs compinit)
+FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
 # init zsh
 export ZSH=~/.oh-my-zsh
 export ZSH_THEME=""
+export ZSH_COMPDUMP=$ZSH/cache/.zcompdump-$HOST
 # shellcheck disable=SC1091
 source $ZSH/oh-my-zsh.sh
-export ZSH_COMPDUMP=$ZSH/cache/.zcompdump-$HOST
 
 # <----------------------- ZPLUG ------------------------->
 # zplug
@@ -44,13 +46,6 @@ source "${HOMEBREW_PREFIX}/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
 # zsh-syntax-highlighting
 # shellcheck disable=SC1091
 source "${HOMEBREW_PREFIX}/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-
-# Eza shell completion
-if type brew &>/dev/null; then
-    FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
-    autoload -Uz compinit
-    compinit
-fi
 
 # <---------------------- ALIASES ------------------------>
 alias gnb="git checkout main && git pull --rebase && git checkout -b"
@@ -98,7 +93,6 @@ export EDITOR="zed --wait"
 export PRETTIERD_DEFAULT_CONFIG=~/.config/prettierd/global.json 
 
 ### STARSHIP
-#export STARSHIP_CONFIG="${HOME}/.starship/starship.toml"
 eval "$(starship init zsh)"
 
 ### Zoxide
