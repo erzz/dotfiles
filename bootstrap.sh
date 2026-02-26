@@ -98,6 +98,20 @@ STOW_PACKAGES=(
 	zsh
 )
 
+# In CI, remove files that conflict with stow (e.g. runner's default .gitconfig)
+if [ "${CI_MODE}" = true ]; then
+	for pkg in "${STOW_PACKAGES[@]}"; do
+		if [ -d "${DOTFILES}/${pkg}" ]; then
+			while IFS= read -r rel; do
+				target="${HOME}/${rel}"
+				if [ -f "$target" ] && [ ! -L "$target" ]; then
+					rm -f "$target"
+				fi
+			done < <(cd "${DOTFILES}/${pkg}" && find . -type f | sed 's|^\./||')
+		fi
+	done
+fi
+
 for pkg in "${STOW_PACKAGES[@]}"; do
 	if [ -d "${DOTFILES}/${pkg}" ]; then
 		stow --dir="${DOTFILES}" --target="${HOME}" --restow "${pkg}"
