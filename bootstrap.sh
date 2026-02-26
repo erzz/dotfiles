@@ -64,10 +64,10 @@ fi
 brew analytics off
 
 # Brew bundle - installs everything declared in the Brewfile
-# In CI mode, only install taps and formulae (skip casks, MAS apps, VSCode extensions)
+# In CI mode, use a minimal Brewfile to keep the run fast
 info "Running brew bundle (this may take a while on first run)..."
 if [ "${CI_MODE}" = true ]; then
-	grep -E '^(tap|brew) ' "${DOTFILES}/brew/Brewfile" | brew bundle --file=-
+	brew bundle --file "${DOTFILES}/brew/Brewfile.ci"
 else
 	brew bundle --file "${DOTFILES}/brew/Brewfile"
 fi

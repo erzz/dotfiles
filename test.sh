@@ -95,17 +95,27 @@ check_symlink "${HOME}/.config/fnox/config.toml" "fnox/config.toml"
 # ---------------------------------------------------------------------------
 section "CLI tools"
 
-# Core tools (installed by brew formulae)
-CORE_TOOLS=(
-	bat brew curl delta direnv eza fd fzf gh git
-	htop jq lazygit mise nvim rg
-	shellcheck shfmt starship stow tmux tree
-	yamllint yq zellij zoxide zsh
+# Core tools (in Brewfile.ci — always expected)
+CI_TOOLS=(
+	bat delta direnv eza fd fzf git jq mise
+	rg shellcheck starship stow tmux zsh
 )
 
-for tool in "${CORE_TOOLS[@]}"; do
+# Additional tools (full Brewfile only)
+FULL_TOOLS=(
+	brew curl gh htop lazygit nvim shfmt tree
+	yamllint yq zellij zoxide
+)
+
+for tool in "${CI_TOOLS[@]}"; do
 	check_command "$tool"
 done
+
+if [ -z "${CI:-}" ]; then
+	for tool in "${FULL_TOOLS[@]}"; do
+		check_command "$tool"
+	done
+fi
 
 # Oh My Zsh
 if [ -d "${HOME}/.oh-my-zsh" ]; then
