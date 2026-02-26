@@ -149,11 +149,12 @@ else
 	fail "config: starship not available"
 fi
 
-# Mise config loaded
+# Mise config
+resolved="$(readlink -f "${HOME}/.config/mise/config.toml" 2>/dev/null)" || true
 if mise config ls 2>/dev/null | grep -q "dotfiles"; then
 	pass "config: mise loads dotfiles config"
-elif [ -L "${HOME}/.config/mise/config.toml" ]; then
-	pass "config: mise config symlinked (mise may not be activated in this shell)"
+elif [[ "$resolved" == "${DOTFILES}"* ]]; then
+	pass "config: mise config resolves into dotfiles"
 else
 	fail "config: mise config not loaded"
 fi
