@@ -5,6 +5,10 @@
 opencode/.config/opencode/node_modules/
 opencode/.config/opencode/package.json
 opencode/.config/opencode/bun.lock
+opencode/.config/opencode/antigravity-accounts.json
+opencode/.config/opencode/antigravity-accounts.json.*.tmp
+opencode/.config/opencode/antigravity-signature-cache.json
+opencode/.config/opencode/antigravity-logs/
 tmux/.tmux/plugins/
 zed/.config/zed/.tmp*
 zed/.config/zed/conversations/

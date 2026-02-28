@@ -1,17 +1,19 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "keybinds": {
-    "input_submit": "super+return",
-    "input_newline": "return"
-  },
   "mcp": {
     "skapa": {
       "type": "local",
-      "command": ["/opt/homebrew/bin/mise", "exec", "--", "skapa-design-system-mcp"]
+      "command": [
+        "/opt/homebrew/bin/mise",
+        "exec",
+        "--",
+        "skapa-design-system-mcp"
+      ]
     },
     "workflows": {
       "type": "local",
       "command": ["/opt/homebrew/bin/mise", "exec", "--", "workflows-mcp"]
     }
-  }
+  },
+  "plugin": [""]
 }

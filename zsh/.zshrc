@@ -90,7 +90,7 @@ precmd() {
 export EDITOR="zed --wait"
 
 ### PRETTIERD
-export PRETTIERD_DEFAULT_CONFIG=~/.config/prettierd/global.json 
+export PRETTIERD_DEFAULT_CONFIG=~/.config/prettierd/global.json
 
 ### STARSHIP
 eval "$(starship init zsh)"
