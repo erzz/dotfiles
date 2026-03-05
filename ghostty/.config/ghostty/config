@@ -28,6 +28,7 @@ window-height                  = 44
 window-width                   = 168
 
 # Other
+macos-option-as-alt            = true
 clipboard-paste-protection     = true
 clipboard-trim-trailing-spaces = true
 copy-on-select                 = true
@@ -53,3 +54,5 @@ keybind                        = ctrl+super+shift+i=inspector:toggle
 keybind                        = ctrl+super+shift+r=reload_config
 keybind                        = super+t=new_tab
 keybind = shift+enter=text:\n
+keybind = alt+arrow_left=unbind
+keybind = alt+arrow_right=unbind
