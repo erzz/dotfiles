@@ -89,6 +89,12 @@ precmd() {
 ### EDITOR
 export EDITOR="zed --wait"
 
+### DOCKER
+# Set the Docker host to use Colima's socket
+export DOCKER_HOST="unix://${XDG_CONFIG_HOME:-$HOME/.config}/colima/default/docker.sock"
+# Cap client API version to match Colima's dockerd
+export DOCKER_API_VERSION=1.43
+
 ### PRETTIERD
 export PRETTIERD_DEFAULT_CONFIG=~/.config/prettierd/global.json
 
@@ -102,3 +108,12 @@ eval "$(mise activate zsh)"
 
 ### FNOX (secrets via 1Password - must be after mise activation)
 eval "$(fnox activate zsh -c ~/.config/fnox/config.toml)"
+
+### BUN 
+#  bun completions
+[ -s "/Users/sean.erswell-liljefelt/.bun/_bun" ] && source "/Users/sean.erswell-liljefelt/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+

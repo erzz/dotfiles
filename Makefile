@@ -1,4 +1,4 @@
-.PHONY: all bootstrap test brew brew-install direnv fnox ghostty gh-dash git mise mise-install nvim opencode os prettierd starship stow tmux xcode zed zellij zsh
+.PHONY: all bootstrap test brew brew-install colima direnv fnox ghostty gh-dash git mise mise-install nvim opencode os prettierd starship stow tmux xcode zed zellij zsh
 
 # Full setup via bootstrap script
 all: bootstrap
@@ -31,6 +31,14 @@ xcode:
 # Config-only targets (stow --restow for convergence)
 direnv:
 	stow --restow direnv
+
+colima:
+	@mkdir -p "$(HOME)/.config/colima/default"
+	@if [ -d "$(HOME)/.colima" ] && [ ! -d "$(HOME)/.config/colima" ]; then \
+		colima stop 2>/dev/null || true; \
+		mv "$(HOME)/.colima" "$(HOME)/.config/colima"; \
+	fi
+	stow --restow colima
 
 drift:
 	stow --restow drift
