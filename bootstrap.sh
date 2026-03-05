@@ -78,8 +78,20 @@ brew cleanup
 # ---------------------------------------------------------------------------
 info "Stage 2: Stowing configs"
 
+# Migrate Colima config from legacy ~/.colima to XDG ~/.config/colima
+if [ -d "${HOME}/.colima" ] && [ ! -d "${HOME}/.config/colima" ]; then
+	echo "Migrating Colima config to XDG path..."
+	colima stop 2>/dev/null || true
+	mv "${HOME}/.colima" "${HOME}/.config/colima"
+	ok "Moved ~/.colima -> ~/.config/colima"
+fi
+
+# Ensure Colima default profile dir exists (stow needs the parent)
+mkdir -p "${HOME}/.config/colima/default"
+
 # List of stow packages (directories that contain config to symlink)
 STOW_PACKAGES=(
+	colima
 	direnv
 	drift
 	fnox
@@ -175,6 +187,15 @@ if [ "${CI_MODE}" != true ]; then
 	fi
 else
 	ok "CI mode — skipping gh-dash extension (requires auth)"
+fi
+
+# Docker buildx CLI plugin (symlink Homebrew binary into Docker CLI plugins dir)
+if command -v docker-buildx &>/dev/null; then
+	mkdir -p "${HOME}/.docker/cli-plugins"
+	ln -sfn "$(brew --prefix)/bin/docker-buildx" "${HOME}/.docker/cli-plugins/docker-buildx"
+	ok "docker-buildx CLI plugin linked"
+else
+	warn "docker-buildx not found (should have been installed by brew bundle)"
 fi
 
 # TPM (Tmux Plugin Manager)

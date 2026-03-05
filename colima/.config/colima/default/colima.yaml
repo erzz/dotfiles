@@ -1,0 +1,33 @@
+cpu: 2
+memory: 8
+disk: 100
+arch: aarch64
+runtime: docker
+hostname: colima
+autoActivate: true
+vmType: qemu
+mountType: sshfs
+mountInotify: true
+
+kubernetes:
+  enabled: false
+  version: v1.28.3+k3s2
+  k3sArgs:
+    - --disable=traefik
+
+network:
+  address: false
+  dns: []
+  dnsHosts: {}
+  hostAddresses: false
+
+docker: {}
+rosetta: false
+nestedVirtualization: false
+forwardAgent: false
+cpuType: ""
+provision: []
+sshConfig: true
+sshPort: 0
+mounts: []
+env: {}
