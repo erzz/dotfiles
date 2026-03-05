@@ -15,5 +15,5 @@
       "command": ["/opt/homebrew/bin/mise", "exec", "--", "workflows-mcp"]
     }
   },
-  "plugin": [""]
+  "plugin": ["oh-my-opencode@latest"]
 }
