@@ -1,6 +1,12 @@
 {
   "overrides": [
     { "files": ["*.js"], "options": { "singleQuote": true } },
+    {
+      "files": ["**/*.jsonc"],
+      "options": {
+        "trailingComma": "none"
+      }
+    },
     { "files": ["*.yml", "*.yaml"], "options": { "singleQuote": false } },
     {
       "files": ["*.md", "*.mdx"],
