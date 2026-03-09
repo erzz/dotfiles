@@ -10,41 +10,50 @@
     "oracle": {
       "model": "github-copilot/gpt-5.2",
       "variant": "high",
+      "tools": { "skapa_*": false, "workflows_*": false },
     },
     // Research agents: cheaper models are fine
     "librarian": {
       "model": "github-copilot/claude-sonnet-4.5",
+      "tools": { "skapa_*": false, "workflows_*": false },
     },
     // Fast codebase grep: Grok Code Fast → MiniMax → Haiku → GPT-5-Nano
     "explore": {
       "model": "github-copilot/gpt-5-mini",
+      "tools": { "skapa_*": false, "workflows_*": false },
     },
     // Vision & Screenshots: Kimi K2.5 → Gemini Flash → GPT-5.2 → GLM-4.6v
     "multimodal-looker": {
       "model": "github-copilot/gemini-3-flash-preview",
+      "tools": { "skapa_*": false, "workflows_*": false },
     },
     // Prometheus inherits sisyphus model; just add prompt guidance
     "prometheus": {
       "model": "github-copilot/claude-opus-4.6",
       "variant": "max",
+      "tools": { "skapa_*": false, "workflows_*": false },
     },
     // Plan gap analysis: Claude Opus → Kimi K2.5 → GPT-5.2 → Gemini 3 Pro
     "metis": {
       "model": "github-copilot/claude-opus-4.6",
       "variant": "max",
+      "tools": { "skapa_*": false, "workflows_*": false },
     },
     // Ruthless reviewer: GPT-5.2 → Claude Opus → Gemini 3 Pro
     "momus": {
       "model": "github-copilot/gpt-5.2",
       "variant": "medium",
+      "tools": { "skapa_*": false, "workflows_*": false },
     },
     // Todo orchestrator: Kimi K2.5 → Claude Sonnet → GPT-5.2
     "atlas": {
       "model": "github-copilot/claude-sonnet-4.5",
+      "tools": { "skapa_*": false, "workflows_*": false },
     },
     // Autonomous deep worker: GPT-5.3 Codex only (only 5.2 available at the minute)
     "hephaestus": {
       "model": "github-copilot/gpt-5.2-codex",
+      // Keeps both MCPs — autonomous implementer may need design system or workflow tools
     },
   },
   "categories": {
@@ -52,37 +61,45 @@
     "visual-engineering": {
       "model": "github-copilot/gemini-3.1-pro-preview",
       "variant": "high",
+      "tools": { "workflows_*": false },
       "prompt_append": "ALWAYS use Skapa components and design system via the MCP for all frontend, UI, styling and accessibility concerns rather than custom CSS or other frameworks such as tailwind.",
     },
     // Maximum reasoning needed: GPT-5.3 Codex → Gemini 3 Pro → Claude Opus
     "ultrabrain": {
       "model": "github-copilot/gemini-3-pro-preview",
       "variant": "high",
+      "tools": { "skapa_*": false, "workflows_*": false },
     },
     // Creative, novel approaches: Gemini 3 Pro → Claude Opus → GPT-5.2
     "artistry": {
       "model": "github-copilot/gemini-3-pro-preview",
       "variant": "high",
+      "tools": { "skapa_*": false, "workflows_*": false },
     },
     // Simple, fast tasks: Claude Haiku → Gemini Flash → GPT-5-Nano
     "quick": {
       "model": "github-copilot/claude-haiku-4.5",
+      "tools": { "skapa_*": false, "workflows_*": false },
     },
     // General standard work: Claude Sonnet → GPT-5.3 Codex → Gemini Flash
     "unspecified-low": {
       "model": "github-copilot/claude-sonnet-4.5",
+      "tools": { "skapa_*": false, "workflows_*": false },
     },
     // General complex work: Claude Opus → GPT-5.2 → Gemini 3 Pro
     "unspecified-high": {
       "model": "github-copilot/claude-opus-4.6",
+      // Keeps both MCPs — complex work may need any tool
     },
     // Text, docs, prose: Gemini Flash → Claude Sonnet
     "writing": {
       "model": "github-copilot/claude-sonnet-4.5",
+      "tools": { "skapa_*": false, "workflows_*": false },
     },
     // Git operations: small and simple
     "git": {
       "model": "github-copilot/gpt-5-mini",
+      "tools": { "skapa_*": false, "workflows_*": false },
       "prompt_append": "ALWAYS use the conventional commits format for commit messages, and ensure that all commit messages are clear, concise, and descriptive of the changes made. ALWAYS ensure new branches are created from a fresh pull of the main branch",
     },
   },
