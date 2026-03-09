@@ -240,6 +240,144 @@ keybinds clear-defaults=true {
     }
 }
 
+// Skapa Dark theme — matches Ghostty skapa-dark palette
+// Active pane frames use IKEA blue (#007CC1) for clear visibility
+themes {
+    skapa-dark {
+        // Body text in panes, status bar tips, etc.
+        text_unselected {
+            base "#CCCCCC"
+            background "#242424"
+            emphasis_0 "#007CC1"
+            emphasis_1 "#3FB1E1"
+            emphasis_2 "#7FC76D"
+            emphasis_3 "#FFDB01"
+        }
+        text_selected {
+            base "#EEEEEE"
+            background "#333333"
+            emphasis_0 "#007CC1"
+            emphasis_1 "#3FB1E1"
+            emphasis_2 "#7FC76D"
+            emphasis_3 "#FFDB01"
+        }
+        // Tab bar ribbons
+        ribbon_unselected {
+            base "#B7B7B7"
+            background "#333333"
+            emphasis_0 "#8C8C8C"
+            emphasis_1 "#EC773F"
+            emphasis_2 "#489CE3"
+            emphasis_3 "#DEBC9C"
+        }
+        ribbon_selected {
+            base "#111111"
+            background "#007CC1"
+            emphasis_0 "#EEEEEE"
+            emphasis_1 "#FFDB01"
+            emphasis_2 "#7FC76D"
+            emphasis_3 "#3FB1E1"
+        }
+        // Tables (session manager, plugin manager)
+        table_title {
+            base "#007CC1"
+            background "#242424"
+            emphasis_0 "#EEEEEE"
+            emphasis_1 "#3FB1E1"
+            emphasis_2 "#FFDB01"
+            emphasis_3 "#7FC76D"
+        }
+        table_cell_unselected {
+            base "#CCCCCC"
+            background "#242424"
+            emphasis_0 "#8C8C8C"
+            emphasis_1 "#489CE3"
+            emphasis_2 "#EC773F"
+            emphasis_3 "#7FC76D"
+        }
+        table_cell_selected {
+            base "#EEEEEE"
+            background "#333333"
+            emphasis_0 "#007CC1"
+            emphasis_1 "#FFDB01"
+            emphasis_2 "#7FC76D"
+            emphasis_3 "#3FB1E1"
+        }
+        // Lists (session manager entries)
+        list_unselected {
+            base "#CCCCCC"
+            background "#242424"
+            emphasis_0 "#8C8C8C"
+            emphasis_1 "#489CE3"
+            emphasis_2 "#EC773F"
+            emphasis_3 "#7FC76D"
+        }
+        list_selected {
+            base "#EEEEEE"
+            background "#333333"
+            emphasis_0 "#007CC1"
+            emphasis_1 "#FFDB01"
+            emphasis_2 "#7FC76D"
+            emphasis_3 "#3FB1E1"
+        }
+        // Pane borders — the key differentiator
+        frame_unselected {
+            base "#545454"
+            background "#242424"
+            emphasis_0 "#767676"
+            emphasis_1 "#8C8C8C"
+            emphasis_2 "#545454"
+            emphasis_3 "#545454"
+        }
+        frame_selected {
+            base "#007CC1"
+            background "#242424"
+            emphasis_0 "#EEEEEE"
+            emphasis_1 "#3FB1E1"
+            emphasis_2 "#7FC76D"
+            emphasis_3 "#FFDB01"
+        }
+        frame_highlight {
+            base "#3FB1E1"
+            background "#242424"
+            emphasis_0 "#EEEEEE"
+            emphasis_1 "#007CC1"
+            emphasis_2 "#FFDB01"
+            emphasis_3 "#7FC76D"
+        }
+        // Exit codes
+        exit_code_success {
+            base "#7FC76D"
+            background "#242424"
+            emphasis_0 "#EEEEEE"
+            emphasis_1 "#007CC1"
+            emphasis_2 "#3FB1E1"
+            emphasis_3 "#FFDB01"
+        }
+        exit_code_error {
+            base "#ED5A51"
+            background "#242424"
+            emphasis_0 "#EEEEEE"
+            emphasis_1 "#FFDB01"
+            emphasis_2 "#EC773F"
+            emphasis_3 "#FB6579"
+        }
+        // Multiplayer cursor colors
+        multiplayer_user_colors {
+            player_1 "#007CC1"
+            player_2 "#7FC76D"
+            player_3 "#EC773F"
+            player_4 "#FFDB01"
+            player_5 "#3FB1E1"
+            player_6 "#FB6579"
+            player_7 "#DEBC9C"
+            player_8 "#5CC27C"
+            player_9 "#489CE3"
+            player_10 "#ED5A51"
+        }
+    }
+}
+
 // Plugin aliases - can be used to change the implementation of Zellij
 // changing these requires a restart to take effect
 plugins {
@@ -278,7 +416,7 @@ web_client {
 // Choose the theme that is specified in the themes section.
 // Default: default
 // 
-theme "tokyo-night"
+theme "skapa-dark"
  
 // Choose the base input mode of zellij.
 // Default: normal
@@ -500,6 +638,13 @@ default_layout "default"
 // Default: true
 // 
 show_startup_tips false
+
+// Rounded pane frame corners for a cleaner look
+ui {
+    pane_frames {
+        rounded_corners true
+    }
+}
  
 // Whether to show release notes on first version run
 // Default: true
