@@ -15,7 +15,7 @@ plugins=(
 
 # <--------------------- OH-MY-ZSH ----------------------->
 # Eza completions (must be on FPATH before OMZ runs compinit)
-FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
+FPATH="/opt/homebrew/share/zsh/site-functions:${FPATH}"
 # init zsh
 export ZSH=~/.oh-my-zsh
 export ZSH_THEME=""
@@ -23,16 +23,12 @@ export ZSH_COMPDUMP=$ZSH/cache/.zcompdump-$HOST
 # shellcheck disable=SC1091
 source $ZSH/oh-my-zsh.sh
 
-# <----------------------- ZPLUG ------------------------->
-# zplug
-export ZPLUG_HOME="${HOMEBREW_PREFIX}/opt/zplug"
-# shellcheck disable=SC1091
-source "$ZPLUG_HOME/init.zsh"
-zplug "dracula/zsh", as:theme
-if ! zplug check; then
-  zplug install
-fi
-zplug load
+# Recompile zcompdump in background if stale (prevents ~500ms compinit penalty)
+{
+  if [[ -s "$ZSH_COMPDUMP" && (! -s "${ZSH_COMPDUMP}.zwc" || "$ZSH_COMPDUMP" -nt "${ZSH_COMPDUMP}.zwc") ]]; then
+    zcompile "$ZSH_COMPDUMP"
+  fi
+} &!
 
 # <----------------------- DRIFT ------------------------->
 ~/dotfiles/drift/detect.sh &>/dev/null &
