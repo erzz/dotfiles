@@ -89,6 +89,7 @@
     // General complex work: Claude Opus → GPT-5.2 → Gemini 3 Pro
     "unspecified-high": {
       "model": "github-copilot/claude-opus-4.6",
+      "variant": "max",
       // Keeps both MCPs — complex work may need any tool
     },
     // Text, docs, prose: Gemini Flash → Claude Sonnet
