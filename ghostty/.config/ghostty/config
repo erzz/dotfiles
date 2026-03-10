@@ -28,7 +28,7 @@ window-height                  = 44
 window-width                   = 168
 
 # Other
-macos-option-as-alt            = true
+macos-option-as-alt            = false
 clipboard-paste-protection     = true
 clipboard-trim-trailing-spaces = true
 copy-on-select                 = true
@@ -41,10 +41,10 @@ shell-integration              = zsh
 # Key bindings
 keybind                        = super+enter=unbind
 keybind                        = ctrl+enter=toggle_fullscreen
-keybind                        = ctrl+h=goto_split:left
-keybind                        = ctrl+j=goto_split:bottom
-keybind                        = ctrl+k=goto_split:top
-keybind                        = ctrl+l=goto_split:right
+keybind                        = ctrl+h=unbind
+keybind                        = ctrl+j=unbind
+keybind                        = ctrl+k=unbind
+keybind                        = ctrl+l=unbind
 keybind                        = ctrl+super+h=new_split:left
 keybind                        = ctrl+super+j=new_split:down
 keybind                        = ctrl+super+k=new_split:up
