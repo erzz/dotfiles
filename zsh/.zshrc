@@ -83,7 +83,7 @@ precmd() {
 }
 
 ### EDITOR
-export EDITOR="zed --wait"
+export EDITOR="zed"
 
 ### DOCKER
 # Set the Docker host to use Colima's socket

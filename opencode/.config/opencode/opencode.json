@@ -12,8 +12,15 @@
     },
     "workflows": {
       "type": "local",
-      "command": ["/opt/homebrew/bin/mise", "exec", "--", "workflows-mcp"]
+      "command": [
+        "/opt/homebrew/bin/mise",
+        "exec",
+        "--",
+        "workflows-mcp"
+      ]
     }
   },
-  "plugin": ["oh-my-opencode@latest"]
+  "plugin": [
+    "oh-my-openagent@latest"
+  ]
 }
