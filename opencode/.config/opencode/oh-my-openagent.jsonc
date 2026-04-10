@@ -1,111 +1,204 @@
 {
   "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/dev/assets/oh-my-opencode.schema.json",
   "agents": {
-    // Main orchestrator: Claude Opus or Kimi K2.5 work best
+    // Main orchestrator: Claude Opus 4.6 max
     "sisyphus": {
       "model": "github-copilot/claude-opus-4.6",
       "variant": "max",
+      "fallback_models": [
+        { "model": "github-copilot/claude-sonnet-4.6" },
+        { "model": "github-copilot/gpt-5.4", "variant": "medium" }
+      ],
+      "tools": { "skapa_*": false, "workflows_*": false },
+      "prompt_append": "You do NOT have access to Skapa design system or INGKA workflow MCP tools. You MUST delegate: (1) Any frontend, UI, styling, design, accessibility, or Skapa component work to the `frontend` custom agent or `visual-engineering` category - they have Skapa MCP access. (2) Any CI/CD, GitHub Actions, reusable workflows, or pipeline work to the `cicd` custom agent - it has the workflows MCP access. Never attempt to call skapa_* or workflows_* tools directly."
     },
-    // Architecture consultation: GPT or Claude Opus
+    // Architecture consultation: GPT-5.4 high (upgraded from 5.2)
     "oracle": {
-      "model": "github-copilot/gpt-5.2",
+      "model": "github-copilot/gpt-5.4",
       "variant": "high",
-      "tools": { "skapa_*": false, "workflows_*": false },
+      "fallback_models": [
+        { "model": "github-copilot/gemini-2.5-pro", "variant": "high" },
+        { "model": "github-copilot/claude-sonnet-4.6" }
+      ],
+      "tools": { "skapa_*": false, "workflows_*": false }
     },
-    // Research agents: cheaper models are fine
+    // Autonomous deep worker: GPT-5.4 medium (upgraded from 5.2-codex)
+    "hephaestus": {
+      "model": "github-copilot/gpt-5.4",
+      "variant": "medium",
+      "fallback_models": [
+        { "model": "github-copilot/gpt-5.3-codex", "variant": "medium" },
+        { "model": "github-copilot/gpt-5.2-codex", "variant": "medium" }
+      ]
+    },
+    // Research agent: Claude Haiku 4.5 (speed over intelligence)
     "librarian": {
-      "model": "github-copilot/claude-sonnet-4.5",
-      "tools": { "skapa_*": false, "workflows_*": false },
+      "model": "github-copilot/claude-haiku-4.5",
+      "fallback_models": [
+        { "model": "github-copilot/gpt-5-mini" },
+        { "model": "github-copilot/gpt-5.4-mini" }
+      ],
+      "tools": { "skapa_*": false, "workflows_*": false }
     },
-    // Fast codebase grep: Grok Code Fast → MiniMax → Haiku → GPT-5-Nano
+    // Fast codebase grep: GPT-5-mini (0x multiplier, speed matters)
     "explore": {
       "model": "github-copilot/gpt-5-mini",
-      "tools": { "skapa_*": false, "workflows_*": false },
+      "fallback_models": [
+        { "model": "github-copilot/claude-haiku-4.5" },
+        { "model": "github-copilot/gpt-5.4-mini" }
+      ],
+      "tools": { "skapa_*": false, "workflows_*": false }
     },
-    // Vision & Screenshots: Kimi K2.5 → Gemini Flash → GPT-5.2 → GLM-4.6v
+    // Vision & Screenshots: GPT-5.4 medium (gemini-3-flash not available)
     "multimodal-looker": {
-      "model": "github-copilot/gemini-3-flash-preview",
-      "tools": { "skapa_*": false, "workflows_*": false },
+      "model": "github-copilot/gpt-5.4",
+      "variant": "medium",
+      "fallback_models": [
+        { "model": "github-copilot/gpt-5.2", "variant": "medium" },
+        { "model": "github-copilot/gemini-2.5-pro" }
+      ],
+      "tools": { "skapa_*": false, "workflows_*": false }
     },
-    // Prometheus inherits sisyphus model; just add prompt guidance
+    // Planning: Claude Opus 4.6 max
     "prometheus": {
       "model": "github-copilot/claude-opus-4.6",
       "variant": "max",
-      "tools": { "skapa_*": false, "workflows_*": false },
+      "fallback_models": [
+        { "model": "github-copilot/gpt-5.4", "variant": "high" },
+        { "model": "github-copilot/gemini-2.5-pro", "variant": "high" }
+      ],
+      "tools": { "skapa_*": false, "workflows_*": false }
     },
-    // Plan gap analysis: Claude Opus → Kimi K2.5 → GPT-5.2 → Gemini 3 Pro
+    // Pre-planning analysis: Claude Opus 4.6 max
     "metis": {
       "model": "github-copilot/claude-opus-4.6",
       "variant": "max",
-      "tools": { "skapa_*": false, "workflows_*": false },
+      "fallback_models": [
+        { "model": "github-copilot/gpt-5.4", "variant": "high" },
+        { "model": "github-copilot/claude-sonnet-4.6" }
+      ],
+      "tools": { "skapa_*": false, "workflows_*": false }
     },
-    // Ruthless reviewer: GPT-5.2 → Claude Opus → Gemini 3 Pro
+    // Ruthless reviewer: GPT-5.4 xhigh (upgraded from 5.2 medium)
     "momus": {
-      "model": "github-copilot/gpt-5.2",
-      "variant": "medium",
-      "tools": { "skapa_*": false, "workflows_*": false },
+      "model": "github-copilot/gpt-5.4",
+      "variant": "xhigh",
+      "fallback_models": [
+        { "model": "github-copilot/gemini-2.5-pro", "variant": "high" },
+        { "model": "github-copilot/claude-opus-4.6", "variant": "max" }
+      ],
+      "tools": { "skapa_*": false, "workflows_*": false }
     },
-    // Todo orchestrator: Kimi K2.5 → Claude Sonnet → GPT-5.2
+    // Todo orchestrator: Claude Sonnet 4.6 (upgraded from 4.5)
     "atlas": {
-      "model": "github-copilot/claude-sonnet-4.5",
-      "tools": { "skapa_*": false, "workflows_*": false },
+      "model": "github-copilot/claude-sonnet-4.6",
+      "fallback_models": [
+        { "model": "github-copilot/claude-sonnet-4.5" },
+        { "model": "github-copilot/gpt-5.4", "variant": "medium" }
+      ],
+      "tools": { "skapa_*": false, "workflows_*": false }
     },
-    // Autonomous deep worker: GPT-5.3 Codex only (only 5.2 available at the minute)
-    "hephaestus": {
-      "model": "github-copilot/gpt-5.2-codex",
-      // Keeps both MCPs — autonomous implementer may need design system or workflow tools
-    },
+    // Category task runner: Claude Sonnet 4.6 (new from installer)
+    "sisyphus-junior": {
+      "model": "github-copilot/claude-sonnet-4.6",
+      "fallback_models": [
+        { "model": "github-copilot/claude-sonnet-4.5" },
+        { "model": "github-copilot/gpt-5.4", "variant": "medium" }
+      ],
+      "tools": { "skapa_*": false, "workflows_*": false }
+    }
   },
   "categories": {
-    // Frontend, UI, CSS, design: Gemini 3 Pro → GLM 5 → Claude Opus
+    // Frontend, UI, CSS, design: Gemini 2.5 Pro (gemini-3.1-pro not available)
     "visual-engineering": {
-      "model": "github-copilot/gemini-3.1-pro-preview",
+      "model": "github-copilot/gemini-2.5-pro",
       "variant": "high",
+      "fallback_models": [
+        { "model": "github-copilot/claude-sonnet-4.6" },
+        { "model": "github-copilot/gpt-5.4", "variant": "medium" }
+      ],
       "tools": { "workflows_*": false },
-      "prompt_append": "ALWAYS use Skapa components and design system via the MCP for all frontend, UI, styling and accessibility concerns rather than custom CSS or other frameworks such as tailwind.",
+      "prompt_append": "ALWAYS use Skapa components and design system via the MCP for all frontend, UI, styling and accessibility concerns rather than custom CSS or other frameworks such as tailwind."
     },
-    // Maximum reasoning needed: GPT-5.3 Codex → Gemini 3 Pro → Claude Opus
+    // Maximum reasoning: GPT-5.4 xhigh (gemini-3-pro not available)
     "ultrabrain": {
-      "model": "github-copilot/gemini-3-pro-preview",
-      "variant": "high",
-      "tools": { "skapa_*": false, "workflows_*": false },
+      "model": "github-copilot/gpt-5.4",
+      "variant": "xhigh",
+      "fallback_models": [
+        { "model": "github-copilot/gemini-2.5-pro", "variant": "high" },
+        { "model": "github-copilot/claude-opus-4.6", "variant": "max" }
+      ],
+      "tools": { "skapa_*": false, "workflows_*": false }
     },
-    // Creative, novel approaches: Gemini 3 Pro → Claude Opus → GPT-5.2
+    // Autonomous deep work: GPT-5.4 medium (new from installer)
+    "deep": {
+      "model": "github-copilot/gpt-5.4",
+      "variant": "medium",
+      "fallback_models": [
+        { "model": "github-copilot/gemini-2.5-pro", "variant": "high" },
+        { "model": "github-copilot/claude-sonnet-4.6" }
+      ]
+    },
+    // Creative, novel approaches: Gemini 2.5 Pro (gemini-3-pro not available)
     "artistry": {
-      "model": "github-copilot/gemini-3-pro-preview",
+      "model": "github-copilot/gemini-2.5-pro",
       "variant": "high",
-      "tools": { "skapa_*": false, "workflows_*": false },
+      "fallback_models": [
+        { "model": "github-copilot/gpt-5.4" },
+        { "model": "github-copilot/claude-sonnet-4.6" }
+      ],
+      "tools": { "skapa_*": false, "workflows_*": false }
     },
-    // Simple, fast tasks: Claude Haiku → Gemini Flash → GPT-5-Nano
+    // Simple, fast tasks: GPT-5.4-mini (upgraded from haiku)
     "quick": {
-      "model": "github-copilot/claude-haiku-4.5",
-      "tools": { "skapa_*": false, "workflows_*": false },
+      "model": "github-copilot/gpt-5.4-mini",
+      "fallback_models": [
+        { "model": "github-copilot/claude-haiku-4.5" },
+        { "model": "github-copilot/gpt-5-mini" }
+      ],
+      "tools": { "skapa_*": false, "workflows_*": false }
     },
-    // General standard work: Claude Sonnet → GPT-5.3 Codex → Gemini Flash
+    // General standard work: Claude Sonnet 4.6 (upgraded from 4.5)
     "unspecified-low": {
-      "model": "github-copilot/claude-sonnet-4.5",
-      "tools": { "skapa_*": false, "workflows_*": false },
+      "model": "github-copilot/claude-sonnet-4.6",
+      "fallback_models": [
+        { "model": "github-copilot/claude-sonnet-4.5" },
+        { "model": "github-copilot/gpt-5.4", "variant": "medium" }
+      ],
+      "tools": { "skapa_*": false, "workflows_*": false }
     },
-    // General complex work: Claude Opus → GPT-5.2 → Gemini 3 Pro
+    // General complex work: Claude Opus 4.6 max
     "unspecified-high": {
       "model": "github-copilot/claude-opus-4.6",
       "variant": "max",
-      // Keeps both MCPs — complex work may need any tool
+      "fallback_models": [
+        { "model": "github-copilot/claude-sonnet-4.6" },
+        { "model": "github-copilot/gpt-5.4", "variant": "medium" }
+      ]
     },
-    // Text, docs, prose: Gemini Flash → Claude Sonnet
+    // Text, docs, prose: Claude Sonnet 4.6 (upgraded from 4.5)
     "writing": {
-      "model": "github-copilot/claude-sonnet-4.5",
-      "tools": { "skapa_*": false, "workflows_*": false },
+      "model": "github-copilot/claude-sonnet-4.6",
+      "fallback_models": [
+        { "model": "github-copilot/claude-sonnet-4.5" },
+        { "model": "github-copilot/gpt-5.4", "variant": "medium" },
+        { "model": "github-copilot/gpt-5.4-mini" }
+      ],
+      "tools": { "skapa_*": false, "workflows_*": false }
     },
     // Git operations: small and simple
     "git": {
       "model": "github-copilot/gpt-5-mini",
+      "fallback_models": [
+        { "model": "github-copilot/gpt-5.4-mini" },
+        { "model": "github-copilot/claude-haiku-4.5" }
+      ],
       "tools": { "skapa_*": false, "workflows_*": false },
-      "prompt_append": "ALWAYS use the conventional commits format for commit messages, and ensure that all commit messages are clear, concise, and descriptive of the changes made. ALWAYS ensure new branches are created from a fresh pull of the main branch",
-    },
+      "prompt_append": "ALWAYS use the conventional commits format for commit messages, and ensure that all commit messages are clear, concise, and descriptive of the changes made. ALWAYS ensure new branches are created from a fresh pull of the main branch"
+    }
   },
   "skills": {
-    "sources": [{ "path": "./skills", "recursive": true }],
+    "sources": [{ "path": "./skills", "recursive": true }]
   },
-  "git_master": { "commit_footer": false, "include_co_authored_by": false },
+  "git_master": { "commit_footer": false, "include_co_authored_by": false }
 }
