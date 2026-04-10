@@ -9,7 +9,13 @@
         { "model": "github-copilot/claude-sonnet-4.6" },
         { "model": "github-copilot/gpt-5.4", "variant": "medium" }
       ],
-      "tools": { "skapa_*": false, "workflows_*": false },
+      "tools": {
+        "skapa_*": false,
+        "workflows_*": false,
+        "context7_*": false,
+        "grep_app_*": false,
+        "session_*": false
+      },
       "prompt_append": "You do NOT have access to Skapa design system or INGKA workflow MCP tools. You MUST delegate: (1) Any frontend, UI, styling, design, accessibility, or Skapa component work to the `frontend` custom agent or `visual-engineering` category - they have Skapa MCP access. (2) Any CI/CD, GitHub Actions, reusable workflows, or pipeline work to the `cicd` custom agent - it has the workflows MCP access. Never attempt to call skapa_* or workflows_* tools directly."
     },
     // Architecture consultation: GPT-5.4 high (upgraded from 5.2)

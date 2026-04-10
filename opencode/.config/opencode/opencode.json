@@ -21,6 +21,6 @@
     }
   },
   "plugin": [
-    "oh-my-openagent@latest"
+    "oh-my-openagent@3.16.0"
   ]
 }
