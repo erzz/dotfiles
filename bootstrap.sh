@@ -73,6 +73,10 @@ else
 fi
 brew cleanup
 
+if [ "${CI_MODE}" != true ]; then
+	warn "Log into the App Store to install MAS apps, then re-run 'brew bundle'"
+fi
+
 # ---------------------------------------------------------------------------
 # Stage 2: Stow all configs (convergent via --restow)
 # ---------------------------------------------------------------------------
@@ -214,6 +218,16 @@ if [ -x "${TPM_DIR}/bin/install_plugins" ]; then
 	ok "Tmux plugins installed"
 fi
 
+# opencode plugins (npm dependencies for the opencode config)
+if [ -f "${HOME}/.config/opencode/package.json" ]; then
+	if command -v npm &>/dev/null; then
+		echo "Installing opencode plugins..."
+		(cd "${HOME}/.config/opencode" && npm install --ignore-scripts 2>/dev/null) && ok "opencode plugins installed" || warn "opencode plugin install failed (run 'npm install' in ~/.config/opencode manually)"
+	else
+		warn "npm not found — run 'npm install' in ~/.config/opencode after mise tools are available"
+	fi
+fi
+
 # ---------------------------------------------------------------------------
 # Stage 5: macOS preferences (optional, flag-gated)
 # ---------------------------------------------------------------------------
@@ -235,3 +249,7 @@ info "Bootstrap complete!"
 echo "  - Open a new terminal to pick up shell changes"
 echo "  - Run 'mise install' any time to update mise-managed tools"
 echo "  - Run './bootstrap.sh --macos' to apply macOS preferences"
+echo ""
+echo "  NOTE: Private npm packages (e.g. @ingka-group-digital/*) require"
+echo "  1Password CLI auth + fnox. Open a new shell, authenticate 1Password,"
+echo "  then run 'mise install' to pick up remaining tools."

@@ -28,6 +28,7 @@ source $ZSH/oh-my-zsh.sh
   if [[ -s "$ZSH_COMPDUMP" && (! -s "${ZSH_COMPDUMP}.zwc" || "$ZSH_COMPDUMP" -nt "${ZSH_COMPDUMP}.zwc") ]]; then
     zcompile "$ZSH_COMPDUMP"
   fi
+# shellcheck disable=SC1035,SC1072
 } &!
 
 # <----------------------- DRIFT ------------------------->
@@ -107,7 +108,7 @@ eval "$(fnox activate zsh -c ~/.config/fnox/config.toml)"
 
 ### BUN 
 #  bun completions
-[ -s "/Users/sean.erswell-liljefelt/.bun/_bun" ] && source "/Users/sean.erswell-liljefelt/.bun/_bun"
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
 # bun
 export BUN_INSTALL="$HOME/.bun"
