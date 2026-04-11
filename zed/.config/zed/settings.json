@@ -17,13 +17,13 @@
     "skapa-design-system": {
       "env": {},
       "enabled": true,
-      "command": "/Users/sean.erswell-liljefelt/.local/share/mise/shims/skapa-design-system-mcp",
-      "args": []
+      "command": "/opt/homebrew/bin/mise",
+      "args": ["exec", "--", "skapa-design-system-mcp"]
     },
     "playwright": {
       "enabled": true,
-      "command": "/Users/sean.erswell-liljefelt/.local/share/mise/shims/playwright-mcp",
-      "args": []
+      "command": "/opt/homebrew/bin/mise",
+      "args": ["exec", "--", "playwright-mcp"]
     }
   },
   "agent": {
