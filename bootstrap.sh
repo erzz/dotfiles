@@ -103,6 +103,7 @@ STOW_PACKAGES=(
 	ghostty
 	git
 	mise
+	npm
 	nvim
 	opencode
 	prettierd
@@ -170,9 +171,11 @@ info "Stage 4: Tool activation"
 if [ "${CI_MODE}" = true ]; then
 	ok "CI mode — skipping mise install (requires auth for private packages)"
 elif command -v mise &>/dev/null; then
-	echo "Installing mise-managed tools..."
-	mise install --yes
-	ok "mise tools installed"
+	echo "Installing mise-managed tools (public only)..."
+	mise install --yes fnox java node "npm:@playwright/mcp" terraform maven "npm:mcp-remote"
+	ok "mise public tools installed"
+	echo ""
+	warn "Private @ingka packages skipped — authenticate 1Password + fnox, then run: make mise-private"
 else
 	warn "mise not found (should have been installed by brew bundle)"
 fi
@@ -250,6 +253,6 @@ echo "  - Open a new terminal to pick up shell changes"
 echo "  - Run 'mise install' any time to update mise-managed tools"
 echo "  - Run './bootstrap.sh --macos' to apply macOS preferences"
 echo ""
-echo "  NOTE: Private npm packages (e.g. @ingka-group-digital/*) require"
-echo "  1Password CLI auth + fnox. Open a new shell, authenticate 1Password,"
-echo "  then run 'mise install' to pick up remaining tools."
+echo "  POST-BOOTSTRAP: To install private @ingka npm packages:"
+echo "    1. Authenticate 1Password"
+echo "    2. Run: make mise-private"

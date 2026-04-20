@@ -1,4 +1,4 @@
-.PHONY: all bootstrap test brew brew-install colima direnv fnox ghostty gh-dash git mise mise-install nvim opencode os prettierd starship stow tmux xcode zed zellij zsh
+.PHONY: all bootstrap test brew brew-install colima direnv fnox ghostty gh-dash git mise mise-install mise-private npm nvim opencode os prettierd starship stow tmux xcode zed zellij zsh
 
 # Full setup via bootstrap script
 all: bootstrap
@@ -61,8 +61,14 @@ git:
 mise:
 	stow --restow mise
 
-mise-install: mise
+mise-install: mise npm
 	@command -v mise &>/dev/null && mise install --yes || echo "mise not found - run 'make brew' first"
+
+mise-private: mise-install
+	@command -v mise &>/dev/null && mise install --yes "npm:@ingka-group-digital/skapa-design-system-mcp" "npm:@ingka-group-digital/workflows-mcp" || echo "Failed - ensure 1Password is authenticated and fnox is active (GH_TOKEN required)"
+
+npm:
+	stow --restow npm
 
 nvim:
 	stow --restow nvim
