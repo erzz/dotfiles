@@ -44,6 +44,7 @@ Each tool can be set up independently via `make`. Useful for temporary machines 
 ```bash
 make git        # Stow git config
 make zsh        # Stow zsh config + install Oh My Zsh
+make npm        # Stow npm config
 make nvim       # Stow neovim config
 make tmux       # Stow tmux config + install TPM + plugins
 make ghostty    # Stow ghostty config
@@ -58,7 +59,8 @@ make opencode   # Stow opencode config
 make zellij     # Stow zellij config
 make os         # Apply macOS preferences
 make brew       # Install Homebrew + run brew bundle
-make mise-install  # Stow mise config + install mise-managed tools
+make mise-install  # Stow mise + npm configs, install public mise tools
+make mise-private  # Install private @ingka packages (requires 1Password auth)
 ```
 
 ## How it works
@@ -86,6 +88,7 @@ mise/.config/mise/config.toml  ->  ~/.config/mise/config.toml
 | `ghostty` | Ghostty terminal config |
 | `git` | Git config with delta, aliases, osxkeychain credential helper |
 | `mise` | Runtime version manager (node, java, terraform, maven, fnox, MCP tools) |
+| `npm` | npm registry scopes for private @ingka packages |
 | `nvim` | Neovim with LazyVim |
 | `opencode` | OpenCode AI assistant config |
 | `os` | macOS system preferences (Finder, Dock, screenshots, etc.) |
