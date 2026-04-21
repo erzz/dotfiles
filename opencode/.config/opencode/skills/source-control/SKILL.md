@@ -38,10 +38,13 @@ Include a scope when it adds clarity (e.g., `feat(auth): add OAuth2 support`). U
 
 ### Branching
 
-- Before creating a new branch, **always pull the latest changes from the default branch** (`main` or `master`) first: `git checkout main && git pull`.
-- When changes are ready to be pushed, check if the current branch is `main` or `master`.
+- Before creating a new branch, **always sync the default branch first**. The default branch may be `main` or `master` (or something else); detect it rather than assuming.
+  1. Confirm the working tree is clean (`git status --porcelain`). If not, stop and ask the user how to handle the changes — do not auto-stash or auto-discard.
+  2. Detect the default branch (e.g. `git symbolic-ref refs/remotes/origin/HEAD --short` then strip the `origin/` prefix).
+  3. Switch to it and pull (`git checkout <default> && git pull --ff-only`).
+- When changes are ready to be pushed, check if the current branch is the default branch.
 - If it is, **suggest creating a new branch** with a descriptive name following the pattern `<type>-<short-description>` (e.g., `feat-add-user-auth`, `fix-null-pointer-dashboard`).
-- Only proceed on `main`/`master` if the user explicitly insists after being warned.
+- Only proceed on the default branch if the user explicitly insists after being warned.
 
 ### Pull Requests
 

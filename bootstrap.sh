@@ -221,16 +221,6 @@ if [ -x "${TPM_DIR}/bin/install_plugins" ]; then
 	ok "Tmux plugins installed"
 fi
 
-# opencode plugins (npm dependencies for the opencode config)
-if [ -f "${HOME}/.config/opencode/package.json" ]; then
-	if command -v npm &>/dev/null; then
-		echo "Installing opencode plugins..."
-		(cd "${HOME}/.config/opencode" && npm install --ignore-scripts 2>/dev/null) && ok "opencode plugins installed" || warn "opencode plugin install failed (run 'npm install' in ~/.config/opencode manually)"
-	else
-		warn "npm not found — run 'npm install' in ~/.config/opencode after mise tools are available"
-	fi
-fi
-
 # ---------------------------------------------------------------------------
 # Stage 5: macOS preferences (optional, flag-gated)
 # ---------------------------------------------------------------------------
