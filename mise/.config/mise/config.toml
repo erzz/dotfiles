@@ -1,4 +1,5 @@
 [tools]
+bun = "latest"
 fnox = "latest"
 java = "latest"
 node = "24"
