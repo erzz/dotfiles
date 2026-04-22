@@ -89,7 +89,7 @@ mise/.config/mise/config.toml  ->  ~/.config/mise/config.toml
 | `git` | Git config with delta, aliases, osxkeychain credential helper |
 | `mise` | Runtime version manager (node, java, terraform, maven, fnox, MCP tools) |
 | `npm` | npm registry scopes for private @ingka packages |
-| `nvim` | Neovim with LazyVim |
+| `nvim` | Neovim 0.12 with native `vim.pack` (no framework) |
 | `opencode` | OpenCode AI assistant config |
 | `os` | macOS system preferences (Finder, Dock, screenshots, etc.) |
 | `prettierd` | Global prettier daemon config |
