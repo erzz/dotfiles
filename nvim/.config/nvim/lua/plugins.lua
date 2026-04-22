@@ -19,6 +19,7 @@ vim.pack.add({
   { src = "https://github.com/nvim-lualine/lualine.nvim" },
   { src = "https://github.com/nvim-tree/nvim-web-devicons" },
   { src = "https://github.com/folke/snacks.nvim" },
+  { src = "https://github.com/folke/which-key.nvim" },
 
   -- Git
   { src = "https://github.com/lewis6991/gitsigns.nvim" },

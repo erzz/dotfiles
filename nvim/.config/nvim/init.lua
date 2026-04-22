@@ -26,5 +26,6 @@ require("plugin-config.mini-files")
 require("plugin-config.tmux-nav")
 require("plugin-config.conform")
 require("plugin-config.lint")
+require("plugin-config.which-key")
 
 require("lsp")
