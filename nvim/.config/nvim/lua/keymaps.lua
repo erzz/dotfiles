@@ -49,6 +49,11 @@ map("n", "<leader>e", function()
   if not mf.close() then mf.open(vim.api.nvim_buf_get_name(0)) end
 end, { desc = "File explorer" })
 
+-- Git
+map("n", "<leader>gg", function() Snacks.lazygit.open() end, { desc = "Lazygit" })
+map("n", "<leader>gl", function() Snacks.lazygit.log() end, { desc = "Lazygit log (cwd)" })
+map("n", "<leader>gf", function() Snacks.lazygit.log_file() end, { desc = "Lazygit file history" })
+
 -- Format
 map({ "n", "v" }, "<leader>cf", function()
   require("conform").format({ async = true, lsp_format = "fallback" })
