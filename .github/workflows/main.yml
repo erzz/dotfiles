@@ -9,6 +9,9 @@ jobs:
 
       - name: ShellCheck
         uses: ludeeus/action-shellcheck@2.0.0
+        with:
+          # shellcheck cannot parse zsh syntax (e.g. `&!` disown operator)
+          ignore_paths: zsh
 
   test-all:
     runs-on: macos-latest
