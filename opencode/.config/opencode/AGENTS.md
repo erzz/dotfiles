@@ -15,6 +15,30 @@ The default agent is `@engineer`. That is the main conversational entrypoint for
 
 Use `/start-work <task>` only when you want an explicit orchestration run in an isolated subtask.
 
+## Information Gathering
+
+Before asking the user for any information that could be obtained from the workspace, **use your
+tools to find it yourself**. This includes file contents, directory layouts, git state, command
+output, and configuration values.
+
+Acceptable to ask the user for:
+
+- Intent, preferences, priorities, or trade-offs
+- Information that genuinely lives outside the workspace (credentials, external system state,
+  things only they know)
+- Confirmation before destructive or irreversible actions
+
+Not acceptable to ask the user for:
+
+- "Can you check what's in file X?"
+- "What does directory Y look like?"
+- "What's your current branch / git status?"
+- "Is tool Z installed?"
+- Any factual question answerable by `read`, `glob`, `grep`, or `bash`
+
+If you catch yourself drafting a question, ask first: *can a tool answer this?* If yes, run the
+tool. Asking the user is the slower, more expensive path.
+
 ## Delegation Rules
 
 These rules are the canonical routing policy. Other agents (`engineer`, `orchestrator`, `start-work`) defer to this list — do not maintain a parallel copy elsewhere.
