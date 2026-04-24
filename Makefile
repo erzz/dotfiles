@@ -72,6 +72,14 @@ npm:
 
 nvim:
 	stow --restow nvim
+	@if command -v nvim &>/dev/null; then \
+		echo "  Fetching vim.pack plugins..."; \
+		nvim --headless "+lua print('ok')" "+qa" >/dev/null 2>&1 || true; \
+		echo "  Installing treesitter parsers..."; \
+		nvim --headless "+lua require('nvim-treesitter').install({'lua','vim','vimdoc','query','go','gomod','gosum','typescript','tsx','javascript','python','terraform','hcl','yaml','json','markdown','markdown_inline','dockerfile','bash','java','regex','diff','gitcommit','gitignore','git_config','luadoc','toml','html','make'}):wait(180000)" "+qa" >/dev/null 2>&1 || true; \
+	else \
+		echo "  nvim not found - run 'make brew' first"; \
+	fi
 
 opencode:
 	stow --restow opencode

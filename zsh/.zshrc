@@ -89,8 +89,6 @@ export EDITOR="zed"
 ### DOCKER
 # Set the Docker host to use Colima's socket
 export DOCKER_HOST="unix://${XDG_CONFIG_HOME:-$HOME/.config}/colima/default/docker.sock"
-# Cap client API version to match Colima's dockerd
-export DOCKER_API_VERSION=1.43
 
 ### PRETTIERD
 export PRETTIERD_DEFAULT_CONFIG=~/.config/prettierd/global.json

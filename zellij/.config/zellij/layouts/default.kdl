@@ -12,4 +12,56 @@ layout {
     pane size=2 borderless=true {
         plugin location="status-bar"
     }
+
+    // Swap layouts — cycle with Alt+n (NextSwapLayout)
+    swap_tiled_layout name="default" {
+        tab {
+            pane split_direction="vertical" {
+                pane size="50%"
+                pane split_direction="horizontal" { children; }
+            }
+        }
+    }
+
+    swap_tiled_layout name="vertical" {
+        tab {
+            pane split_direction="vertical" {
+                pane
+                pane { children; }
+            }
+        }
+    }
+
+    swap_tiled_layout name="horizontal" {
+        tab {
+            pane split_direction="horizontal" {
+                pane
+                pane { children; }
+            }
+        }
+    }
+
+    swap_tiled_layout name="main-vertical" {
+        tab {
+            pane split_direction="vertical" {
+                pane size="60%"
+                pane split_direction="horizontal" { children; }
+            }
+        }
+    }
+
+    swap_tiled_layout name="main-horizontal" {
+        tab {
+            pane split_direction="horizontal" {
+                pane size="60%"
+                pane split_direction="vertical" { children; }
+            }
+        }
+    }
+
+    swap_tiled_layout name="stacked" {
+        tab min_panes=2 {
+            pane stacked=true { children; }
+        }
+    }
 }

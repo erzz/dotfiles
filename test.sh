@@ -183,6 +183,15 @@ else
 	fail "config: TPM not installed"
 fi
 
+# Neovim starts cleanly with stowed config (skip in CI — nvim not in Brewfile.ci)
+if [ -z "${CI:-}" ] && command -v nvim &>/dev/null; then
+	if nvim --headless "+lua print('ok')" "+qa" >/dev/null 2>&1; then
+		pass "config: nvim starts cleanly with stowed config"
+	else
+		fail "config: nvim startup failed"
+	fi
+fi
+
 # ---------------------------------------------------------------------------
 # Summary
 # ---------------------------------------------------------------------------

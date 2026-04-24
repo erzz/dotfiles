@@ -15,6 +15,11 @@ keybinds {
         bind "Ctrl a" { NewPane; }
         bind "Ctrl y" { MoveTab "left"; }
         bind "Ctrl u" { MoveTab "right"; }
+        // Swap layout cycling — Alt+] / Alt+[ are unreachable on Swedish ISO,
+        // and Alt+n is a dead key (composes ˜) on macOS Swedish layout
+        bind "Ctrl s" { NextSwapLayout; }
+        unbind "Alt ]"
+        unbind "Alt ["
     }
     // Ctrl+m enters move mode (replacing default Ctrl+h)
     shared_except "locked" "move" {
