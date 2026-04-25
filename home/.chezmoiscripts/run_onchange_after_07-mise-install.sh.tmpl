@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Install mise-managed tools (public packages only).
+# Install mise-managed tools. Reads tool list from configs/mise/config.toml.
 # Re-runs whenever ~/.config/mise/config.toml changes (its hash is below).
 #
 # mise config hash:
@@ -7,14 +7,29 @@
 {{- if not .ci }}
 set -euo pipefail
 
+# Ensure brew (and tools installed via brew like mise) are on PATH even if
+# this is the first apply on a fresh machine where the user's shell config
+# hasn't been sourced yet.
+if [ -x /opt/homebrew/bin/brew ] && ! command -v brew >/dev/null 2>&1; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
+
 if ! command -v mise >/dev/null 2>&1; then
   echo "==> mise not found (should have been installed by brew bundle); skipping"
   exit 0
 fi
 
-echo "==> Installing mise-managed tools (public only)..."
-mise install --yes fnox java node "npm:@playwright/mcp" terraform maven "npm:mcp-remote"
-echo "  Private @ingka packages skipped — authenticate 1Password + fnox, then run: make mise-private"
+echo "==> Installing mise-managed tools (reads from ~/.config/mise/config.toml)..."
+# `mise install` reads the active config and installs everything listed.
+# Private @ingka packages will fail without GH_TOKEN; we let mise skip them
+# and the user runs the printed command after authenticating fnox/1Password.
+mise install --yes || {
+  echo ""
+  echo "==> Some mise tools failed to install (likely private @ingka packages)."
+  echo "    Authenticate 1Password + fnox, then re-run:  mise install --yes"
+  exit 0
+}
 {{- else }}
 echo "==> CI mode — skipping mise install (requires auth for private packages)"
 {{- end }}
+

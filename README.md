@@ -11,27 +11,35 @@ macOS dotfiles managed with [chezmoi](https://www.chezmoi.io/) and [Homebrew](ht
 
 ## Quick start
 
-On a brand new Mac, `git` isn't installed yet -- but typing `git` in Terminal prompts you to install Xcode CLI tools (which includes git).
+On a brand new Mac, run:
 
 ```bash
-git
-# Install Xcode CLI tools when prompted
-
-# Install Homebrew + chezmoi
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-brew install chezmoi
-
-# One-line onboarding
-chezmoi init --apply erzz
+sh -c "$(curl -fsLS https://get.chezmoi.io)" -- init --apply erzz
 ```
 
-That's it. `chezmoi init --apply` clones this repo to `~/.local/share/chezmoi`, generates `~/.config/chezmoi/chezmoi.toml` from the template, then runs every bootstrap script.
+That single command:
+
+1. Downloads the chezmoi binary into `./bin/chezmoi`.
+2. Clones this repo to `~/.local/share/chezmoi`.
+3. Generates `~/.config/chezmoi/chezmoi.toml` from the template.
+4. Runs every bootstrap script — including installing Xcode CLT and Homebrew.
+
+You'll be prompted twice during the run:
+
+- **Xcode CLT installer** (GUI dialog) — accept it; the script polls until it finishes.
+- **sudo password** — needed by the Homebrew installer and `chsh`.
 
 For full setup including macOS preferences (requires reboot):
 
 ```bash
-chezmoi init --apply erzz --promptBool macos=true
+sh -c "$(curl -fsLS https://get.chezmoi.io)" -- init --apply erzz --promptBool macos=true
 ```
+
+After bootstrap, open a new terminal so `~/.zshrc` is sourced (puts brew, mise, fnox on PATH). Then sign into:
+
+- **App Store** — required for `mas` to install the apps in `Brewfile.mas`. Run `chezmoi apply` again afterwards to pick them up.
+- **1Password.app** + enable "Integrate with 1Password CLI" in Settings → Developer — required for fnox to inject secrets (`GH_TOKEN`, etc.) into your shell.
+- **GitHub CLI** (`gh auth login`) — required for the `gh-dash` extension. Run `chezmoi apply` again afterwards.
 
 ## How it works
 

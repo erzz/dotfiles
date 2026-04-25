@@ -32,8 +32,11 @@ if [ -n "$BEHIND" ] && [ "$BEHIND" -gt 0 ]; then
 fi
 
 # 3. Chezmoi-managed file/symlink drift (replaced files, broken links, etc.)
+# `chezmoi status` prints one line per drifted entry and always exits 0,
+# so we check whether its output is non-empty (`chezmoi diff` always exits 0
+# regardless of drift, so its exit code is useless here).
 if command -v chezmoi >/dev/null 2>&1; then
-	if ! chezmoi diff --exclude=scripts >/dev/null 2>&1; then
+	if [ -n "$(chezmoi status --exclude=scripts 2>/dev/null)" ]; then
 		MESSAGES+=("${COLOUR}chezmoi reports file drift (run: chezmoi diff)${NC}")
 	fi
 fi

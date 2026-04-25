@@ -12,6 +12,11 @@
 {{- if and (eq .chezmoi.os "darwin") (not .ci) }}
 set -uo pipefail
 
+# Ensure brew is on PATH (fresh-machine guard).
+if [ -x /opt/homebrew/bin/brew ] && ! command -v brew >/dev/null 2>&1; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
+
 DOTFILES="{{ .chezmoi.workingTree }}"
 
 if ! [ -t 0 ] && ! [ -t 1 ]; then

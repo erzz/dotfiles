@@ -8,8 +8,12 @@ if xcode-select -p >/dev/null 2>&1; then
   echo "==> Xcode CLT already installed"
 else
   echo "==> Installing Xcode Command Line Tools (this takes a while)..."
-  xcode-select --install
-  echo "Press any key once the Xcode CLT install has completed..."
-  read -r -n 1
+  echo "    A GUI installer will appear. This script will wait for it to finish."
+  xcode-select --install || true
+  # Poll instead of blocking on `read` so this works in non-tty contexts too.
+  while ! xcode-select -p >/dev/null 2>&1; do
+    sleep 10
+  done
+  echo "==> Xcode CLT installed"
 fi
 {{- end }}

@@ -56,8 +56,12 @@ jobs:
       - name: Second apply (must be no-op for files)
         run: |
           chezmoi apply --force --keep-going
-          if ! chezmoi diff --exclude=scripts | tee /tmp/diff.out | head -50 && [ ! -s /tmp/diff.out ]; then
+          # `chezmoi diff` always exits 0; check `chezmoi status` for drift.
+          drift="$(chezmoi status --exclude=scripts)"
+          if [ -n "$drift" ]; then
             echo "::error::chezmoi reports file drift after second apply"
+            echo "$drift"
+            chezmoi diff --exclude=scripts
             exit 1
           fi
 

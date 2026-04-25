@@ -15,6 +15,12 @@
 {{- if eq .chezmoi.os "darwin" }}
 set -euo pipefail
 
+# Ensure brew is on PATH even if this is the first apply on a fresh machine
+# (parent shell pre-dates the brew install in script 02).
+if [ -x /opt/homebrew/bin/brew ] && ! command -v brew >/dev/null 2>&1; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
+
 DOTFILES="{{ .chezmoi.workingTree }}"
 
 echo "==> Running brew bundle..."

@@ -3,8 +3,19 @@
 {{- if not .ci }}
 set -euo pipefail
 
+# Ensure brew is on PATH (fresh-machine guard).
+if [ -x /opt/homebrew/bin/brew ] && ! command -v brew >/dev/null 2>&1; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
+
 if ! command -v gh >/dev/null 2>&1; then
   echo "==> gh not found (should have been installed by brew bundle); skipping gh-dash"
+  exit 0
+fi
+
+# gh extension install requires authentication; skip cleanly if not signed in.
+if ! gh auth status >/dev/null 2>&1; then
+  echo "==> gh not authenticated; skipping gh-dash. Run 'gh auth login' then 'chezmoi apply'."
   exit 0
 fi
 

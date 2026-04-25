@@ -3,6 +3,11 @@
 {{- if eq .chezmoi.os "darwin" }}
 set -euo pipefail
 
+# Ensure brew is on PATH (fresh-machine guard).
+if [ -x /opt/homebrew/bin/brew ] && ! command -v brew >/dev/null 2>&1; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
+
 if ! command -v docker-buildx >/dev/null 2>&1; then
   echo "==> docker-buildx not found (should have been installed by brew bundle); skipping"
   exit 0
