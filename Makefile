@@ -1,122 +1,29 @@
-.PHONY: all bootstrap test brew brew-install colima direnv fnox ghostty gh-dash git mise mise-install mise-private npm nvim opencode os prettierd starship stow tmux xcode zed zellij zsh
+.PHONY: apply diff test update tools drift status
 
-# Full setup via bootstrap script
-all: bootstrap
+# Apply chezmoi state (idempotent)
+apply:
+	@chezmoi apply
 
-bootstrap:
-	@chmod +x bootstrap.sh
-	@./bootstrap.sh
+# Show pending changes
+diff:
+	@chezmoi diff
 
+# Run the test suite
 test:
-	@chmod +x test.sh
-	@./test.sh
+	@./tests/run.sh
 
-# ---------------------------------------------------------------------------
-# Individual targets (for "temporary machine" use or standalone setup)
-# Each target is idempotent and can be run independently.
-# Prerequisites: brew & stow must be available (run `make brew` first).
-# ---------------------------------------------------------------------------
+# Pull latest from git and apply
+update:
+	@chezmoi update
 
-brew: brew-install
-	@chmod +x brew/bundle.sh
-	@./brew/bundle.sh
+# Show chezmoi status
+status:
+	@chezmoi status
 
-brew-install: xcode
-	@chmod +x brew/install.sh
-	@./brew/install.sh
-
-xcode:
-	@xcode-select -p &>/dev/null || xcode-select --install
-
-# Config-only targets (stow --restow for convergence)
-direnv:
-	stow --restow direnv
-
-colima:
-	@mkdir -p "$(HOME)/.config/colima/default"
-	@if [ -d "$(HOME)/.colima" ] && [ ! -d "$(HOME)/.config/colima" ]; then \
-		colima stop 2>/dev/null || true; \
-		mv "$(HOME)/.colima" "$(HOME)/.config/colima"; \
-	fi
-	stow --restow colima
-
+# Run drift detection
 drift:
-	stow --restow drift
+	@./drift/detect.sh
 
-fnox:
-	stow --restow fnox
-
-ghostty:
-	stow --restow ghostty
-
-gh-dash:
-	stow --restow gh-dash
-	@if command -v gh &>/dev/null && ! gh extension list 2>/dev/null | grep -q "dlvhdr/gh-dash"; then \
-		gh extension install dlvhdr/gh-dash; \
-	fi
-
-git:
-	stow --restow git
-
-mise:
-	stow --restow mise
-
-mise-install: mise npm
-	@command -v mise &>/dev/null && mise install --yes || echo "mise not found - run 'make brew' first"
-
-mise-private: mise-install
-	@command -v mise &>/dev/null && mise install --yes "npm:@ingka-group-digital/skapa-design-system-mcp" "npm:@ingka-group-digital/workflows-mcp" || echo "Failed - ensure 1Password is authenticated and fnox is active (GH_TOKEN required)"
-
-npm:
-	stow --restow npm
-
-nvim:
-	stow --restow nvim
-	@if command -v nvim &>/dev/null; then \
-		echo "  Fetching vim.pack plugins..."; \
-		nvim --headless "+lua print('ok')" "+qa" >/dev/null 2>&1 || true; \
-		echo "  Installing treesitter parsers..."; \
-		nvim --headless "+lua require('nvim-treesitter').install({'lua','vim','vimdoc','query','go','gomod','gosum','typescript','tsx','javascript','python','terraform','hcl','yaml','json','markdown','markdown_inline','dockerfile','bash','java','regex','diff','gitcommit','gitignore','git_config','luadoc','toml','html','make'}):wait(180000)" "+qa" >/dev/null 2>&1 || true; \
-	else \
-		echo "  nvim not found - run 'make brew' first"; \
-	fi
-
-opencode:
-	stow --restow opencode
-
-os:
-	@chmod +x os/install.sh
-	@./os/install.sh
-
-prettierd:
-	stow --restow prettierd
-
-starship:
-	stow --restow starship
-
-stow:
-	stow --restow stow
-
-tmux:
-	stow --restow tmux
-	@if [ ! -d "$(HOME)/.tmux/plugins/tpm" ]; then \
-		git clone https://github.com/tmux-plugins/tpm "$(HOME)/.tmux/plugins/tpm"; \
-	fi
-	@if [ -x "$(HOME)/.tmux/plugins/tpm/bin/install_plugins" ]; then \
-		"$(HOME)/.tmux/plugins/tpm/bin/install_plugins"; \
-	fi
-
-zed:
-	stow --restow zed
-
-zellij:
-	stow --restow zellij
-
-zsh:
-	stow --restow zsh
-	@if [ ! -d "$(HOME)/.oh-my-zsh" ]; then \
-		sh -c "$$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc; \
-	fi
-	@if [ "$$(dscl . -read /Users/$$(whoami) UserShell | awk '{print $$2}')" != "/bin/zsh" ]; then \
-		chsh -s /bin/zsh; \
-	fi
+# Install optional/ad-hoc tools (driven by .chezmoidata.toml install.* flags)
+tools:
+	@chezmoi apply --force

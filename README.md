@@ -1,12 +1,12 @@
 # dotfiles
 
-macOS dotfiles managed with [GNU Stow](https://www.gnu.org/software/stow/) and [Homebrew](https://brew.sh/).
+macOS dotfiles managed with [chezmoi](https://www.chezmoi.io/) and [Homebrew](https://brew.sh/).
 
 ## Design principles
 
 1. **One command** to set up a new machine from scratch
-2. **Individual targets** to configure a single tool on a temporary machine
-3. **Idempotent** -- run at any time to converge back to the desired state
+2. **Idempotent** -- run `chezmoi apply` at any time to converge back to the desired state
+3. **Edit live** -- configs are symlinked from `$HOME` straight into the repo, so changes are captured by `git` (no `chezmoi add` ceremony)
 4. **No secrets** -- credentials managed by [fnox](https://github.com/jdx/fnox) + 1Password
 
 ## Quick start
@@ -17,88 +17,72 @@ On a brand new Mac, `git` isn't installed yet -- but typing `git` in Terminal pr
 git
 # Install Xcode CLI tools when prompted
 
-git clone https://github.com/erzz/dotfiles.git ~/dotfiles
-cd ~/dotfiles
-./bootstrap.sh
+# Install Homebrew + chezmoi
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+brew install chezmoi
+
+# One-line onboarding
+chezmoi init --apply erzz
 ```
 
-The bootstrap script runs five stages, each idempotent:
+That's it. `chezmoi init --apply` clones this repo to `~/.local/share/chezmoi`, generates `~/.config/chezmoi/chezmoi.toml` from the template, then runs every bootstrap script.
 
-| Stage | What it does |
-|-------|-------------|
-| 1. Prerequisites | Xcode CLT, Homebrew, `brew bundle` (installs everything) |
-| 2. Stow configs | `stow --restow` for all packages (convergent symlinks) |
-| 3. Shell setup | Oh My Zsh (if missing), set default shell to zsh |
-| 4. Tool activation | `mise install`, gh-dash extension, TPM + tmux plugins |
-| 5. macOS prefs | Skipped by default -- pass `--macos` to apply (requires reboot) |
+For full setup including macOS preferences (requires reboot):
 
 ```bash
-# Full setup including macOS preferences
-./bootstrap.sh --macos
-```
-
-## Individual targets
-
-Each tool can be set up independently via `make`. Useful for temporary machines where you only need a specific tool configured.
-
-```bash
-make git        # Stow git config
-make zsh        # Stow zsh config + install Oh My Zsh
-make npm        # Stow npm config
-make nvim       # Stow neovim config
-make tmux       # Stow tmux config + install TPM + plugins
-make ghostty    # Stow ghostty config
-make zed        # Stow zed config
-make starship   # Stow starship config
-make mise       # Stow mise config
-make fnox       # Stow fnox config
-make direnv     # Stow direnv config
-make prettierd  # Stow prettierd config
-make gh-dash    # Stow gh-dash config + install extension
-make opencode   # Stow opencode config
-make zellij     # Stow zellij config
-make os         # Apply macOS preferences
-make brew       # Install Homebrew + run brew bundle
-make mise-install  # Stow mise + npm configs, install public mise tools
-make mise-private  # Install private @ingka packages (requires 1Password auth)
+chezmoi init --apply erzz --promptBool macos=true
 ```
 
 ## How it works
 
-Each top-level directory is a **stow package** that mirrors `$HOME`. For example:
+Configs are deployed as **whole-directory symlinks** from `$HOME` into the repo's `configs/` directory. Edit a file in `~/.config/nvim/` and it shows up in `git status` immediately -- no resync step.
 
 ```
-git/.gitconfig        ->  ~/.gitconfig
-git/.config/git/ignore  ->  ~/.config/git/ignore
-zsh/.zshrc            ->  ~/.zshrc
-mise/.config/mise/config.toml  ->  ~/.config/mise/config.toml
+~/.zshrc                  ->  ~/.local/share/chezmoi/configs/... (single-file)
+~/.config/nvim            ->  ~/.local/share/chezmoi/configs/nvim (whole-dir)
+~/.config/opencode        ->  ~/.local/share/chezmoi/configs/opencode (whole-dir)
 ```
 
-**Tool installation** is handled by the Brewfile (single source of truth for all Homebrew-managed packages). **Runtime tools** (Node, Java, Terraform, etc.) are managed by [mise](https://mise.jdx.dev/). **Secrets** are injected at runtime by fnox via 1Password.
+Bootstrap stages live as scripts under `home/.chezmoiscripts/` and run automatically on `chezmoi apply`:
+
+| Stage | What it does |
+|-------|-------------|
+| Prerequisites | Xcode CLT, Homebrew, `brew bundle` |
+| Shell setup | Oh My Zsh (if missing), set default shell to zsh |
+| Tool activation | `mise install`, gh-dash extension, TPM + tmux plugins |
+| macOS prefs | Skipped by default -- pass `--promptBool macos=true` to `chezmoi init` |
+
+**Tool installation** is handled by the Brewfile (single source of truth for Homebrew-managed packages). **Runtime tools** (Node, Java, Terraform, etc.) are managed by [mise](https://mise.jdx.dev/). **Secrets** are injected at runtime by fnox via 1Password.
+
+## Common operations
+
+```bash
+make apply      # chezmoi apply (idempotent re-converge)
+make diff       # show pending changes
+make status     # chezmoi status
+make update     # git pull + apply
+make test       # run the test suite
+make drift      # check for drift vs declared state
+```
 
 ## What's included
 
-| Package | Description |
-|---------|-------------|
-| `brew` | Brewfile with CLI tools, casks, fonts, MAS apps, VS Code extensions |
+| Config | Description |
+|--------|-------------|
+| `colima` | Colima container runtime |
 | `direnv` | Per-directory environment variables |
-| `drift` | Background drift detection for dotfiles |
 | `fnox` | 1Password-backed credential injection |
 | `gh-dash` | GitHub CLI dashboard |
 | `ghostty` | Ghostty terminal config |
 | `git` | Git config with delta, aliases, osxkeychain credential helper |
 | `mise` | Runtime version manager (node, java, terraform, maven, fnox, MCP tools) |
-| `npm` | npm registry scopes for private @ingka packages |
 | `nvim` | Neovim 0.12 with native `vim.pack` (no framework) |
 | `opencode` | OpenCode AI assistant config |
-| `os` | macOS system preferences (Finder, Dock, screenshots, etc.) |
 | `prettierd` | Global prettier daemon config |
-| `starship` | Starship prompt theme |
-| `stow` | Stow global ignore rules |
-| `tmux` | tmux config with TPM, sesh, vim-tmux navigation |
 | `zed` | Zed editor config with MCP servers |
 | `zellij` | Zellij terminal multiplexer config |
-| `zsh` | Zsh config with Oh My Zsh, zplug, mise, fnox, direnv, starship, zoxide |
+
+Plus single-file configs: `.zshrc`, `.gitconfig`, `.tmux.conf`, `.npmrc`, and `~/.config/starship.toml`.
 
 ## Acknowledgements
 
