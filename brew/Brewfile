@@ -17,6 +17,7 @@ brew "bfg"
 brew "binutils"
 brew "btop"
 brew "ccache"
+brew "chezmoi"
 brew "colima", restart_service: true
 brew "coreutils"
 brew "curl"
