@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
-# Run brew bundle. The Brewfile contents are interpolated into a comment
-# below so that this script's hash changes whenever the Brewfile changes,
-# triggering chezmoi to re-run it (run_onchange_ semantics).
+# Run brew bundle for the main (non-MAS) Brewfile. The Brewfile contents are
+# interpolated into a comment below so this script's hash changes whenever
+# the Brewfile changes, triggering chezmoi to re-run it (run_onchange_).
+#
+# Mac App Store apps live in Brewfile.mas and are handled by script 04
+# (which only runs interactively, since `mas` requires a tty for sudo).
 #
 # Brewfile hash:
 {{- if .ci }}
@@ -10,7 +13,7 @@
 # {{ output "sha256sum" (joinPath .chezmoi.workingTree "brew" "Brewfile") }}
 {{- end }}
 {{- if eq .chezmoi.os "darwin" }}
-set -uo pipefail
+set -euo pipefail
 
 DOTFILES="{{ .chezmoi.workingTree }}"
 
@@ -20,14 +23,5 @@ brew bundle --file "${DOTFILES}/brew/Brewfile.ci"
 {{- else -}}
 brew bundle --file "${DOTFILES}/brew/Brewfile"
 {{- end }}
-status=$?
 brew cleanup || true
-
-if [ $status -ne 0 ]; then
-  echo ""
-  echo "==> WARN: brew bundle reported failures (often Mac App Store apps needing sudo or login)."
-  echo "    Log into the App Store, then run: chezmoi apply"
-  # Exit 0 so chezmoi marks the script as run; rerun by editing the Brewfile or via 'chezmoi state delete-bucket --bucket=scriptState'.
-fi
-exit 0
 {{- end }}

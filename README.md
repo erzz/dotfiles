@@ -52,7 +52,7 @@ Bootstrap stages live as scripts under `home/.chezmoiscripts/` and run automatic
 | Tool activation | `mise install`, gh-dash extension, TPM + tmux plugins |
 | macOS prefs | Skipped by default -- pass `--promptBool macos=true` to `chezmoi init` |
 
-**Tool installation** is handled by the Brewfile (single source of truth for Homebrew-managed packages). **Runtime tools** (Node, Java, Terraform, etc.) are managed by [mise](https://mise.jdx.dev/). **Secrets** are injected at runtime by fnox via 1Password.
+**Tool installation** is handled by the Brewfile (single source of truth for Homebrew-managed packages). Mac App Store apps live in `brew/Brewfile.mas` and are installed by a separate script that only runs interactively (sign into App Store first). **Runtime tools** (Node, Java, Terraform, etc.) are managed by [mise](https://mise.jdx.dev/). **Secrets** are injected at runtime by fnox via 1Password.
 
 ## Common operations
 

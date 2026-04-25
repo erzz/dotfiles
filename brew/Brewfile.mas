@@ -1,0 +1,16 @@
+# <---------------------- APP STORE ---------------------->
+# Mac App Store apps. Requires:
+#   1. App Store sign-in (open App Store.app, log in with Apple ID).
+#   2. Each app must already be "purchased" (free or paid) on this Apple ID.
+#   3. An interactive terminal (sudo prompt for upgrades).
+#
+# Installed automatically by chezmoi script 04 when run from a tty.
+# Skipped silently in non-interactive runs (CI, ssh-without-tty, etc.).
+
+mas "ColorSlurp", id: 1287239339
+mas "DockLock Lite", id: 6741814079
+mas "iStatistica", id: 1025822138
+mas "Pastel", id: 413897608
+mas "Spark Desktop", id: 6445813049
+mas "Step Two", id: 1448916662
+mas "Things", id: 904280696

@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# Install Mac App Store apps from Brewfile.mas.
+#
+# Why a separate script: `mas` requires an interactive terminal because
+# upgrades of already-installed MAS apps invoke sudo to write into
+# /Applications. In a non-interactive `chezmoi apply` (CI, ssh, automation)
+# sudo can't prompt and brew bundle aborts. So we detect a tty and skip
+# cleanly when there isn't one.
+#
+# Re-runs whenever Brewfile.mas changes (run_onchange_ keyed on hash below):
+# {{ output "sha256sum" (joinPath .chezmoi.workingTree "brew" "Brewfile.mas") }}
+{{- if and (eq .chezmoi.os "darwin") (not .ci) }}
+set -uo pipefail
+
+DOTFILES="{{ .chezmoi.workingTree }}"
+
+if ! [ -t 0 ] && ! [ -t 1 ]; then
+  echo "==> Skipping MAS apps (no tty). Re-run 'chezmoi apply' in a terminal."
+  exit 0
+fi
+
+if ! command -v mas >/dev/null 2>&1; then
+  echo "==> mas not found (should be installed by main Brewfile); skipping MAS apps"
+  exit 0
+fi
+
+# mas account was removed in macOS 12+; check sign-in via mas list working.
+if ! mas list >/dev/null 2>&1; then
+  echo "==> Not signed into App Store. Open App Store.app, sign in, then re-run."
+  exit 0
+fi
+
+echo "==> Running brew bundle for MAS apps..."
+brew bundle --file "${DOTFILES}/brew/Brewfile.mas"
+status=$?
+
+if [ $status -ne 0 ]; then
+  echo ""
+  echo "==> WARN: brew bundle (MAS) reported failures."
+  echo "    Common causes:"
+  echo "      - App not 'purchased' on this Apple ID (open App Store and 'Get' it once)"
+  echo "      - Sudo prompt dismissed (re-run in a terminal that can prompt)"
+fi
+exit 0
+{{- end }}
