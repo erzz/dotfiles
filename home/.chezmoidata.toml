@@ -8,3 +8,23 @@ macos = false
 # Skip auth-dependent steps (mise private packages, gh-dash extension, chsh).
 # CI runners set this true; humans leave it false.
 ci = false
+
+# Optional tool installation for borrowed/temporary machines.
+# When true, run script 98 to install a minimal essentials set via brew without
+# requiring the full Brewfile run. Safe to leave false on owned machines (the
+# Brewfile already installs everything).
+[install]
+optional_tools = false
+
+# Individual tool toggles (only consulted when install.optional_tools = true).
+[install.tools]
+nvim = true
+tmux = true
+starship = true
+mise = true
+fzf = true
+zoxide = true
+ripgrep = true
+fd = true
+bat = true
+eza = true

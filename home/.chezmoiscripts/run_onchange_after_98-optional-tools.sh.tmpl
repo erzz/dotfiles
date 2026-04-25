@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+# Optional ad-hoc tool installer for borrowed/temporary machines.
+#
+# Skipped unless install.optional_tools = true in chezmoi data.
+# When enabled, installs the subset of tools toggled in [install.tools].
+# Each tool is installed only if missing (idempotent) and only if brew is available.
+{{- if .install.optional_tools }}
+set -euo pipefail
+
+if ! command -v brew >/dev/null 2>&1; then
+  echo "==> brew not found; skipping optional tools (run script 02-homebrew first)"
+  exit 0
+fi
+
+install_if_missing() {
+  local cmd="$1" formula="$2"
+  if command -v "$cmd" >/dev/null 2>&1; then
+    echo "==> $cmd already installed"
+  else
+    echo "==> Installing $formula..."
+    brew install "$formula"
+  fi
+}
+
+{{- if .install.tools.nvim }}
+install_if_missing nvim neovim
+{{- end }}
+{{- if .install.tools.tmux }}
+install_if_missing tmux tmux
+{{- end }}
+{{- if .install.tools.starship }}
+install_if_missing starship starship
+{{- end }}
+{{- if .install.tools.mise }}
+install_if_missing mise mise
+{{- end }}
+{{- if .install.tools.fzf }}
+install_if_missing fzf fzf
+{{- end }}
+{{- if .install.tools.zoxide }}
+install_if_missing zoxide zoxide
+{{- end }}
+{{- if .install.tools.ripgrep }}
+install_if_missing rg ripgrep
+{{- end }}
+{{- if .install.tools.fd }}
+install_if_missing fd fd
+{{- end }}
+{{- if .install.tools.bat }}
+install_if_missing bat bat
+{{- end }}
+{{- if .install.tools.eza }}
+install_if_missing eza eza
+{{- end }}
+
+echo "==> Optional tools complete"
+{{- end }}
