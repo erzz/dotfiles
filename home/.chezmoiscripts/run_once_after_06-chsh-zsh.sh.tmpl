@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Set zsh as the default login shell. Skipped in CI (requires password).
+{{- if and (eq .chezmoi.os "darwin") (not .ci) }}
+set -euo pipefail
+
+if [ "$(dscl . -read /Users/"$(whoami)" UserShell | awk '{print $2}')" = "/bin/zsh" ]; then
+  echo "==> Default shell is already zsh"
+else
+  echo "==> Changing default shell to zsh..."
+  chsh -s /bin/zsh
+fi
+{{- end }}

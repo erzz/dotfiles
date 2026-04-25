@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# Run brew bundle. The Brewfile contents are interpolated into a comment
+# below so that this script's hash changes whenever the Brewfile changes,
+# triggering chezmoi to re-run it (run_onchange_ semantics).
+#
+# Brewfile hash:
+{{- if .ci }}
+# {{ output "sha256sum" (joinPath .chezmoi.workingTree "brew" "Brewfile.ci") }}
+{{- else }}
+# {{ output "sha256sum" (joinPath .chezmoi.workingTree "brew" "Brewfile") }}
+{{- end }}
+{{- if eq .chezmoi.os "darwin" }}
+set -uo pipefail
+
+DOTFILES="{{ .chezmoi.workingTree }}"
+
+echo "==> Running brew bundle..."
+{{ if .ci -}}
+brew bundle --file "${DOTFILES}/brew/Brewfile.ci"
+{{- else -}}
+brew bundle --file "${DOTFILES}/brew/Brewfile"
+{{- end }}
+status=$?
+brew cleanup || true
+
+if [ $status -ne 0 ]; then
+  echo ""
+  echo "==> WARN: brew bundle reported failures (often Mac App Store apps needing sudo or login)."
+  echo "    Log into the App Store, then run: chezmoi apply"
+  # Exit 0 so chezmoi marks the script as run; rerun by editing the Brewfile or via 'chezmoi state delete-bucket --bucket=scriptState'.
+fi
+exit 0
+{{- end }}

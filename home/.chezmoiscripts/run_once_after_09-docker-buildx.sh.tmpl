@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Link Homebrew's docker-buildx into Docker's CLI plugins dir.
+{{- if eq .chezmoi.os "darwin" }}
+set -euo pipefail
+
+if ! command -v docker-buildx >/dev/null 2>&1; then
+  echo "==> docker-buildx not found (should have been installed by brew bundle); skipping"
+  exit 0
+fi
+
+mkdir -p "${HOME}/.docker/cli-plugins"
+ln -sfn "$(brew --prefix)/bin/docker-buildx" "${HOME}/.docker/cli-plugins/docker-buildx"
+echo "==> docker-buildx CLI plugin linked"
+{{- end }}

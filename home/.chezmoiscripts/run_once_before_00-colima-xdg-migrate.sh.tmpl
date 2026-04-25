@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Migrate legacy ~/.colima to XDG ~/.config/colima.
+# Runs once per machine, before files are applied (so the symlink can be
+# created cleanly afterwards).
+{{- if eq .chezmoi.os "darwin" }}
+set -euo pipefail
+
+if [ -d "${HOME}/.colima" ] && [ ! -L "${HOME}/.config/colima" ] && [ ! -d "${HOME}/.config/colima" ]; then
+  echo "==> Migrating Colima config to XDG path..."
+  command -v colima >/dev/null 2>&1 && colima stop 2>/dev/null || true
+  mv "${HOME}/.colima" "${HOME}/.config/colima"
+  echo "  Moved ~/.colima -> ~/.config/colima"
+fi
+{{- end }}

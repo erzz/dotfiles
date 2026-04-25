@@ -3,7 +3,7 @@ COLOUR='\033[0;33m' # Yellow-ish
 NC='\033[0m'        # No Color
 DRIFT_FLAG="/tmp/dotfiles-drift"
 
-cd ~/dotfiles || return
+cd ~/.local/share/chezmoi || return
 
 git fetch -q
 

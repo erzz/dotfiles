@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# Install mise-managed tools (public packages only).
+# Re-runs whenever ~/.config/mise/config.toml changes (its hash is below).
+#
+# mise config hash:
+# {{ output "sha256sum" (joinPath .chezmoi.workingTree "configs" "mise" "config.toml") }}
+{{- if not .ci }}
+set -euo pipefail
+
+if ! command -v mise >/dev/null 2>&1; then
+  echo "==> mise not found (should have been installed by brew bundle); skipping"
+  exit 0
+fi
+
+echo "==> Installing mise-managed tools (public only)..."
+mise install --yes fnox java node "npm:@playwright/mcp" terraform maven "npm:mcp-remote"
+echo "  Private @ingka packages skipped — authenticate 1Password + fnox, then run: make mise-private"
+{{- else }}
+echo "==> CI mode — skipping mise install (requires auth for private packages)"
+{{- end }}

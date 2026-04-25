@@ -1,0 +1,10 @@
+# Default data values, overridable per-machine via:
+#   chezmoi apply --data='{"macos":true}'
+# or by editing ~/.config/chezmoi/chezmoi.toml [data] section.
+
+# Apply macOS preferences (os/install.sh). Default off; opt in per machine.
+macos = false
+
+# Skip auth-dependent steps (mise private packages, gh-dash extension, chsh).
+# CI runners set this true; humans leave it false.
+ci = false

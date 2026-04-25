@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# Install Xcode Command Line Tools (macOS only, interactive on first run).
+# Skipped in CI — GitHub macOS runners ship with CLT.
+{{- if and (eq .chezmoi.os "darwin") (not .ci) }}
+set -euo pipefail
+
+if xcode-select -p >/dev/null 2>&1; then
+  echo "==> Xcode CLT already installed"
+else
+  echo "==> Installing Xcode Command Line Tools (this takes a while)..."
+  xcode-select --install
+  echo "Press any key once the Xcode CLT install has completed..."
+  read -r -n 1
+fi
+{{- end }}

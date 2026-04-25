@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# Apply macOS preferences (gated). Opt in by setting `macos = true` in
+# ~/.config/chezmoi/chezmoi.toml [data] section, or via:
+#   chezmoi apply --data='{"macos":true}'
+#
+# Re-runs whenever os/install.sh changes (hash below).
+#
+# os/install.sh hash:
+# {{ output "sha256sum" (joinPath .chezmoi.workingTree "os" "install.sh") }}
+{{- if and (eq .chezmoi.os "darwin") .macos }}
+set -euo pipefail
+
+DOTFILES="{{ .chezmoi.workingTree }}"
+chmod +x "${DOTFILES}/os/install.sh"
+"${DOTFILES}/os/install.sh"
+echo ""
+echo "==> WARN: A reboot is recommended for macOS preference changes to take effect."
+{{- else }}
+echo "==> macOS preferences skipped (set macos=true in chezmoi data to enable)"
+{{- end }}
