@@ -16,7 +16,10 @@ DRIFT_FLAG="/tmp/dotfiles-drift"
 REPO="${HOME}/.local/share/chezmoi"
 cd "${REPO}" || return
 
-git fetch -q
+# Never block on auth prompts: this script runs in the background from
+# zsh's precmd hook, and a tty-input prompt would suspend the shell.
+export GIT_TERMINAL_PROMPT=0
+git fetch -q </dev/null 2>/dev/null || true
 
 MESSAGES=()
 
