@@ -73,6 +73,64 @@ make test       # run the test suite
 make drift      # check for drift vs declared state
 ```
 
+### Adding a new config
+
+The repo's `configs/<name>/` dir holds the *real* content; `home/dot_config/symlink_<name>.tmpl` points `~/.config/<name>` at it. To bring a new tool's config into management:
+
+**Whole directory** (e.g. `~/.config/newtool/`):
+
+```bash
+# 1. Move the live config into the repo.
+mv ~/.config/newtool ~/.local/share/chezmoi/configs/newtool
+
+# 2. Create the symlink template.
+cat > ~/.local/share/chezmoi/home/dot_config/symlink_newtool.tmpl <<'EOF'
+{{ .chezmoi.workingTree }}/configs/newtool
+EOF
+
+# 3. Apply (creates ~/.config/newtool -> configs/newtool symlink).
+chezmoi apply
+
+# 4. Verify it's symlinked, then commit.
+ls -la ~/.config/newtool
+cd ~/.local/share/chezmoi && git add -A && git commit -m "feat: add newtool config"
+```
+
+**Single file in `$HOME`** (e.g. `~/.foorc`):
+
+```bash
+# 1. Move into source dir with the dot_ prefix chezmoi expects.
+mv ~/.foorc ~/.local/share/chezmoi/home/dot_foorc
+
+# 2. Apply and commit.
+chezmoi apply
+cd ~/.local/share/chezmoi && git add -A && git commit -m "feat: add foorc"
+```
+
+**Single file under `~/.config/`** (e.g. `~/.config/bar.toml`):
+
+```bash
+mv ~/.config/bar.toml ~/.local/share/chezmoi/home/dot_config/bar.toml
+chezmoi apply
+cd ~/.local/share/chezmoi && git add -A && git commit -m "feat: add bar.toml"
+```
+
+After the symlink exists, you edit the live file (`~/.config/newtool/foo.lua`) directly and `git status` in the repo picks up the change — no resync.
+
+### Adding a brew package
+
+Edit `brew/Brewfile`, then:
+
+```bash
+chezmoi apply  # script 03's run_onchange_ detects the Brewfile hash change and re-runs brew bundle
+```
+
+(Or `brew bundle --file ~/.local/share/chezmoi/brew/Brewfile` directly — same result.)
+
+### Adding a mise tool
+
+Edit `~/.config/mise/config.toml` (which is symlinked into the repo at `configs/mise/config.toml`), then `chezmoi apply` re-runs `mise install --yes`. No script edit needed.
+
 ## What's included
 
 | Config | Description |
