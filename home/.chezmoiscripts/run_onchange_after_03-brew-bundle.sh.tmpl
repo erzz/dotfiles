@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
-# Run brew bundle for the main (non-MAS) Brewfile. The Brewfile contents are
-# interpolated into a comment below so this script's hash changes whenever
-# the Brewfile changes, triggering chezmoi to re-run it (run_onchange_).
+# Run brew bundle. The Brewfile contents are interpolated into a comment below
+# so this script's hash changes whenever the Brewfile changes, triggering
+# chezmoi to re-run it (run_onchange_).
 #
-# Mac App Store apps live in Brewfile.mas and are handled by script 04
-# (which only runs interactively, since `mas` requires a tty for sudo).
+# The Brewfile now includes Mac App Store apps via `mas`. `mas` upgrades of
+# already-installed apps invoke sudo to write into /Applications, which can't
+# prompt without a tty. In non-interactive contexts we pass --no-upgrade to
+# brew bundle so MAS lines just skip-or-install rather than upgrade.
 #
 # Brewfile hash:
 {{- if .ci }}
@@ -13,21 +15,35 @@
 # {{ output "sha256sum" (joinPath .chezmoi.workingTree "brew" "Brewfile") }}
 {{- end }}
 {{- if eq .chezmoi.os "darwin" }}
-set -euo pipefail
+set -uo pipefail
 
-# Ensure brew is on PATH even if this is the first apply on a fresh machine
-# (parent shell pre-dates the brew install in script 02).
+# Ensure brew is on PATH even if the parent shell predates the brew install
+# (e.g. running chezmoi apply directly without sourcing a new shell first).
 if [ -x /opt/homebrew/bin/brew ] && ! command -v brew >/dev/null 2>&1; then
   eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
 DOTFILES="{{ .chezmoi.workingTree }}"
 
+# Detect interactive tty for MAS upgrade safety.
+BUNDLE_FLAGS=()
+if ! [ -t 0 ] || ! [ -t 1 ]; then
+  echo "==> Non-interactive run; passing --no-upgrade to skip MAS sudo prompts"
+  BUNDLE_FLAGS+=("--no-upgrade")
+fi
+
 echo "==> Running brew bundle..."
 {{ if .ci -}}
-brew bundle --file "${DOTFILES}/brew/Brewfile.ci"
+brew bundle "${BUNDLE_FLAGS[@]}" --file "${DOTFILES}/brew/Brewfile.ci"
 {{- else -}}
-brew bundle --file "${DOTFILES}/brew/Brewfile"
+brew bundle "${BUNDLE_FLAGS[@]}" --file "${DOTFILES}/brew/Brewfile" || {
+  echo ""
+  echo "==> WARN: brew bundle reported failures."
+  echo "    Common causes:"
+  echo "      - MAS app not 'purchased' on this Apple ID (open App Store and 'Get' it once)"
+  echo "      - Sudo prompt dismissed (re-run from a tty)"
+  echo "      - App Store not signed in"
+}
 {{- end }}
 brew cleanup || true
 {{- end }}
