@@ -1,94 +1,68 @@
 # dotfiles
 
-macOS dotfiles managed with [chezmoi](https://www.chezmoi.io/) and [Homebrew](https://brew.sh/).
+macOS dotfiles managed with [chezmoi](https://www.chezmoi.io/) and [Homebrew](https://brew.sh/), orchestrated by a single `bootstrap.sh`.
 
 ## Design principles
 
 1. **One command** to set up a new machine from scratch
-2. **Idempotent** -- run `chezmoi apply` at any time to converge back to the desired state
-3. **Edit live** -- configs are symlinked from `$HOME` straight into the repo, so changes are captured by `git` (no `chezmoi add` ceremony)
-4. **No secrets** -- credentials managed by [fnox](https://github.com/jdx/fnox) + 1Password
+2. **Idempotent** — re-run anything at any time, only missing work is done
+3. **Edit live** — configs are symlinked from `$HOME` straight into the repo, so changes are captured by `git` (no `chezmoi add` ceremony)
+4. **No secrets in git** — sensitive registry details pulled from 1Password at apply time; runtime credentials injected by [fnox](https://github.com/jdx/fnox)
 
 ## Quick start
 
-This repo is private, so the bootstrap needs GitHub authentication before
-chezmoi can clone it. The cleanest path on a brand new Mac is:
+On a brand new Mac:
 
 ```bash
-# 1. Xcode Command Line Tools (Homebrew will trigger this for you if you
-#    skip it; this just gets it out of the way first).
-xcode-select --install
-
-# 2. Homebrew. The installer prompts for your sudo password.
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-eval "$(/opt/homebrew/bin/brew shellenv)"
-
-# 3. gh + chezmoi.
-brew install gh chezmoi
-
-# 4. Sign into GitHub. Opens your browser, asks you to paste an 8-char code,
-#    then stores a token that gh and git both reuse.
-gh auth login --hostname github.com --git-protocol https --web
-
-# 5. The actual bootstrap. Clones this private repo using gh's token,
-#    generates ~/.config/chezmoi/chezmoi.toml, then runs every script
-#    (brew bundle, oh-my-zsh, mise install, tmux plugins, etc.).
-chezmoi init --apply erzz
+xcode-select --install   # if missing
+curl -fsSL https://raw.githubusercontent.com/erzz/dotfiles/main/bootstrap.sh | bash
 ```
 
-You'll see one more interactive prompt during step 5: **`chsh` asks for your
-password** to set zsh as your default shell.
+That's it. `bootstrap.sh` orchestrates everything and pauses at the small handful of moments that genuinely need a human (signing in to 1Password, toggling the CLI integration, signing in to App Store, authorising `gh`). Total time: ~15-20 minutes, mostly waiting for `brew bundle` to download apps.
 
-For full setup including macOS preferences (Finder, Dock, screenshots, etc.;
-requires a reboot to take effect):
+To enable macOS preferences too (Finder, Dock, screenshots, etc. — requires reboot):
 
 ```bash
-chezmoi init --apply erzz --promptBool macos=true
+chezmoi apply --data='{"macos":true}'
 ```
 
-### Why 5 commands instead of 1?
+## Architecture
 
-A truly single-command bootstrap (`sh -c "$(curl ...)" -- init --apply erzz`)
-only works for **public** repos, because the chezmoi binary needs to clone
-this repo before any of our scripts run — and an anonymous clone of a
-private repo fails. Authenticating with `gh auth login` first means chezmoi
-(and every subsequent `git pull`) reuses gh's stored token automatically;
-`gh auth login` also configures `gh auth git-credential` as git's credential
-helper, which is what `home/dot_gitconfig` expects.
+The setup is layered. Each layer can be re-run independently and is idempotent.
 
-### After bootstrap
+| Layer | What | Driven by |
+|-------|------|-----------|
+| 1. Prerequisites | Xcode CLT, Homebrew, bootstrap brew packages (1password, op, gh, chezmoi) | `bootstrap.sh` Phase 1 |
+| 2. Identity | 1Password sign-in + CLI integration, gh auth, App Store sign-in | `bootstrap.sh` Phase 2 (interactive pauses) |
+| 3. Configs | Symlinks from `$HOME` to `configs/`, templated dotfiles, brew bundle, mise install, tmux plugins, optional macOS prefs | `chezmoi apply` (invoked from `bootstrap.sh` Phase 3, or run directly thereafter) |
+| 4. Finalisers | Oh My Zsh, chsh, gh-dash extension, docker-buildx symlink, TPM, tmux plugin install | `bootstrap.sh` Phase 4 |
 
-Open a new terminal so `~/.zshrc` is sourced (puts brew, mise, fnox on PATH).
-Then sign into the remaining auth-gated services:
+After bootstrap, day-to-day you only ever touch Layer 3:
 
-- **App Store** — required for `mas` to install the apps in `Brewfile.mas`.
-  Run `chezmoi apply` again afterwards to pick them up.
-- **1Password.app** + enable "Integrate with 1Password CLI" in Settings →
-  Developer — required for fnox to inject secrets (`GH_TOKEN`, etc.) into
-  your shell.
-- **gh-dash extension** — `chezmoi apply` will install it automatically once
-  gh is authenticated (which step 4 above already did).
+- **Edit a config**: change the file in-place (it's a symlink into the repo). Commit when ready.
+- **Add a brew package**: edit `brew/Brewfile` → `chezmoi apply` (script 03 detects the hash change, re-runs `brew bundle`).
+- **Add a mise tool**: edit `~/.config/mise/config.toml` → `chezmoi apply` re-runs `mise install --yes`.
+- **Pull from another machine**: `make update` (= `chezmoi update`).
 
-## How it works
-
-Configs are deployed as **whole-directory symlinks** from `$HOME` into the repo's `configs/` directory. Edit a file in `~/.config/nvim/` and it shows up in `git status` immediately -- no resync step.
+### How configs are deployed
 
 ```
-~/.zshrc                  ->  ~/.local/share/chezmoi/configs/... (single-file)
-~/.config/nvim            ->  ~/.local/share/chezmoi/configs/nvim (whole-dir)
-~/.config/opencode        ->  ~/.local/share/chezmoi/configs/opencode (whole-dir)
+~/.zshrc                  ->  ~/.local/share/chezmoi/configs/zsh/zshrc (single-file symlink)
+~/.config/nvim            ->  ~/.local/share/chezmoi/configs/nvim     (whole-dir symlink)
+~/.config/opencode        ->  ~/.local/share/chezmoi/configs/opencode (whole-dir symlink)
 ```
 
-Bootstrap stages live as scripts under `home/.chezmoiscripts/` and run automatically on `chezmoi apply`:
+`home/dot_config/symlink_<name>.tmpl` files describe the symlink target; `configs/<name>/` holds the real content. Edit a file in `~/.config/nvim/` and `git status` in the repo picks it up immediately — no resync.
 
-| Stage | What it does |
-|-------|-------------|
-| Prerequisites | Xcode CLT, Homebrew, `brew bundle` |
-| Shell setup | Oh My Zsh (if missing), set default shell to zsh |
-| Tool activation | `mise install`, gh-dash extension, TPM + tmux plugins |
-| macOS prefs | Skipped by default -- pass `--promptBool macos=true` to `chezmoi init` |
+### Why a `bootstrap.sh` and not just chezmoi?
 
-**Tool installation** is handled by the Brewfile (single source of truth for Homebrew-managed packages). Mac App Store apps live in `brew/Brewfile.mas` and are installed by a separate script that only runs interactively (sign into App Store first). **Runtime tools** (Node, Java, Terraform, etc.) are managed by [mise](https://mise.jdx.dev/). **Secrets** are injected at runtime by fnox via 1Password.
+chezmoi is excellent at config files but its `run_*` scripts have ordering and credential constraints that don't fit the **prerequisites → identity → configs** flow naturally:
+
+- chezmoi clones the repo *before* any script runs, so it can't bootstrap GitHub auth itself.
+- 1Password CLI integration (needed for templated `dot_npmrc.tmpl` to use `onepasswordRead`) requires a manual UI toggle.
+- App Store sign-in is inherently human.
+
+`bootstrap.sh` makes those interactive moments explicit and visible (one readable shell script vs. a dozen `run_once` scripts in execution order). chezmoi then handles what it's best at: declarative config state.
 
 ## Common operations
 
@@ -103,7 +77,7 @@ make drift      # check for drift vs declared state
 
 ### Adding a new config
 
-The repo's `configs/<name>/` dir holds the *real* content; `home/dot_config/symlink_<name>.tmpl` points `~/.config/<name>` at it. To bring a new tool's config into management:
+The repo's `configs/<name>/` directory holds the *real* content; `home/dot_config/symlink_<name>.tmpl` points `~/.config/<name>` at it. To bring a new tool's config into management:
 
 **Whole directory** (e.g. `~/.config/newtool/`):
 
@@ -127,10 +101,7 @@ cd ~/.local/share/chezmoi && git add -A && git commit -m "feat: add newtool conf
 **Single file in `$HOME`** (e.g. `~/.foorc`):
 
 ```bash
-# 1. Move into source dir with the dot_ prefix chezmoi expects.
 mv ~/.foorc ~/.local/share/chezmoi/home/dot_foorc
-
-# 2. Apply and commit.
 chezmoi apply
 cd ~/.local/share/chezmoi && git add -A && git commit -m "feat: add foorc"
 ```
@@ -143,17 +114,19 @@ chezmoi apply
 cd ~/.local/share/chezmoi && git add -A && git commit -m "feat: add bar.toml"
 ```
 
-After the symlink exists, you edit the live file (`~/.config/newtool/foo.lua`) directly and `git status` in the repo picks up the change — no resync.
+### Templated configs (1Password-backed)
+
+For configs that contain sensitive bits, give the file a `.tmpl` suffix and use `onepasswordRead`:
+
+```gotmpl
+{{ onepasswordRead "op://Employee/myitem/myfield" }}
+```
+
+`bootstrap.sh` Phase 2 guarantees the 1Password CLI is integrated before `chezmoi apply` runs, so these reads work on first apply. See `home/dot_npmrc.tmpl` for a real example.
 
 ### Adding a brew package
 
-Edit `brew/Brewfile`, then:
-
-```bash
-chezmoi apply  # script 03's run_onchange_ detects the Brewfile hash change and re-runs brew bundle
-```
-
-(Or `brew bundle --file ~/.local/share/chezmoi/brew/Brewfile` directly — same result.)
+Edit `brew/Brewfile`, then `chezmoi apply` (script 03 detects the hash change and re-runs `brew bundle`).
 
 ### Adding a mise tool
 
@@ -176,7 +149,7 @@ Edit `~/.config/mise/config.toml` (which is symlinked into the repo at `configs/
 | `zed` | Zed editor config with MCP servers |
 | `zellij` | Zellij terminal multiplexer config |
 
-Plus single-file configs: `.zshrc`, `.gitconfig`, `.tmux.conf`, `.npmrc`, and `~/.config/starship.toml`.
+Plus single-file configs: `.zshrc`, `.gitconfig`, `.tmux.conf`, `.npmrc` (templated), and `~/.config/starship.toml`.
 
 ## Acknowledgements
 
