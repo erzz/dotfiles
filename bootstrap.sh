@@ -94,7 +94,10 @@ else
 fi
 
 step "Homebrew"
-if command -v brew >/dev/null 2>&1; then
+# Check the binary path directly: a fresh shell on a new Mac may not have
+# brew on PATH yet (added by ~/.zprofile, which only sources for new login
+# shells). `command -v brew` would falsely report missing.
+if [ -x /opt/homebrew/bin/brew ] || [ -x /usr/local/bin/brew ]; then
   ok "already installed"
 else
   warn "installing (the installer will prompt for your sudo password)..."
@@ -102,7 +105,11 @@ else
   ok "installed"
 fi
 # Make brew available in this script's environment.
-eval "$(/opt/homebrew/bin/brew shellenv)"
+if [ -x /opt/homebrew/bin/brew ]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [ -x /usr/local/bin/brew ]; then
+  eval "$(/usr/local/bin/brew shellenv)"
+fi
 brew analytics off >/dev/null 2>&1 || true
 
 step "Bootstrap brew packages (1password, 1password-cli, gh, chezmoi)"
@@ -215,7 +222,12 @@ fi
 
 step "Apply chezmoi state (this triggers brew bundle, mise install, etc.)"
 warn "this can take ~10 minutes the first time (downloading apps)..."
-chezmoi apply --keep-going
+# --force: overwrite any pre-existing files in $HOME (e.g. macOS-default
+#   ~/.zshrc) that would otherwise cause chezmoi to prompt interactively
+#   and hang the bootstrap. Safe in a fresh-machine bootstrap context.
+# --keep-going: don't abort the whole apply on a single file/script error;
+#   surface warnings instead so the user can see what failed at the end.
+chezmoi apply --force --keep-going
 
 # ─────────────────────────────────────────────────────────────────────
 # Phase 4: finalisers (post-config setup)
@@ -269,8 +281,11 @@ TPM_DIR="${HOME}/.tmux/plugins/tpm"
 if [ -d "${TPM_DIR}" ]; then
   ok "already installed"
 else
-  git clone https://github.com/tmux-plugins/tpm "${TPM_DIR}"
-  ok "installed"
+  if git clone https://github.com/tmux-plugins/tpm "${TPM_DIR}" 2>&1; then
+    ok "installed"
+  else
+    warn "TPM clone failed — skipping (run 'git clone https://github.com/tmux-plugins/tpm ${TPM_DIR}' manually later)"
+  fi
 fi
 
 step "Tmux plugins"
