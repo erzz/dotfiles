@@ -33,10 +33,13 @@ if ! [ -t 0 ] || ! [ -t 1 ]; then
 fi
 
 echo "==> Running brew bundle..."
+# The "${arr[@]+"${arr[@]}"}" idiom safely expands an empty array under
+# `set -u` on macOS's stock bash 3.2, where bare "${arr[@]}" errors with
+# "unbound variable" if the array has no elements.
 {{ if .ci -}}
-brew bundle "${BUNDLE_FLAGS[@]}" --file "${DOTFILES}/brew/Brewfile.ci"
+brew bundle ${BUNDLE_FLAGS[@]+"${BUNDLE_FLAGS[@]}"} --file "${DOTFILES}/brew/Brewfile.ci"
 {{- else -}}
-brew bundle "${BUNDLE_FLAGS[@]}" --file "${DOTFILES}/brew/Brewfile" || {
+brew bundle ${BUNDLE_FLAGS[@]+"${BUNDLE_FLAGS[@]}"} --file "${DOTFILES}/brew/Brewfile" || {
   echo ""
   echo "==> WARN: brew bundle reported failures."
   echo "    Common causes:"
