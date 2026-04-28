@@ -22,6 +22,12 @@ GITHUB_USER="erzz"
 REPO_NAME="dotfiles"
 DOTFILES_DIR="${HOME}/.local/share/chezmoi"
 
+# Optional: override the branch chezmoi clones from. Useful for testing an
+# unmerged branch on a fresh machine before promoting it to main.
+#   BOOTSTRAP_BRANCH=chezmoi-migration ./bootstrap.sh
+# Leave unset for normal use (chezmoi will use the repo's default branch).
+BOOTSTRAP_BRANCH="${BOOTSTRAP_BRANCH:-}"
+
 BLUE='\033[1;34m'
 GREEN='\033[1;32m'
 YELLOW='\033[1;33m'
@@ -49,7 +55,12 @@ box() {
 }
 
 prompt_continue() {
-  printf '\n%bPress ENTER when done (or Ctrl-C to abort)...%b ' "${YELLOW}" "${NC}"
+  printf '\n%bPress ENTER to continue (or Ctrl-C to abort)...%b ' "${YELLOW}" "${NC}"
+  read -r _
+}
+
+prompt_done() {
+  printf '\n%bPress ENTER once you have done the above (or Ctrl-C to abort)...%b ' "${YELLOW}" "${NC}"
   read -r _
 }
 
@@ -123,7 +134,7 @@ else
     "come back here." \
     ""
   open -a "1Password" || warn "couldn't open 1Password.app — open it manually"
-  prompt_continue
+  prompt_done
 
   box "ACTION NEEDED: enable 1Password CLI integration" \
     "" \
@@ -172,7 +183,7 @@ else
     "Brewfile will warn but not fail." \
     ""
   open -a "App Store" || warn "couldn't open App Store.app — open it manually"
-  prompt_continue
+  prompt_done
 fi
 
 # ─────────────────────────────────────────────────────────────────────
@@ -184,9 +195,21 @@ phase "Phase 3: Configs (chezmoi apply)"
 step "Clone dotfiles repo"
 if [ -d "${DOTFILES_DIR}/.git" ]; then
   ok "repo already cloned at ${DOTFILES_DIR}"
+  if [ -n "${BOOTSTRAP_BRANCH}" ]; then
+    warn "BOOTSTRAP_BRANCH=${BOOTSTRAP_BRANCH} set but repo already cloned; checking out branch..."
+    git -C "${DOTFILES_DIR}" fetch origin "${BOOTSTRAP_BRANCH}"
+    git -C "${DOTFILES_DIR}" checkout "${BOOTSTRAP_BRANCH}"
+    git -C "${DOTFILES_DIR}" pull --ff-only origin "${BOOTSTRAP_BRANCH}"
+    ok "on branch ${BOOTSTRAP_BRANCH}"
+  fi
 else
-  warn "initialising chezmoi from github.com/${GITHUB_USER}/${REPO_NAME}..."
-  chezmoi init "${GITHUB_USER}"
+  if [ -n "${BOOTSTRAP_BRANCH}" ]; then
+    warn "initialising chezmoi from github.com/${GITHUB_USER}/${REPO_NAME} (branch: ${BOOTSTRAP_BRANCH})..."
+    chezmoi init --branch "${BOOTSTRAP_BRANCH}" "${GITHUB_USER}"
+  else
+    warn "initialising chezmoi from github.com/${GITHUB_USER}/${REPO_NAME}..."
+    chezmoi init "${GITHUB_USER}"
+  fi
   ok "cloned"
 fi
 
@@ -197,8 +220,13 @@ chezmoi apply --keep-going
 # ─────────────────────────────────────────────────────────────────────
 # Phase 4: finalisers (post-config setup)
 # ─────────────────────────────────────────────────────────────────────
+#
+# Best-effort: a failure here is annoying but not fatal — Phases 1-3 have
+# already produced a usable system. Disable -e for the duration so a single
+# step's exit code doesn't abort the whole bootstrap.
 
 phase "Phase 4: Finalisers"
+set +e
 
 step "Oh My Zsh"
 if [ -d "${HOME}/.oh-my-zsh" ]; then
@@ -246,11 +274,28 @@ else
 fi
 
 step "Tmux plugins"
+# install_plugins parses ~/.tmux.conf for `set -g @plugin '...'` lines and
+# fails hard with "FATAL: Tmux Plugin Manager not configured in tmux.conf"
+# if it can't find any. That can happen if chezmoi hasn't fully placed
+# ~/.tmux.conf yet, or if the user's conf doesn't use TPM. Treat as warning.
 TPM_INSTALL="${TPM_DIR}/bin/install_plugins"
-if [ -x "${TPM_INSTALL}" ]; then
-  "${TPM_INSTALL}" >/dev/null
-  ok "installed"
+if [ ! -x "${TPM_INSTALL}" ]; then
+  warn "TPM install script missing — skipping"
+elif ! [ -e "${HOME}/.tmux.conf" ]; then
+  # shellcheck disable=SC2088  # tilde here is just human-readable text
+  warn "~/.tmux.conf not present — skipping (run 'chezmoi apply' then prefix-I in tmux)"
+elif ! grep -qE "^\s*set\s+-g\s+@plugin" "${HOME}/.tmux.conf" 2>/dev/null; then
+  # shellcheck disable=SC2088
+  warn "no @plugin lines in ~/.tmux.conf — skipping"
+else
+  if "${TPM_INSTALL}" >/dev/null 2>&1; then
+    ok "installed"
+  else
+    warn "tmux plugin install reported failure — run prefix-I inside tmux to retry"
+  fi
 fi
+
+set -e
 
 # ─────────────────────────────────────────────────────────────────────
 # Done

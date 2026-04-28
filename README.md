@@ -26,6 +26,12 @@ To enable macOS preferences too (Finder, Dock, screenshots, etc. — requires re
 chezmoi apply --data='{"macos":true}'
 ```
 
+To test an unmerged branch on a fresh machine (chezmoi defaults to the repo's default branch otherwise):
+
+```bash
+BOOTSTRAP_BRANCH=my-branch ./bootstrap.sh
+```
+
 ## Architecture
 
 The setup is layered. Each layer can be re-run independently and is idempotent.
