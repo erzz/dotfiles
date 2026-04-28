@@ -1,26 +1,17 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "model": "github-copilot/claude-sonnet-4.6",
+  "plugin": ["@ramtinj95/opencode-tokenscope"],
   "default_agent": "engineer",
   "instructions": ["~/.config/opencode/AGENTS.md"],
   "mcp": {
     "skapa": {
       "type": "local",
-      "command": [
-        "mise",
-        "exec",
-        "--",
-        "skapa-design-system-mcp"
-      ]
+      "command": ["mise", "exec", "--", "skapa-design-system-mcp"]
     },
     "workflows": {
       "type": "local",
-      "command": [
-        "mise",
-        "exec",
-        "--",
-        "workflows-mcp"
-      ]
+      "command": ["mise", "exec", "--", "workflows-mcp"]
     }
   }
 }

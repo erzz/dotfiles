@@ -1,6 +1,9 @@
 # Just in case it lands in dotfiles by accident
 .localrc
 
+# tokenscope output (generated on demand, never committed)
+token-usage-output.txt
+
 # Runtime artifacts in symlinked config directories
 configs/opencode/node_modules/
 configs/opencode/package.json
