@@ -1,27 +1,111 @@
 name: Test Dotfiles
 on: push
+
 jobs:
   shellcheck:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: ShellCheck
-        uses: ludeeus/action-shellcheck@2.0.0
+      - uses: actions/checkout@v4
+      - uses: ludeeus/action-shellcheck@2.0.0
         with:
-          # shellcheck cannot parse zsh syntax (e.g. `&!` disown operator)
-          ignore_paths: zsh
+          # zsh syntax (e.g. `&!` disown) trips up shellcheck
+          ignore_paths: configs/zsh
 
-  test-all:
+  # Fast Linux container job: exercises file/symlink behaviour and
+  # idempotency without needing a macOS runner. Runs on every push.
+  test-linux:
+    runs-on: ubuntu-latest
+    container: archlinux:base-devel
+    timeout-minutes: 5
+    env:
+      HOME: /root
+    steps:
+      - name: Install prerequisites
+        run: |
+          pacman -Sy --noconfirm git chezmoi bash zsh tmux mise jq
+
+      - name: Checkout into chezmoi source location
+        uses: actions/checkout@v4
+        with:
+          path: chezmoi-source
+
+      - name: Move repo to chezmoi source dir
+        run: |
+          mkdir -p "$HOME/.local/share"
+          mv "${{ github.workspace }}/chezmoi-source" "$HOME/.local/share/chezmoi"
+
+      - name: Write chezmoi config (CI mode)
+        run: |
+          mkdir -p "$HOME/.config/chezmoi"
+          cat > "$HOME/.config/chezmoi/chezmoi.toml" <<EOF
+          mode = "symlink"
+
+          [diff]
+            exclude = ["scripts"]
+          [status]
+            exclude = ["scripts"]
+
+          [data]
+            macos = false
+            ci = true
+          EOF
+
+      - name: First apply
+        run: chezmoi apply --force --keep-going
+
+      - name: Second apply (must be no-op for files)
+        run: |
+          chezmoi apply --force --keep-going
+          # `chezmoi diff` always exits 0; check `chezmoi status` for drift.
+          drift="$(chezmoi status --exclude=scripts)"
+          if [ -n "$drift" ]; then
+            echo "::error::chezmoi reports file drift after second apply"
+            echo "$drift"
+            chezmoi diff --exclude=scripts
+            exit 1
+          fi
+
+      - name: Run test suite
+        run: bash tests/run.sh
+        working-directory: /root/.local/share/chezmoi
+
+  # Full macOS E2E: runs the full apply (brew, mise, etc.). Slow,
+  # so kept on the canonical job for merges to main.
+  test-macos:
     runs-on: macos-latest
     timeout-minutes: 30
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          path: chezmoi-source
 
-      - name: Bootstrap (CI mode)
-        run: ./bootstrap.sh --ci
+      - name: Install chezmoi
+        run: brew install chezmoi
 
-      - name: Verify outcome
-        run: ./test.sh
+      - name: Move repo to chezmoi source dir
+        run: |
+          mkdir -p "$HOME/.local/share"
+          mv "${{ github.workspace }}/chezmoi-source" "$HOME/.local/share/chezmoi"
+
+      - name: Write chezmoi config (CI mode)
+        run: |
+          mkdir -p "$HOME/.config/chezmoi"
+          cat > "$HOME/.config/chezmoi/chezmoi.toml" <<EOF
+          mode = "symlink"
+
+          [diff]
+            exclude = ["scripts"]
+          [status]
+            exclude = ["scripts"]
+
+          [data]
+            macos = false
+            ci = true
+          EOF
+
+      - name: First apply
+        run: chezmoi apply --force --keep-going
+
+      - name: Run test suite
+        run: bash tests/run.sh
+        working-directory: ~/.local/share/chezmoi

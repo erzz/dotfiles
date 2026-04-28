@@ -1,17 +1,20 @@
 # Just in case it lands in dotfiles by accident
 .localrc
 
-# Runtime artifacts
-opencode/.config/opencode/node_modules/
-opencode/.config/opencode/package.json
-opencode/.config/opencode/bun.lock
-opencode/.config/opencode/antigravity-accounts.json
-opencode/.config/opencode/antigravity-accounts.json.*.tmp
-opencode/.config/opencode/antigravity-signature-cache.json
-opencode/.config/opencode/antigravity-logs/
-tmux/.tmux/plugins/
-zed/.config/zed/.tmp*
-zed/.config/zed/conversations/
-zed/.config/zed/embeddings/
-zed/.config/zed/prompts/
-zed/.config/zed/settings_backup.json
+# tokenscope output (generated on demand, never committed)
+token-usage-output.txt
+
+# Runtime artifacts in symlinked config directories
+configs/opencode/node_modules/
+configs/opencode/package.json
+configs/opencode/package-lock.json
+configs/opencode/bun.lock
+configs/opencode/antigravity-accounts.json
+configs/opencode/antigravity-accounts.json.*.tmp
+configs/opencode/antigravity-signature-cache.json
+configs/opencode/antigravity-logs/
+configs/zed/.tmp*
+configs/zed/conversations/
+configs/zed/embeddings/
+configs/zed/prompts/
+configs/zed/settings_backup.json

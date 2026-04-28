@@ -1,0 +1,22 @@
+{{/*
+  npmrc with sensitive registry details pulled from 1Password at apply time.
+
+  Requires the 1Password CLI integration to be active (1Password.app →
+  Settings → Developer → "Integrate with 1Password CLI"). bootstrap.sh
+  guarantees that before chezmoi apply runs.
+
+  In CI we skip the op lookups entirely — the registries are only needed
+  for installing private @ingka packages, which CI doesn't do.
+
+  1Password item: op://Employee/ingka-npmrc/
+    org-scope        the @-prefixed npm scope for the internal registry
+    registry-host    hostname of the internal registry (no scheme, no path)
+    gh-org-scope     bare GitHub org name (template prepends @)
+*/ -}}
+{{- if .ci -}}
+# CI build — private @ingka registries omitted (no auth available).
+{{- else -}}
+{{ onepasswordRead "op://Employee/ingka-npmrc/org-scope" }}:registry=https://{{ onepasswordRead "op://Employee/ingka-npmrc/registry-host" }}
+@{{ onepasswordRead "op://Employee/ingka-npmrc/gh-org-scope" }}:registry=https://npm.pkg.github.com/
+//npm.pkg.github.com/:_authToken=${GH_TOKEN}
+{{- end }}

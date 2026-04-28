@@ -17,6 +17,7 @@ brew "bfg"
 brew "binutils"
 brew "btop"
 brew "ccache"
+brew "chezmoi"
 brew "colima", restart_service: true
 brew "coreutils"
 brew "curl"
@@ -30,6 +31,7 @@ brew "eza"
 brew "fastfetch"
 brew "fd"
 brew "flac"
+brew "fnox"
 brew "fzf"
 brew "gh"
 brew "git"
@@ -107,7 +109,6 @@ brew "sesh"
 brew "shellcheck"
 brew "shfmt"
 brew "starship"
-brew "stow"
 brew "terraformer"
 brew "tflint"
 brew "the_silver_searcher"
@@ -168,7 +169,7 @@ cask "font-ubuntu"
 cask "garmin-express"
 cask "ghostty"
 cask "google-chrome"
-cask "google-cloud-sdk"
+cask "gcloud-cli"
 cask "microsoft-auto-update"
 cask "microsoft-office"
 cask "microsoft-teams"
@@ -190,6 +191,11 @@ cask "whatsapp"
 cask "zed"
 
 # <---------------------- APP STORE ---------------------->
+# Mac App Store apps. Requires:
+#   1. App Store sign-in (handled by bootstrap.sh, Phase 2).
+#   2. Each app must already be "purchased" (free or paid) on this Apple ID.
+#   3. An interactive terminal (sudo prompt for upgrades) — guaranteed because
+#      bootstrap.sh runs interactively and chezmoi apply is invoked from within it.
 mas "ColorSlurp", id: 1287239339
 mas "DockLock Lite", id: 6741814079
 mas "iStatistica", id: 1025822138

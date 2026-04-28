@@ -1,248 +1,359 @@
 #!/usr/bin/env bash
+# bootstrap.sh — single-entry orchestrator for setting up a new Mac.
 #
-# bootstrap.sh - Idempotent setup for a new (or existing) macOS machine.
+# Run on a fresh machine:
+#   curl -fsSL https://raw.githubusercontent.com/erzz/dotfiles/main/bootstrap.sh | bash
 #
-# Usage:
-#   ./bootstrap.sh            # Full setup (skips macOS preferences)
-#   ./bootstrap.sh --macos    # Full setup + macOS preferences (requires reboot)
-#   ./bootstrap.sh --ci       # CI mode: formulae only, skip auth-dependent steps
+# Or, after cloning the repo manually:
+#   ./bootstrap.sh
 #
-# Safe to run repeatedly - every step is guarded or convergent.
+# The script is idempotent: re-running it skips anything already done. It
+# pauses at the small handful of steps that genuinely need a human (sign in
+# to 1Password, toggle the CLI integration, sign in to App Store, etc.).
 #
+# Architecture: this script handles Layer 1 (prerequisites) and Layer 2
+# (identity/credentials). It then hands off to chezmoi for Layer 3 (configs)
+# and a few `run_onchange` scripts (brew bundle, mise install, tmux plugins,
+# macOS prefs) which re-run when their inputs change.
+
 set -euo pipefail
 
-DOTFILES="$(cd "$(dirname "$0")" && pwd)"
-MACOS=false
-CI_MODE=false
+GITHUB_USER="erzz"
+REPO_NAME="dotfiles"
+DOTFILES_DIR="${HOME}/.local/share/chezmoi"
 
-for arg in "$@"; do
-	case "$arg" in
-	--macos) MACOS=true ;;
-	--ci) CI_MODE=true ;;
-	*)
-		echo "Unknown option: $arg"
-		exit 1
-		;;
-	esac
+# Optional: override the branch chezmoi clones from. Useful for testing an
+# unmerged branch on a fresh machine before promoting it to main.
+#   BOOTSTRAP_BRANCH=chezmoi-migration ./bootstrap.sh
+# Leave unset for normal use (chezmoi will use the repo's default branch).
+BOOTSTRAP_BRANCH="${BOOTSTRAP_BRANCH:-}"
+
+BLUE='\033[1;34m'
+GREEN='\033[1;32m'
+YELLOW='\033[1;33m'
+RED='\033[1;31m'
+NC='\033[0m'
+
+phase()   { printf '\n%b==> %s%b\n\n' "${BLUE}" "$*" "${NC}"; }
+step()    { printf '%b--> %s%b\n' "${BLUE}" "$*" "${NC}"; }
+ok()      { printf '%b    ✓ %s%b\n' "${GREEN}" "$*" "${NC}"; }
+warn()    { printf '%b    ! %s%b\n' "${YELLOW}" "$*" "${NC}"; }
+fail()    { printf '%b    ✗ %s%b\n' "${RED}" "$*" "${NC}"; exit 1; }
+
+box() {
+  local line
+  printf '%b┌─ %s ─' "${YELLOW}" "$1"
+  for ((i=${#1}; i<60; i++)); do printf '─'; done
+  printf '┐%b\n' "${NC}"
+  shift
+  for line in "$@"; do
+    printf '%b│%b %-62s %b│%b\n' "${YELLOW}" "${NC}" "$line" "${YELLOW}" "${NC}"
+  done
+  printf '%b└' "${YELLOW}"
+  for ((i=0; i<64; i++)); do printf '─'; done
+  printf '┘%b\n' "${NC}"
+}
+
+prompt_continue() {
+  printf '\n%bPress ENTER to continue (or Ctrl-C to abort)...%b ' "${YELLOW}" "${NC}"
+  read -r _
+}
+
+prompt_done() {
+  printf '\n%bPress ENTER once you have done the above (or Ctrl-C to abort)...%b ' "${YELLOW}" "${NC}"
+  read -r _
+}
+
+# ─────────────────────────────────────────────────────────────────────
+# Sanity
+# ─────────────────────────────────────────────────────────────────────
+
+if [ "$(uname -s)" != "Darwin" ]; then
+  fail "This bootstrap is for macOS only (got $(uname -s))."
+fi
+
+phase "macOS dotfiles bootstrap"
+echo "This will set up your Mac with brew, chezmoi, and the dotfiles repo."
+echo "It pauses when you need to sign in to something. Total time: ~15-20 min"
+echo "(most of which is brew bundle downloading apps in the background)."
+
+# ─────────────────────────────────────────────────────────────────────
+# Sudo: prompt once up-front and keep the timestamp alive for the whole
+# run. Many cask installers (DisplayLink, etc.) and the Homebrew installer
+# itself need sudo. Without keepalive, the macOS default ~5-min timeout
+# expires mid-bundle and prompts mid-flow, breaking the unattended feel.
+# ─────────────────────────────────────────────────────────────────────
+
+box "ACTION NEEDED: sudo password" \
+  "" \
+  "The bootstrap installs Homebrew and several casks that need" \
+  "admin rights. Entering your password once now means no more" \
+  "interruptions for the rest of the run." \
+  ""
+sudo -v
+# Background keepalive: refresh the sudo timestamp every 60s. Exits when
+# this script exits (via the EXIT trap) or if the parent dies.
+( while true; do sudo -n true; sleep 60; kill -0 "$$" 2>/dev/null || exit; done ) 2>/dev/null &
+SUDO_KEEPALIVE_PID=$!
+trap 'kill "${SUDO_KEEPALIVE_PID}" 2>/dev/null || true' EXIT
+ok "sudo cached; keepalive running (pid ${SUDO_KEEPALIVE_PID})"
+
+# ─────────────────────────────────────────────────────────────────────
+# Phase 1: prerequisites (automated where possible)
+# ─────────────────────────────────────────────────────────────────────
+
+phase "Phase 1: Prerequisites"
+
+step "Xcode Command Line Tools"
+if xcode-select -p >/dev/null 2>&1; then
+  ok "already installed"
+else
+  warn "installing — a GUI installer will appear; this script will wait for it."
+  xcode-select --install || true
+  while ! xcode-select -p >/dev/null 2>&1; do sleep 10; done
+  ok "installed"
+fi
+
+step "Homebrew"
+# Check the binary path directly: a fresh shell on a new Mac may not have
+# brew on PATH yet (added by ~/.zprofile, which only sources for new login
+# shells). `command -v brew` would falsely report missing.
+if [ -x /opt/homebrew/bin/brew ] || [ -x /usr/local/bin/brew ]; then
+  ok "already installed"
+else
+  warn "installing..."
+  # NONINTERACTIVE=1 skips Homebrew's "Press RETURN to continue" prompt;
+  # sudo is already cached above so no password prompt either.
+  NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  ok "installed"
+fi
+# Make brew available in this script's environment.
+if [ -x /opt/homebrew/bin/brew ]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [ -x /usr/local/bin/brew ]; then
+  eval "$(/usr/local/bin/brew shellenv)"
+fi
+brew analytics off >/dev/null 2>&1 || true
+
+step "Bootstrap brew packages (1password, 1password-cli, gh, chezmoi)"
+# We install only the packages needed to complete the rest of bootstrap.
+# Everything else comes from `brew bundle` later.
+for pkg in 1password 1password-cli gh chezmoi; do
+  if brew list "$pkg" >/dev/null 2>&1 || brew list --cask "$pkg" >/dev/null 2>&1; then
+    ok "$pkg already installed"
+  else
+    warn "installing $pkg..."
+    brew install "$pkg"
+  fi
 done
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-info() { printf '\033[1;34m==> %s\033[0m\n' "$1"; }
-ok() { printf '\033[1;32m  OK: %s\033[0m\n' "$1"; }
-warn() { printf '\033[1;33m  WARN: %s\033[0m\n' "$1"; }
+# ─────────────────────────────────────────────────────────────────────
+# Phase 2: identity (interactive — these need you)
+# ─────────────────────────────────────────────────────────────────────
 
-# ---------------------------------------------------------------------------
-# Stage 1: Prerequisites
-# ---------------------------------------------------------------------------
-info "Stage 1: Prerequisites"
+phase "Phase 2: Identity"
 
-# Xcode Command Line Tools (skip in CI — runners have CLT pre-installed)
-if [ "${CI:-}" != "true" ]; then
-	if xcode-select -p &>/dev/null; then
-		ok "Xcode CLT already installed"
-	else
-		echo "Installing Xcode Command Line Tools (this takes a while)..."
-		xcode-select --install
-		echo "Press any key once the Xcode CLT install has completed..."
-		read -r -n 1
-	fi
+step "1Password.app sign-in"
+if op account list 2>/dev/null | grep -q .; then
+  ok "1Password CLI already integrated and signed in"
 else
-	ok "CI detected — skipping Xcode CLT install"
+  box "ACTION NEEDED: sign in to 1Password" \
+    "" \
+    "Opening 1Password.app. Sign in with your master password" \
+    "and Secret Key. When done, leave 1Password running and" \
+    "come back here." \
+    ""
+  open -a "1Password" || warn "couldn't open 1Password.app — open it manually"
+  prompt_done
+
+  box "ACTION NEEDED: enable 1Password CLI integration" \
+    "" \
+    "In 1Password.app:" \
+    "  Settings → Developer → toggle 'Integrate with 1Password CLI'" \
+    "" \
+    "Optional: also enable 'Use Touch ID to unlock' on the same page" \
+    "for fingerprint authentication." \
+    ""
+  warn "waiting for the integration to come online (poll every 5s)..."
+  while ! op account list 2>/dev/null | grep -q .; do sleep 5; done
+  ok "1Password CLI integrated"
 fi
 
-# Homebrew
-if command -v brew &>/dev/null; then
-	ok "Homebrew already installed"
+step "GitHub authentication"
+if gh auth status >/dev/null 2>&1; then
+  ok "gh already authenticated"
 else
-	echo "Installing Homebrew..."
-	/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-	eval "$(/opt/homebrew/bin/brew shellenv)"
+  box "ACTION NEEDED: authenticate gh" \
+    "" \
+    "Launching 'gh auth login'. Follow the browser flow:" \
+    "  1. Copy the 8-character code shown in the terminal" \
+    "  2. Paste it in the browser tab that opens" \
+    "  3. Authorize the device" \
+    ""
+  prompt_continue
+  gh auth login --hostname github.com --git-protocol https --web
+  ok "gh authenticated"
 fi
+# Ensure git uses gh's credential helper from now on (idempotent).
+gh auth setup-git >/dev/null 2>&1 || true
 
-brew analytics off
-
-# Brew bundle - installs everything declared in the Brewfile
-# In CI mode, use a minimal Brewfile to keep the run fast
-info "Running brew bundle (this may take a while on first run)..."
-if [ "${CI_MODE}" = true ]; then
-	brew bundle --file "${DOTFILES}/brew/Brewfile.ci"
+step "App Store sign-in (optional, needed for MAS apps)"
+if mas account >/dev/null 2>&1; then
+  ok "already signed in to App Store"
+elif command -v mas >/dev/null 2>&1 && mas list >/dev/null 2>&1; then
+  ok "App Store accessible (mas can list installed apps)"
 else
-	brew bundle --file "${DOTFILES}/brew/Brewfile"
-fi
-brew cleanup
-
-if [ "${CI_MODE}" != true ]; then
-	warn "Log into the App Store to install MAS apps, then re-run 'brew bundle'"
-fi
-
-# ---------------------------------------------------------------------------
-# Stage 2: Stow all configs (convergent via --restow)
-# ---------------------------------------------------------------------------
-info "Stage 2: Stowing configs"
-
-# Migrate Colima config from legacy ~/.colima to XDG ~/.config/colima
-if [ -d "${HOME}/.colima" ] && [ ! -d "${HOME}/.config/colima" ]; then
-	echo "Migrating Colima config to XDG path..."
-	colima stop 2>/dev/null || true
-	mv "${HOME}/.colima" "${HOME}/.config/colima"
-	ok "Moved ~/.colima -> ~/.config/colima"
+  box "ACTION NEEDED: sign in to App Store (or skip)" \
+    "" \
+    "Opening App Store.app. Sign in with your Apple ID, then" \
+    "return here." \
+    "" \
+    "If you don't want any Mac App Store apps, just press ENTER" \
+    "to skip — bootstrap will continue and the MAS lines in the" \
+    "Brewfile will warn but not fail." \
+    ""
+  open -a "App Store" || warn "couldn't open App Store.app — open it manually"
+  prompt_done
 fi
 
-# Ensure Colima default profile dir exists (stow needs the parent)
-mkdir -p "${HOME}/.config/colima/default"
+# ─────────────────────────────────────────────────────────────────────
+# Phase 3: clone + chezmoi apply (Layers 2 & 3)
+# ─────────────────────────────────────────────────────────────────────
 
-# List of stow packages (directories that contain config to symlink)
-STOW_PACKAGES=(
-	colima
-	direnv
-	drift
-	fnox
-	gh-dash
-	ghostty
-	git
-	mise
-	npm
-	nvim
-	opencode
-	prettierd
-	starship
-	stow
-	tmux
-	zed
-	zellij
-	zsh
-)
+phase "Phase 3: Configs (chezmoi apply)"
 
-# In CI, remove files that conflict with stow (e.g. runner's default .gitconfig)
-if [ "${CI_MODE}" = true ]; then
-	for pkg in "${STOW_PACKAGES[@]}"; do
-		if [ -d "${DOTFILES}/${pkg}" ]; then
-			while IFS= read -r rel; do
-				target="${HOME}/${rel}"
-				if [ -f "$target" ] && [ ! -L "$target" ]; then
-					rm -f "$target"
-				fi
-			done < <(cd "${DOTFILES}/${pkg}" && find . -type f | sed 's|^\./||')
-		fi
-	done
+step "Clone dotfiles repo"
+if [ -d "${DOTFILES_DIR}/.git" ]; then
+  ok "repo already cloned at ${DOTFILES_DIR}"
+  if [ -n "${BOOTSTRAP_BRANCH}" ]; then
+    warn "BOOTSTRAP_BRANCH=${BOOTSTRAP_BRANCH} set but repo already cloned; checking out branch..."
+    git -C "${DOTFILES_DIR}" fetch origin "${BOOTSTRAP_BRANCH}"
+    git -C "${DOTFILES_DIR}" checkout "${BOOTSTRAP_BRANCH}"
+    git -C "${DOTFILES_DIR}" pull --ff-only origin "${BOOTSTRAP_BRANCH}"
+    ok "on branch ${BOOTSTRAP_BRANCH}"
+  fi
+else
+  if [ -n "${BOOTSTRAP_BRANCH}" ]; then
+    warn "initialising chezmoi from github.com/${GITHUB_USER}/${REPO_NAME} (branch: ${BOOTSTRAP_BRANCH})..."
+    chezmoi init --branch "${BOOTSTRAP_BRANCH}" "${GITHUB_USER}"
+  else
+    warn "initialising chezmoi from github.com/${GITHUB_USER}/${REPO_NAME}..."
+    chezmoi init "${GITHUB_USER}"
+  fi
+  ok "cloned"
 fi
 
-for pkg in "${STOW_PACKAGES[@]}"; do
-	if [ -d "${DOTFILES}/${pkg}" ]; then
-		stow --dir="${DOTFILES}" --target="${HOME}" --restow "${pkg}"
-		ok "Stowed ${pkg}"
-	else
-		warn "Package directory ${pkg}/ not found, skipping"
-	fi
-done
+step "Apply chezmoi state (this triggers brew bundle, mise install, etc.)"
+warn "this can take ~10 minutes the first time (downloading apps)..."
+# Re-run 'chezmoi init' to ensure the locally-generated config
+# (~/.config/chezmoi/chezmoi.toml) reflects the latest source template.
+# Without this, a cached config from an earlier run can keep stale settings
+# (e.g. mode=file when the template now says mode=symlink), causing files
+# that should be symlinks to remain regular files.
+chezmoi init "${GITHUB_USER}" >/dev/null
+# --force: overwrite any pre-existing files in $HOME (e.g. macOS-default
+#   ~/.zshrc) that would otherwise cause chezmoi to prompt interactively
+#   and hang the bootstrap. Safe in a fresh-machine bootstrap context.
+# --keep-going: don't abort the whole apply on a single file/script error;
+#   surface warnings instead so the user can see what failed at the end.
+chezmoi apply --force --keep-going
 
-# ---------------------------------------------------------------------------
-# Stage 3: Shell setup
-# ---------------------------------------------------------------------------
-info "Stage 3: Shell setup"
+# ─────────────────────────────────────────────────────────────────────
+# Phase 4: finalisers (post-config setup)
+# ─────────────────────────────────────────────────────────────────────
+#
+# Best-effort: a failure here is annoying but not fatal — Phases 1-3 have
+# already produced a usable system. Disable -e for the duration so a single
+# step's exit code doesn't abort the whole bootstrap.
 
-# Oh My Zsh (guarded - only install if missing)
+phase "Phase 4: Finalisers"
+set +e
+
+step "Oh My Zsh"
 if [ -d "${HOME}/.oh-my-zsh" ]; then
-	ok "Oh My Zsh already installed"
+  ok "already installed"
 else
-	echo "Installing Oh My Zsh..."
-	sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc
+  warn "installing..."
+  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc
+  ok "installed"
 fi
 
-# Set zsh as default shell (guarded, skip in CI — requires password)
-if [ "${CI_MODE}" = true ]; then
-	ok "CI mode — skipping chsh"
-elif [ "$(dscl . -read /Users/"$(whoami)" UserShell | awk '{print $2}')" = "/bin/zsh" ]; then
-	ok "Default shell is already zsh"
+step "Default shell → zsh"
+if [ "$(dscl . -read /Users/"$(whoami)" UserShell | awk '{print $2}')" = "/bin/zsh" ]; then
+  ok "already zsh"
 else
-	echo "Changing default shell to zsh..."
-	chsh -s /bin/zsh
+  warn "running chsh — will prompt for your password..."
+  chsh -s /bin/zsh
+  ok "shell changed"
 fi
 
-# ---------------------------------------------------------------------------
-# Stage 4: Tool activation
-# ---------------------------------------------------------------------------
-info "Stage 4: Tool activation"
-
-# mise - install all tools declared in ~/.config/mise/config.toml
-# Skip in CI — some tools require private registry auth (NPM_TOKEN)
-if [ "${CI_MODE}" = true ]; then
-	ok "CI mode — skipping mise install (requires auth for private packages)"
-elif command -v mise &>/dev/null; then
-	echo "Installing mise-managed tools (public only)..."
-	mise install --yes fnox java node "npm:@playwright/mcp" terraform maven "npm:mcp-remote"
-	ok "mise public tools installed"
-	echo ""
-	warn "Private @ingka packages skipped — authenticate 1Password + fnox, then run: make mise-private"
+step "gh-dash extension"
+if gh extension list 2>/dev/null | grep -q "dlvhdr/gh-dash"; then
+  ok "already installed"
 else
-	warn "mise not found (should have been installed by brew bundle)"
+  warn "installing..."
+  gh extension install dlvhdr/gh-dash
+  ok "installed"
 fi
 
-# gh-dash extension (guarded, skip in CI — requires auth)
-if [ "${CI_MODE}" != true ]; then
-	if command -v gh &>/dev/null; then
-		if gh extension list 2>/dev/null | grep -q "dlvhdr/gh-dash"; then
-			ok "gh-dash extension already installed"
-		else
-			echo "Installing gh-dash extension..."
-			gh extension install dlvhdr/gh-dash
-		fi
-	else
-		warn "gh not found (should have been installed by brew bundle)"
-	fi
+step "docker-buildx CLI plugin"
+if command -v docker-buildx >/dev/null 2>&1; then
+  mkdir -p "${HOME}/.docker/cli-plugins"
+  ln -sfn "$(brew --prefix)/bin/docker-buildx" "${HOME}/.docker/cli-plugins/docker-buildx"
+  ok "linked"
 else
-	ok "CI mode — skipping gh-dash extension (requires auth)"
+  warn "docker-buildx not in brew bundle output — skipping"
 fi
 
-# Docker buildx CLI plugin (symlink Homebrew binary into Docker CLI plugins dir)
-if command -v docker-buildx &>/dev/null; then
-	mkdir -p "${HOME}/.docker/cli-plugins"
-	ln -sfn "$(brew --prefix)/bin/docker-buildx" "${HOME}/.docker/cli-plugins/docker-buildx"
-	ok "docker-buildx CLI plugin linked"
-else
-	warn "docker-buildx not found (should have been installed by brew bundle)"
-fi
-
-# TPM (Tmux Plugin Manager)
+step "Tmux Plugin Manager (TPM)"
 TPM_DIR="${HOME}/.tmux/plugins/tpm"
 if [ -d "${TPM_DIR}" ]; then
-	ok "TPM already installed"
+  ok "already installed"
 else
-	echo "Installing TPM..."
-	git clone https://github.com/tmux-plugins/tpm "${TPM_DIR}"
+  if git clone https://github.com/tmux-plugins/tpm "${TPM_DIR}" 2>&1; then
+    ok "installed"
+  else
+    warn "TPM clone failed — skipping (run 'git clone https://github.com/tmux-plugins/tpm ${TPM_DIR}' manually later)"
+  fi
 fi
 
-# Install tmux plugins (non-interactive)
-if [ -x "${TPM_DIR}/bin/install_plugins" ]; then
-	echo "Installing tmux plugins..."
-	"${TPM_DIR}/bin/install_plugins"
-	ok "Tmux plugins installed"
-fi
-
-# ---------------------------------------------------------------------------
-# Stage 5: macOS preferences (optional, flag-gated)
-# ---------------------------------------------------------------------------
-if [ "${MACOS}" = true ]; then
-	info "Stage 5: macOS preferences"
-	chmod +x "${DOTFILES}/os/install.sh"
-	"${DOTFILES}/os/install.sh"
-	echo ""
-	warn "A reboot is recommended for macOS preference changes to take effect."
+step "Tmux plugins"
+# install_plugins parses ~/.tmux.conf for `set -g @plugin '...'` lines and
+# fails hard with "FATAL: Tmux Plugin Manager not configured in tmux.conf"
+# if it can't find any. That can happen if chezmoi hasn't fully placed
+# ~/.tmux.conf yet, or if the user's conf doesn't use TPM. Treat as warning.
+TPM_INSTALL="${TPM_DIR}/bin/install_plugins"
+if [ ! -x "${TPM_INSTALL}" ]; then
+  warn "TPM install script missing — skipping"
+elif ! [ -e "${HOME}/.tmux.conf" ]; then
+  # shellcheck disable=SC2088  # tilde here is just human-readable text
+  warn "~/.tmux.conf not present — skipping (run 'chezmoi apply' then prefix-I in tmux)"
+elif ! grep -qE "^\s*set\s+-g\s+@plugin" "${HOME}/.tmux.conf" 2>/dev/null; then
+  # shellcheck disable=SC2088
+  warn "no @plugin lines in ~/.tmux.conf — skipping"
 else
-	info "Stage 5: macOS preferences (skipped - pass --macos to apply)"
+  if "${TPM_INSTALL}" >/dev/null 2>&1; then
+    ok "installed"
+  else
+    warn "tmux plugin install reported failure — run prefix-I inside tmux to retry"
+  fi
 fi
 
-# ---------------------------------------------------------------------------
+set -e
+
+# ─────────────────────────────────────────────────────────────────────
 # Done
-# ---------------------------------------------------------------------------
-echo ""
-info "Bootstrap complete!"
-echo "  - Open a new terminal to pick up shell changes"
-echo "  - Run 'mise install' any time to update mise-managed tools"
-echo "  - Run './bootstrap.sh --macos' to apply macOS preferences"
-echo ""
-echo "  POST-BOOTSTRAP: To install private @ingka npm packages:"
-echo "    1. Authenticate 1Password"
-echo "    2. Run: make mise-private"
+# ─────────────────────────────────────────────────────────────────────
+
+phase "Done!"
+cat <<'EOF'
+Next steps:
+
+  1. Open a NEW terminal window so ~/.zshrc gets sourced (puts brew, mise,
+     fnox on PATH).
+  2. (Optional) Apply macOS preferences:
+        chezmoi apply --data='{"macos":true}'
+     A reboot is recommended afterwards for them to take effect.
+  3. Re-run this bootstrap.sh anytime — it's idempotent and will only
+     re-do what's needed.
+EOF

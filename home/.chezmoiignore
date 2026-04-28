@@ -1,0 +1,2 @@
+# Patterns of files in source that should NOT be applied to destination.
+# Matches target paths (without dot_ prefix).
