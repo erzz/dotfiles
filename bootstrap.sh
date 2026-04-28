@@ -245,6 +245,12 @@ fi
 
 step "Apply chezmoi state (this triggers brew bundle, mise install, etc.)"
 warn "this can take ~10 minutes the first time (downloading apps)..."
+# Re-run 'chezmoi init' to ensure the locally-generated config
+# (~/.config/chezmoi/chezmoi.toml) reflects the latest source template.
+# Without this, a cached config from an earlier run can keep stale settings
+# (e.g. mode=file when the template now says mode=symlink), causing files
+# that should be symlinks to remain regular files.
+chezmoi init "${GITHUB_USER}" >/dev/null
 # --force: overwrite any pre-existing files in $HOME (e.g. macOS-default
 #   ~/.zshrc) that would otherwise cause chezmoi to prompt interactively
 #   and hang the bootstrap. Safe in a fresh-machine bootstrap context.
