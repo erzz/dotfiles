@@ -19,6 +19,17 @@ if ! command -v mise >/dev/null 2>&1; then
   exit 0
 fi
 
+# Try to populate GH_TOKEN via fnox so private @ingka-group-digital npm
+# packages can be installed in this same chezmoi-apply pass. fnox is
+# installed via brew (see Brewfile), so it should be on PATH after script
+# 03 ran. If 1Password CLI isn't unlocked, fnox will silently produce no
+# output and we fall through to the "deferred install" path below.
+if command -v fnox >/dev/null 2>&1 && [ -f "${HOME}/.config/fnox/config.toml" ]; then
+  echo "==> Loading secrets via fnox..."
+  # shellcheck disable=SC1090
+  eval "$(fnox export -c "${HOME}/.config/fnox/config.toml" 2>/dev/null || true)"
+fi
+
 echo "==> Installing mise-managed tools (reads from ~/.config/mise/config.toml)..."
 # `mise install` reads the active config and installs everything listed.
 # Private @ingka packages will fail without GH_TOKEN; we let mise skip them
@@ -26,7 +37,8 @@ echo "==> Installing mise-managed tools (reads from ~/.config/mise/config.toml).
 mise install --yes || {
   echo ""
   echo "==> Some mise tools failed to install (likely private @ingka packages)."
-  echo "    Authenticate 1Password + fnox, then re-run:  mise install --yes"
+  echo "    Open a new shell (so fnox loads GH_TOKEN) and re-run:"
+  echo "        mise install --yes"
   exit 0
 }
 {{- else }}

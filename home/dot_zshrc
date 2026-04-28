@@ -11,7 +11,8 @@ plugins=(
 )
 
 # <------------------ PRIVATE INCLUDES ------------------->
-# Secrets managed by fnox + 1Password (loaded after mise activation below)
+# Secrets managed by fnox + 1Password (loaded before mise activation below
+# so private npm tools can authenticate via $GH_TOKEN)
 
 # <--------------------- OH-MY-ZSH ----------------------->
 # Eza completions (must be on FPATH before OMZ runs compinit)
@@ -99,10 +100,13 @@ eval "$(starship init zsh)"
 ### Zoxide
 eval "$(zoxide init zsh)"
 
-eval "$(mise activate zsh)"
-
-### FNOX (secrets via 1Password - must be after mise activation)
+### FNOX (secrets via 1Password - must run BEFORE mise so that mise can
+### use $GH_TOKEN when auto-installing private @ingka-group-digital npm
+### packages. fnox itself is installed via brew (not mise) to break the
+### chicken-and-egg.
 eval "$(fnox activate zsh -c ~/.config/fnox/config.toml)"
+
+eval "$(mise activate zsh)"
 
 ### BUN 
 #  bun completions

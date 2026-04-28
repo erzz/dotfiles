@@ -1,6 +1,5 @@
 [tools]
 bun = "latest"
-fnox = "latest"
 java = "latest"
 node = "24"
 "npm:@ingka-group-digital/skapa-design-system-mcp" = "0.5.5"
