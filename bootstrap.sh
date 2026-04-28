@@ -78,6 +78,27 @@ echo "It pauses when you need to sign in to something. Total time: ~15-20 min"
 echo "(most of which is brew bundle downloading apps in the background)."
 
 # ─────────────────────────────────────────────────────────────────────
+# Sudo: prompt once up-front and keep the timestamp alive for the whole
+# run. Many cask installers (DisplayLink, etc.) and the Homebrew installer
+# itself need sudo. Without keepalive, the macOS default ~5-min timeout
+# expires mid-bundle and prompts mid-flow, breaking the unattended feel.
+# ─────────────────────────────────────────────────────────────────────
+
+box "ACTION NEEDED: sudo password" \
+  "" \
+  "The bootstrap installs Homebrew and several casks that need" \
+  "admin rights. Entering your password once now means no more" \
+  "interruptions for the rest of the run." \
+  ""
+sudo -v
+# Background keepalive: refresh the sudo timestamp every 60s. Exits when
+# this script exits (via the EXIT trap) or if the parent dies.
+( while true; do sudo -n true; sleep 60; kill -0 "$$" 2>/dev/null || exit; done ) 2>/dev/null &
+SUDO_KEEPALIVE_PID=$!
+trap 'kill "${SUDO_KEEPALIVE_PID}" 2>/dev/null || true' EXIT
+ok "sudo cached; keepalive running (pid ${SUDO_KEEPALIVE_PID})"
+
+# ─────────────────────────────────────────────────────────────────────
 # Phase 1: prerequisites (automated where possible)
 # ─────────────────────────────────────────────────────────────────────
 
@@ -100,8 +121,10 @@ step "Homebrew"
 if [ -x /opt/homebrew/bin/brew ] || [ -x /usr/local/bin/brew ]; then
   ok "already installed"
 else
-  warn "installing (the installer will prompt for your sudo password)..."
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  warn "installing..."
+  # NONINTERACTIVE=1 skips Homebrew's "Press RETURN to continue" prompt;
+  # sudo is already cached above so no password prompt either.
+  NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   ok "installed"
 fi
 # Make brew available in this script's environment.
