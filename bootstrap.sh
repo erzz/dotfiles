@@ -15,6 +15,13 @@
 # (identity/credentials). It then hands off to chezmoi for Layer 3 (configs)
 # and a few `run_onchange` scripts (brew bundle, mise install, tmux plugins,
 # macOS prefs) which re-run when their inputs change.
+#
+# Phases live in bootstrap/:
+#   bootstrap/lib.sh           — colour vars, helpers, `try` machinery
+#   bootstrap/01-prereqs.sh    — Phase 1: Xcode CLT, Homebrew, bootstrap pkgs
+#   bootstrap/02-identity.sh   — Phase 2: 1Password, gh, App Store
+#   bootstrap/03-chezmoi.sh    — Phase 3: clone + chezmoi apply
+#   bootstrap/04-finalisers.sh — Phase 4: Oh My Zsh, chsh, gh-dash, etc.
 
 set -euo pipefail
 
@@ -28,41 +35,65 @@ DOTFILES_DIR="${HOME}/.local/share/chezmoi"
 # Leave unset for normal use (chezmoi will use the repo's default branch).
 BOOTSTRAP_BRANCH="${BOOTSTRAP_BRANCH:-}"
 
-BLUE='\033[1;34m'
-GREEN='\033[1;32m'
-YELLOW='\033[1;33m'
-RED='\033[1;31m'
-NC='\033[0m'
+# ─────────────────────────────────────────────────────────────────────
+# Locate phase files
+# ─────────────────────────────────────────────────────────────────────
+#
+# When invoked via `curl ... | bash`, this script is fed to bash on stdin
+# and BASH_SOURCE is empty / "bash" / "/dev/stdin", so there is no sibling
+# bootstrap/ directory we can source from. In that case we bootstrap the
+# bootstrap: install git (via xcode-select if needed), clone the repo to
+# DOTFILES_DIR, and re-exec the on-disk bootstrap.sh — which then finds
+# bootstrap/ next to itself and proceeds normally.
+#
+# When invoked from a checkout (`./bootstrap.sh` or
+# `bash /path/to/bootstrap.sh`), BASH_SOURCE[0] resolves to the script
+# path and the sibling bootstrap/ dir is right there.
 
-phase()   { printf '\n%b==> %s%b\n\n' "${BLUE}" "$*" "${NC}"; }
-step()    { printf '%b--> %s%b\n' "${BLUE}" "$*" "${NC}"; }
-ok()      { printf '%b    ✓ %s%b\n' "${GREEN}" "$*" "${NC}"; }
-warn()    { printf '%b    ! %s%b\n' "${YELLOW}" "$*" "${NC}"; }
-fail()    { printf '%b    ✗ %s%b\n' "${RED}" "$*" "${NC}"; exit 1; }
+BOOTSTRAP_DIR=""
+if [ -n "${BASH_SOURCE[0]:-}" ] && [ -f "${BASH_SOURCE[0]}" ]; then
+  BOOTSTRAP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/bootstrap"
+fi
 
-box() {
-  local line
-  printf '%b┌─ %s ─' "${YELLOW}" "$1"
-  for ((i=${#1}; i<60; i++)); do printf '─'; done
-  printf '┐%b\n' "${NC}"
-  shift
-  for line in "$@"; do
-    printf '%b│%b %-62s %b│%b\n' "${YELLOW}" "${NC}" "$line" "${YELLOW}" "${NC}"
-  done
-  printf '%b└' "${YELLOW}"
-  for ((i=0; i<64; i++)); do printf '─'; done
-  printf '┘%b\n' "${NC}"
-}
+if [ -z "${BOOTSTRAP_DIR}" ] || [ ! -d "${BOOTSTRAP_DIR}" ]; then
+  # ── Piped-from-curl path ───────────────────────────────────────────
+  # No on-disk siblings. Clone the repo, then re-exec.
+  printf '\033[1;34m==> Piped install detected — cloning repo first\033[0m\n\n'
 
-prompt_continue() {
-  printf '\n%bPress ENTER to continue (or Ctrl-C to abort)...%b ' "${YELLOW}" "${NC}"
-  read -r _
-}
+  # git ships with Xcode CLT. Trigger the install if it's missing; this
+  # opens a GUI installer that we wait for before continuing.
+  if ! xcode-select -p >/dev/null 2>&1; then
+    printf '\033[1;33m    ! Xcode Command Line Tools not present; launching installer...\033[0m\n'
+    xcode-select --install || true
+    while ! xcode-select -p >/dev/null 2>&1; do sleep 10; done
+    printf '\033[1;32m    ✓ Xcode CLT installed\033[0m\n'
+  fi
 
-prompt_done() {
-  printf '\n%bPress ENTER once you have done the above (or Ctrl-C to abort)...%b ' "${YELLOW}" "${NC}"
-  read -r _
-}
+  if [ -d "${DOTFILES_DIR}/.git" ]; then
+    printf '\033[1;32m    ✓ repo already at %s — re-execing\033[0m\n' "${DOTFILES_DIR}"
+  else
+    mkdir -p "$(dirname "${DOTFILES_DIR}")"
+    CLONE_BRANCH_ARG=()
+    if [ -n "${BOOTSTRAP_BRANCH}" ]; then
+      CLONE_BRANCH_ARG=(--branch "${BOOTSTRAP_BRANCH}")
+    fi
+    git clone "${CLONE_BRANCH_ARG[@]}" \
+      "https://github.com/${GITHUB_USER}/${REPO_NAME}.git" "${DOTFILES_DIR}"
+    printf '\033[1;32m    ✓ cloned to %s\033[0m\n' "${DOTFILES_DIR}"
+  fi
+
+  # Re-exec the on-disk bootstrap.sh. This swaps the running process so
+  # nothing here continues; everything from this point onward runs in the
+  # new process, with BASH_SOURCE properly set and bootstrap/ visible.
+  exec bash "${DOTFILES_DIR}/bootstrap.sh" "$@"
+fi
+
+# ─────────────────────────────────────────────────────────────────────
+# From here on: on-disk path with bootstrap/ available.
+# ─────────────────────────────────────────────────────────────────────
+
+# shellcheck source=bootstrap/lib.sh
+source "${BOOTSTRAP_DIR}/lib.sh"
 
 # ─────────────────────────────────────────────────────────────────────
 # Sanity
@@ -99,247 +130,20 @@ trap 'kill "${SUDO_KEEPALIVE_PID}" 2>/dev/null || true' EXIT
 ok "sudo cached; keepalive running (pid ${SUDO_KEEPALIVE_PID})"
 
 # ─────────────────────────────────────────────────────────────────────
-# Phase 1: prerequisites (automated where possible)
+# Phases
 # ─────────────────────────────────────────────────────────────────────
 
-phase "Phase 1: Prerequisites"
+# shellcheck source=bootstrap/01-prereqs.sh
+source "${BOOTSTRAP_DIR}/01-prereqs.sh"
 
-step "Xcode Command Line Tools"
-if xcode-select -p >/dev/null 2>&1; then
-  ok "already installed"
-else
-  warn "installing — a GUI installer will appear; this script will wait for it."
-  xcode-select --install || true
-  while ! xcode-select -p >/dev/null 2>&1; do sleep 10; done
-  ok "installed"
-fi
+# shellcheck source=bootstrap/02-identity.sh
+source "${BOOTSTRAP_DIR}/02-identity.sh"
 
-step "Homebrew"
-# Check the binary path directly: a fresh shell on a new Mac may not have
-# brew on PATH yet (added by ~/.zprofile, which only sources for new login
-# shells). `command -v brew` would falsely report missing.
-if [ -x /opt/homebrew/bin/brew ] || [ -x /usr/local/bin/brew ]; then
-  ok "already installed"
-else
-  warn "installing..."
-  # NONINTERACTIVE=1 skips Homebrew's "Press RETURN to continue" prompt;
-  # sudo is already cached above so no password prompt either.
-  NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-  ok "installed"
-fi
-# Make brew available in this script's environment.
-if [ -x /opt/homebrew/bin/brew ]; then
-  eval "$(/opt/homebrew/bin/brew shellenv)"
-elif [ -x /usr/local/bin/brew ]; then
-  eval "$(/usr/local/bin/brew shellenv)"
-fi
-brew analytics off >/dev/null 2>&1 || true
+# shellcheck source=bootstrap/03-chezmoi.sh
+source "${BOOTSTRAP_DIR}/03-chezmoi.sh"
 
-step "Bootstrap brew packages (1password, 1password-cli, gh, chezmoi)"
-# We install only the packages needed to complete the rest of bootstrap.
-# Everything else comes from `brew bundle` later.
-for pkg in 1password 1password-cli gh chezmoi; do
-  if brew list "$pkg" >/dev/null 2>&1 || brew list --cask "$pkg" >/dev/null 2>&1; then
-    ok "$pkg already installed"
-  else
-    warn "installing $pkg..."
-    brew install "$pkg"
-  fi
-done
-
-# ─────────────────────────────────────────────────────────────────────
-# Phase 2: identity (interactive — these need you)
-# ─────────────────────────────────────────────────────────────────────
-
-phase "Phase 2: Identity"
-
-step "1Password.app sign-in"
-if op account list 2>/dev/null | grep -q .; then
-  ok "1Password CLI already integrated and signed in"
-else
-  box "ACTION NEEDED: sign in to 1Password" \
-    "" \
-    "Opening 1Password.app. Sign in with your master password" \
-    "and Secret Key. When done, leave 1Password running and" \
-    "come back here." \
-    ""
-  open -a "1Password" || warn "couldn't open 1Password.app — open it manually"
-  prompt_done
-
-  box "ACTION NEEDED: enable 1Password CLI integration" \
-    "" \
-    "In 1Password.app:" \
-    "  Settings → Developer → toggle 'Integrate with 1Password CLI'" \
-    "" \
-    "Optional: also enable 'Use Touch ID to unlock' on the same page" \
-    "for fingerprint authentication." \
-    ""
-  warn "waiting for the integration to come online (poll every 5s)..."
-  while ! op account list 2>/dev/null | grep -q .; do sleep 5; done
-  ok "1Password CLI integrated"
-fi
-
-step "GitHub authentication"
-if gh auth status >/dev/null 2>&1; then
-  ok "gh already authenticated"
-else
-  box "ACTION NEEDED: authenticate gh" \
-    "" \
-    "Launching 'gh auth login'. Follow the browser flow:" \
-    "  1. Copy the 8-character code shown in the terminal" \
-    "  2. Paste it in the browser tab that opens" \
-    "  3. Authorize the device" \
-    ""
-  prompt_continue
-  gh auth login --hostname github.com --git-protocol https --web
-  ok "gh authenticated"
-fi
-# Ensure git uses gh's credential helper from now on (idempotent).
-gh auth setup-git >/dev/null 2>&1 || true
-
-step "App Store sign-in (optional, needed for MAS apps)"
-if mas account >/dev/null 2>&1; then
-  ok "already signed in to App Store"
-elif command -v mas >/dev/null 2>&1 && mas list >/dev/null 2>&1; then
-  ok "App Store accessible (mas can list installed apps)"
-else
-  box "ACTION NEEDED: sign in to App Store (or skip)" \
-    "" \
-    "Opening App Store.app. Sign in with your Apple ID, then" \
-    "return here." \
-    "" \
-    "If you don't want any Mac App Store apps, just press ENTER" \
-    "to skip — bootstrap will continue and the MAS lines in the" \
-    "Brewfile will warn but not fail." \
-    ""
-  open -a "App Store" || warn "couldn't open App Store.app — open it manually"
-  prompt_done
-fi
-
-# ─────────────────────────────────────────────────────────────────────
-# Phase 3: clone + chezmoi apply (Layers 2 & 3)
-# ─────────────────────────────────────────────────────────────────────
-
-phase "Phase 3: Configs (chezmoi apply)"
-
-step "Clone dotfiles repo"
-if [ -d "${DOTFILES_DIR}/.git" ]; then
-  ok "repo already cloned at ${DOTFILES_DIR}"
-  if [ -n "${BOOTSTRAP_BRANCH}" ]; then
-    warn "BOOTSTRAP_BRANCH=${BOOTSTRAP_BRANCH} set but repo already cloned; checking out branch..."
-    git -C "${DOTFILES_DIR}" fetch origin "${BOOTSTRAP_BRANCH}"
-    git -C "${DOTFILES_DIR}" checkout "${BOOTSTRAP_BRANCH}"
-    git -C "${DOTFILES_DIR}" pull --ff-only origin "${BOOTSTRAP_BRANCH}"
-    ok "on branch ${BOOTSTRAP_BRANCH}"
-  fi
-else
-  if [ -n "${BOOTSTRAP_BRANCH}" ]; then
-    warn "initialising chezmoi from github.com/${GITHUB_USER}/${REPO_NAME} (branch: ${BOOTSTRAP_BRANCH})..."
-    chezmoi init --branch "${BOOTSTRAP_BRANCH}" "${GITHUB_USER}"
-  else
-    warn "initialising chezmoi from github.com/${GITHUB_USER}/${REPO_NAME}..."
-    chezmoi init "${GITHUB_USER}"
-  fi
-  ok "cloned"
-fi
-
-step "Apply chezmoi state (this triggers brew bundle, mise install, etc.)"
-warn "this can take ~10 minutes the first time (downloading apps)..."
-# Re-run 'chezmoi init' to ensure the locally-generated config
-# (~/.config/chezmoi/chezmoi.toml) reflects the latest source template.
-# Without this, a cached config from an earlier run can keep stale settings
-# (e.g. mode=file when the template now says mode=symlink), causing files
-# that should be symlinks to remain regular files.
-chezmoi init "${GITHUB_USER}" >/dev/null
-# --force: overwrite any pre-existing files in $HOME (e.g. macOS-default
-#   ~/.zshrc) that would otherwise cause chezmoi to prompt interactively
-#   and hang the bootstrap. Safe in a fresh-machine bootstrap context.
-# --keep-going: don't abort the whole apply on a single file/script error;
-#   surface warnings instead so the user can see what failed at the end.
-chezmoi apply --force --keep-going
-
-# ─────────────────────────────────────────────────────────────────────
-# Phase 4: finalisers (post-config setup)
-# ─────────────────────────────────────────────────────────────────────
-#
-# Best-effort: a failure here is annoying but not fatal — Phases 1-3 have
-# already produced a usable system. Disable -e for the duration so a single
-# step's exit code doesn't abort the whole bootstrap.
-
-phase "Phase 4: Finalisers"
-set +e
-
-step "Oh My Zsh"
-if [ -d "${HOME}/.oh-my-zsh" ]; then
-  ok "already installed"
-else
-  warn "installing..."
-  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc
-  ok "installed"
-fi
-
-step "Default shell → zsh"
-if [ "$(dscl . -read /Users/"$(whoami)" UserShell | awk '{print $2}')" = "/bin/zsh" ]; then
-  ok "already zsh"
-else
-  warn "running chsh — will prompt for your password..."
-  chsh -s /bin/zsh
-  ok "shell changed"
-fi
-
-step "gh-dash extension"
-if gh extension list 2>/dev/null | grep -q "dlvhdr/gh-dash"; then
-  ok "already installed"
-else
-  warn "installing..."
-  gh extension install dlvhdr/gh-dash
-  ok "installed"
-fi
-
-step "docker-buildx CLI plugin"
-if command -v docker-buildx >/dev/null 2>&1; then
-  mkdir -p "${HOME}/.docker/cli-plugins"
-  ln -sfn "$(brew --prefix)/bin/docker-buildx" "${HOME}/.docker/cli-plugins/docker-buildx"
-  ok "linked"
-else
-  warn "docker-buildx not in brew bundle output — skipping"
-fi
-
-step "Tmux Plugin Manager (TPM)"
-TPM_DIR="${HOME}/.tmux/plugins/tpm"
-if [ -d "${TPM_DIR}" ]; then
-  ok "already installed"
-else
-  if git clone https://github.com/tmux-plugins/tpm "${TPM_DIR}" 2>&1; then
-    ok "installed"
-  else
-    warn "TPM clone failed — skipping (run 'git clone https://github.com/tmux-plugins/tpm ${TPM_DIR}' manually later)"
-  fi
-fi
-
-step "Tmux plugins"
-# install_plugins parses ~/.tmux.conf for `set -g @plugin '...'` lines and
-# fails hard with "FATAL: Tmux Plugin Manager not configured in tmux.conf"
-# if it can't find any. That can happen if chezmoi hasn't fully placed
-# ~/.tmux.conf yet, or if the user's conf doesn't use TPM. Treat as warning.
-TPM_INSTALL="${TPM_DIR}/bin/install_plugins"
-if [ ! -x "${TPM_INSTALL}" ]; then
-  warn "TPM install script missing — skipping"
-elif ! [ -e "${HOME}/.tmux.conf" ]; then
-  # shellcheck disable=SC2088  # tilde here is just human-readable text
-  warn "~/.tmux.conf not present — skipping (run 'chezmoi apply' then prefix-I in tmux)"
-elif ! grep -qE "^\s*set\s+-g\s+@plugin" "${HOME}/.tmux.conf" 2>/dev/null; then
-  # shellcheck disable=SC2088
-  warn "no @plugin lines in ~/.tmux.conf — skipping"
-else
-  if "${TPM_INSTALL}" >/dev/null 2>&1; then
-    ok "installed"
-  else
-    warn "tmux plugin install reported failure — run prefix-I inside tmux to retry"
-  fi
-fi
-
-set -e
+# shellcheck source=bootstrap/04-finalisers.sh
+source "${BOOTSTRAP_DIR}/04-finalisers.sh"
 
 # ─────────────────────────────────────────────────────────────────────
 # Done

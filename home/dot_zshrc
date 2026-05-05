@@ -77,10 +77,12 @@ precmd() {
   # sets the tab title to current dir
   echo -ne "\e]2;${PWD##*/}\a"
 
-  # One-shot drift notification (written by background detect.sh)
-  if [[ -f /tmp/dotfiles-drift ]]; then
-    cat /tmp/dotfiles-drift
-    rm -f /tmp/dotfiles-drift
+  # One-shot drift notification (written by background detect.sh).
+  # Per-user path; matches DRIFT_FLAG in drift/detect.sh.
+  local drift_flag="${TMPDIR:-/tmp}/dotfiles-drift.${UID}"
+  if [[ -f "$drift_flag" ]]; then
+    cat "$drift_flag"
+    rm -f "$drift_flag"
   fi
 }
 

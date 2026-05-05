@@ -1,0 +1,18 @@
+## Shared chezmoi config used by CI jobs (.github/workflows/main.yml).
+## Both the Linux container job and the macOS E2E job copy this into
+## ~/.config/chezmoi/chezmoi.toml so they share one source of truth for
+## what "CI mode" means.
+##
+## If you change `[data]` here (e.g. flip a feature flag), CI behaviour
+## changes for both jobs.
+
+mode = "symlink"
+
+[diff]
+  exclude = ["scripts"]
+[status]
+  exclude = ["scripts"]
+
+[data]
+  macos = false
+  ci = true

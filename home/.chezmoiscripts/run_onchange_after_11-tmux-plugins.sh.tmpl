@@ -1,14 +1,38 @@
 #!/usr/bin/env bash
 # Install/update tmux plugins. Re-runs whenever .tmux.conf changes (hash below).
 #
+# This script owns BOTH installing TPM (the plugin manager) and running
+# `install_plugins`. bootstrap.sh used to do plugin install separately;
+# that duplication has been removed and TPM/plugin lifecycle lives here so
+# `chezmoi apply` is sufficient on its own.
+#
 # tmux.conf hash:
 # {{ output "sha256sum" (joinPath .chezmoi.workingTree "home" "dot_tmux.conf") }}
 set -euo pipefail
 
-TPM_INSTALL="${HOME}/.tmux/plugins/tpm/bin/install_plugins"
-if [ -x "${TPM_INSTALL}" ]; then
-  echo "==> Installing tmux plugins..."
-  "${TPM_INSTALL}"
-else
-  echo "==> TPM not installed; skipping plugin install"
+TPM_DIR="${HOME}/.tmux/plugins/tpm"
+TPM_INSTALL="${TPM_DIR}/bin/install_plugins"
+
+if [ ! -d "${TPM_DIR}" ]; then
+  echo "==> Cloning Tmux Plugin Manager..."
+  if ! git clone --quiet https://github.com/tmux-plugins/tpm "${TPM_DIR}"; then
+    echo "==> TPM clone failed; skipping plugin install (run 'chezmoi apply' again to retry)"
+    exit 0
+  fi
 fi
+
+if [ ! -x "${TPM_INSTALL}" ]; then
+  echo "==> TPM install script missing at ${TPM_INSTALL}; skipping"
+  exit 0
+fi
+
+# install_plugins fails hard ("FATAL: Tmux Plugin Manager not configured in
+# tmux.conf") if there are no `set -g @plugin` lines. Skip cleanly in that
+# case so `chezmoi apply` doesn't fail on a perfectly valid no-plugins setup.
+if [ ! -e "${HOME}/.tmux.conf" ] || ! grep -qE "^\s*set\s+-g\s+@plugin" "${HOME}/.tmux.conf" 2>/dev/null; then
+  echo "==> No @plugin lines in ~/.tmux.conf; skipping plugin install"
+  exit 0
+fi
+
+echo "==> Installing tmux plugins..."
+"${TPM_INSTALL}"

@@ -11,10 +11,19 @@
 
 COLOUR='\033[0;33m'
 NC='\033[0m'
-DRIFT_FLAG="/tmp/dotfiles-drift"
+# Per-user flag path: avoids cross-user collisions on shared machines, and
+# keeps each user's drift signal isolated.
+DRIFT_FLAG="${TMPDIR:-/tmp}/dotfiles-drift.${UID}"
+# Temp file for atomic write: build the message in a sibling file, then
+# rename into place. Without this, two shells starting near-simultaneously
+# could race and produce a half-written file the prompt reader would garble.
+DRIFT_TMP="${DRIFT_FLAG}.$$"
 
 REPO="${HOME}/.local/share/chezmoi"
-cd "${REPO}" || return
+# `return` would only be valid if this script were sourced; it's executed
+# from a zsh background job, so `exit 0` is correct (and silent — drift
+# detection failing should never spam the prompt).
+cd "${REPO}" || exit 0
 
 # Never block on auth prompts: this script runs in the background from
 # zsh's precmd hook, and a tty-input prompt would suspend the shell.
@@ -59,7 +68,9 @@ if command -v mise >/dev/null 2>&1; then
 fi
 
 if [ ${#MESSAGES[@]} -gt 0 ]; then
-	printf '%b\n' "${MESSAGES[@]}" >"$DRIFT_FLAG"
+	# Atomic write: build in $DRIFT_TMP, then mv into place. The prompt reader
+	# only ever sees a complete file (or no file at all), never a partial one.
+	printf '%b\n' "${MESSAGES[@]}" >"$DRIFT_TMP" && mv -f "$DRIFT_TMP" "$DRIFT_FLAG"
 else
-	rm -f "$DRIFT_FLAG"
+	rm -f "$DRIFT_FLAG" "$DRIFT_TMP"
 fi

@@ -35,20 +35,10 @@ jobs:
           mv "${{ github.workspace }}/chezmoi-source" "$HOME/.local/share/chezmoi"
 
       - name: Write chezmoi config (CI mode)
+        # Shared with the macOS job — see tests/ci/chezmoi.toml.
         run: |
           mkdir -p "$HOME/.config/chezmoi"
-          cat > "$HOME/.config/chezmoi/chezmoi.toml" <<EOF
-          mode = "symlink"
-
-          [diff]
-            exclude = ["scripts"]
-          [status]
-            exclude = ["scripts"]
-
-          [data]
-            macos = false
-            ci = true
-          EOF
+          cp "$HOME/.local/share/chezmoi/tests/ci/chezmoi.toml" "$HOME/.config/chezmoi/chezmoi.toml"
 
       - name: First apply
         run: chezmoi apply --force --keep-going
@@ -88,20 +78,10 @@ jobs:
           mv "${{ github.workspace }}/chezmoi-source" "$HOME/.local/share/chezmoi"
 
       - name: Write chezmoi config (CI mode)
+        # Shared with the Linux job — see tests/ci/chezmoi.toml.
         run: |
           mkdir -p "$HOME/.config/chezmoi"
-          cat > "$HOME/.config/chezmoi/chezmoi.toml" <<EOF
-          mode = "symlink"
-
-          [diff]
-            exclude = ["scripts"]
-          [status]
-            exclude = ["scripts"]
-
-          [data]
-            macos = false
-            ci = true
-          EOF
+          cp "$HOME/.local/share/chezmoi/tests/ci/chezmoi.toml" "$HOME/.config/chezmoi/chezmoi.toml"
 
       - name: First apply
         run: chezmoi apply --force --keep-going

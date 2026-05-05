@@ -39,25 +39,99 @@ Not acceptable to ask the user for:
 If you catch yourself drafting a question, ask first: *can a tool answer this?* If yes, run the
 tool. Asking the user is the slower, more expensive path.
 
-## Delegation Rules
+## Project Grounding
 
-These rules are the canonical routing policy. Other agents (`engineer`, `orchestrator`, `start-work`) defer to this list — do not maintain a parallel copy elsewhere.
+At the start of any session in a project directory, before answering substantive
+questions or editing code:
 
-- Use `@framing` only when the request wording may hide ambiguity or unstated intent.
-- Use `@planner` for non-trivial work, loading the `planning` skill.
-- Use `@plan-reviewer` only when the plan matters or spans multiple files/systems.
-- Use `@explore` to map unfamiliar codebases and return file paths with brief notes.
-- Use `@librarian` for external documentation or library behavior.
-- Use `@frontend` for frontend implementation.
-- Use `@cicd` for GitHub Actions, reusable workflows, releases, and pipeline design.
-- Use `@quick` for trivial, low-risk tasks only.
-- Use `@deep` for research-heavy end-to-end implementation across multiple moving parts.
-- Use `@ultrabrain` only for the hardest reasoning or architecture work.
-- Use `@writing` for documentation and polished prose.
-- Use `@git` for git strategy, branches, commits, and PR-oriented repository work.
-- Use `@reviewer` after meaningful implementation work to critique quality, edge cases, and risks.
-- Use `@architect` only for unusually hard debugging or architecture decisions after normal approaches fail.
-- Use `@orchestrator` only through `/start-work` when you want an explicit isolated orchestration run.
+1. **Project `AGENTS.md` present?** OpenCode has already loaded it. Use it. Do
+   not re-read it as a tool call.
+2. **No project `AGENTS.md` and the task is non-trivial?** Do a 30-second
+   self-orientation: read `README.md` (or its top), list the top-level
+   directory, and skim the manifest (`package.json`, `go.mod`, `pyproject.toml`,
+   `Cargo.toml`, `flake.nix`, equivalent). This is ~3 cheap tool calls — not
+   `@explore`.
+3. **Only after that** may you ask the user project-shape questions.
+
+For trivial requests ("what does this command do", "fix this typo", pure
+conversation) skip grounding entirely.
+
+If the project is non-trivial and has no `AGENTS.md`, **offer once at the end
+of the session** to draft one based on what you learned. Use the shape defined
+under "Project Brief Shape" below.
+
+For an explicit deeper pass (new contributor, returning to a project after a
+long absence, big refactor incoming), use `/ground`.
+
+### Project Brief Shape
+
+When drafting or updating a project `AGENTS.md`, keep it under ~120 lines and
+use this shape. No prose padding.
+
+```markdown
+# Project: <name>
+
+## Stack
+One line. e.g. "Go 1.22, Echo, Postgres via sqlc, Tofu for infra"
+
+## Layout
+5–10 bullets. Top-level dirs and what lives there.
+
+## How to run / test / build
+Exact commands. No prose.
+
+## Conventions
+Bullets only. Linters, formatters, naming, error handling style.
+Anything an outsider would get wrong on first try.
+
+## Entry points
+Where to start reading for common tasks.
+
+## Gotchas
+Things that surprised you. Things the agent has gotten wrong before.
+```
+
+If the brief grows past ~120 lines it is wrong — split details into separate
+files referenced by path, and let the agent read those on demand.
+
+## Delegation Defaults
+
+These are **defaults the engineer must follow**, not options to consider. If
+you skip a default, state which step and why in one sentence before proceeding.
+Silent skipping is a bug.
+
+For any task that touches code:
+
+1. **Unfamiliar area in this session?** → `@explore` first. Skip only if you
+   have already read the relevant files in this session, or if grounding
+   covered it.
+2. **More than ~30 lines of new code, or >2 files?** → `@planner` first.
+3. **After implementation of any non-trivial change** → `@reviewer` before
+   declaring done.
+
+State your delegation choice explicitly at the start of a code-touching task,
+e.g. *"Plan: explore=N (already read these files), planner=Y, reviewer=Y."*
+
+### Specialist Routing
+
+When the defaults above call for delegation, or when a task obviously fits a
+specialist, route to:
+
+- `@framing` — request wording may hide ambiguity or unstated intent
+- `@planner` — non-trivial planning (loads the `planning` skill)
+- `@plan-reviewer` — plan matters or spans multiple files/systems
+- `@explore` — map unfamiliar codebases, return file paths with brief notes
+- `@librarian` — external documentation or library behavior
+- `@frontend` — frontend implementation
+- `@cicd` — GitHub Actions, reusable workflows, releases, pipeline design
+- `@quick` — trivial, low-risk tasks only
+- `@deep` — research-heavy end-to-end implementation across multiple moving parts
+- `@ultrabrain` — the hardest reasoning or architecture work
+- `@writing` — documentation and polished prose
+- `@git` — git strategy, branches, commits, PR-oriented repository work
+- `@reviewer` — critique completed work for quality, edge cases, risks
+- `@architect` — unusually hard debugging or architecture decisions after normal approaches fail
+- `@orchestrator` — only through `/start-work` for explicit isolated orchestration runs
 
 ## Handoff Standard
 
@@ -90,6 +164,7 @@ be expressed with agents, skills, commands, `AGENTS.md`, or `opencode.json`, kee
 - `/plan <task>` uses `@planner` to produce a short execution plan
 - `/review <change>` uses `@reviewer` to critique completed work
 - `/start-work <task>` uses `@orchestrator` to run the native orchestration flow
+- `/ground` uses `@explore` to perform a deep project orientation pass and offer to write a project `AGENTS.md`
 
 ## Project-Specific Rules
 
