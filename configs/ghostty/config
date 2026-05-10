@@ -1,5 +1,5 @@
 # theme="Atom"
-#unfocused-split-opacity        = 1
+unfocused-split-opacity        = 0.5
 theme                          = dark:skapa-dark,light:skapa-dark
 
 # Font
@@ -39,18 +39,26 @@ scrollback-limit               = 4200
 shell-integration              = zsh
 
 # Key bindings
-keybind                        = ctrl+enter=toggle_fullscreen
-keybind                        = ctrl+h=unbind
-keybind                        = ctrl+j=unbind
-keybind                        = ctrl+k=unbind
-keybind                        = ctrl+l=unbind
-keybind                        = ctrl+super+h=new_split:left
-keybind                        = ctrl+super+j=new_split:down
-keybind                        = ctrl+super+k=new_split:up
-keybind                        = ctrl+super+l=new_split:right
-keybind                        = ctrl+super+n=new_split:auto
-keybind                        = ctrl+super+shift+i=inspector:toggle
-keybind                        = ctrl+super+shift+r=reload_config
-keybind                        = super+t=new_tab
+
+# Pass ctrl+hjkl through to shell/tmux/nvim
+keybind = ctrl+h=unbind
+keybind = ctrl+j=unbind
+keybind = ctrl+k=unbind
+keybind = ctrl+l=unbind
+
+# Pass alt+arrows through (word-jump in shell)
 keybind = alt+arrow_left=unbind
 keybind = alt+arrow_right=unbind
+
+# Splits: super+hjkl focus, super+shift+hjkl create
+keybind = super+h=goto_split:left
+keybind = super+j=goto_split:down
+keybind = super+k=goto_split:up
+keybind = super+l=goto_split:right
+keybind = super+shift+h=new_split:left
+keybind = super+shift+j=new_split:down
+keybind = super+shift+k=new_split:up
+keybind = super+shift+l=new_split:right
+
+# clear_screen (displaced from super+k)
+keybind = super+ctrl+shift+k=clear_screen
