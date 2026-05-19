@@ -11,8 +11,15 @@ plugins=(
 )
 
 # <------------------ PRIVATE INCLUDES ------------------->
-# Secrets managed by fnox + 1Password (loaded before mise activation below
-# so private npm tools can authenticate via $GH_TOKEN)
+# Secrets rendered by chezmoi from 1Password into ~/.local/state/secrets.env
+# (mode 0600). Loaded before mise activation so private npm tools can
+# authenticate via $GH_TOKEN. Refresh with `chezmoi apply`.
+if [ -r "$HOME/.local/state/secrets.env" ]; then
+  set -a
+  # shellcheck disable=SC1091
+  source "$HOME/.local/state/secrets.env"
+  set +a
+fi
 
 # <--------------------- OH-MY-ZSH ----------------------->
 # Eza completions (must be on FPATH before OMZ runs compinit)
@@ -101,12 +108,6 @@ eval "$(starship init zsh)"
 
 ### Zoxide
 eval "$(zoxide init zsh)"
-
-### FNOX (secrets via 1Password - must run BEFORE mise so that mise can
-### use $GH_TOKEN when auto-installing private @ingka-group-digital npm
-### packages. fnox itself is installed via brew (not mise) to break the
-### chicken-and-egg.
-eval "$(fnox activate zsh -c ~/.config/fnox/config.toml)"
 
 eval "$(mise activate zsh)"
 

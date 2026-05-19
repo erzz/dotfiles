@@ -47,8 +47,15 @@ fi
 # `chezmoi status` prints one line per drifted entry and always exits 0,
 # so we check whether its output is non-empty (`chezmoi diff` always exits 0
 # regardless of drift, so its exit code is useless here).
+#
+# We pass --no-tty plus OP_BIOMETRIC_UNLOCK_ENABLED=false so any template
+# that calls `onepasswordRead` fails fast instead of popping a Touch ID
+# prompt on every shell start. The trade-off: drift in those specific
+# templated files (e.g. ~/.npmrc, ~/.local/state/secrets.env) won't be
+# detected here — which is fine, since their content reflects remote
+# 1Password state, not local edits.
 if command -v chezmoi >/dev/null 2>&1; then
-	if [ -n "$(chezmoi status --exclude=scripts 2>/dev/null)" ]; then
+	if [ -n "$(OP_BIOMETRIC_UNLOCK_ENABLED=false chezmoi status --no-tty --exclude=scripts 2>/dev/null)" ]; then
 		MESSAGES+=("${COLOUR}chezmoi reports file drift (run: chezmoi diff)${NC}")
 	fi
 fi
