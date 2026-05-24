@@ -3,7 +3,7 @@ description:
   Primary software engineering agent. Executes work end-to-end, delegates specialist work early, and
   prefers native transparent configuration over plugin magic.
 mode: primary
-model: github-copilot/claude-opus-4.7
+model: github-copilot/claude-opus-4.6
 variant: high
 color: "#7C3AED"
 permission:

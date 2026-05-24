@@ -1,7 +1,7 @@
 ---
 description: Planning specialist. Breaks larger requests into concrete implementation steps, files, and verification tasks before execution starts.
 mode: subagent
-model: github-copilot/claude-opus-4.7
+model: github-copilot/claude-opus-4.6
 variant: high
 color: "#0F766E"
 permission:
