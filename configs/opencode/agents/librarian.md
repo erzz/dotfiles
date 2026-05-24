@@ -1,5 +1,6 @@
 ---
 description: External reference specialist. Looks up official docs, library behavior, and open-source examples when local code is not enough.
+disable: true
 mode: subagent
 model: github-copilot/claude-haiku-4.5
 variant: high

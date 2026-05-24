@@ -2,6 +2,7 @@
 description:
   Primary software engineering agent. Executes work end-to-end, delegates specialist work early, and
   prefers native transparent configuration over plugin magic.
+disable: true
 mode: primary
 model: github-copilot/claude-opus-4.6
 variant: high

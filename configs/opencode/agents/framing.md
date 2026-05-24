@@ -1,5 +1,6 @@
 ---
 description: Framing critic. Identifies ambiguity, hidden intent, risks, and likely failure modes before planning starts.
+disable: true
 mode: subagent
 model: github-copilot/claude-opus-4.6
 variant: high

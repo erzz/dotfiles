@@ -1,5 +1,6 @@
 ---
 description: Implementation reviewer. Critiques completed work for correctness, quality, edge cases, and maintainability.
+disable: true
 mode: subagent
 model: github-copilot/gpt-5.4
 variant: high
