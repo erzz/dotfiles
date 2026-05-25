@@ -111,7 +111,7 @@ eval "$(zoxide init zsh)"
 
 eval "$(mise activate zsh)"
 
-### BUN 
+### BUN
 #  bun completions
 [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
@@ -119,3 +119,5 @@ eval "$(mise activate zsh)"
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
+# herdr
+export PATH="/Users/sean.erswell-liljefelt/.local/bin:$PATH"
