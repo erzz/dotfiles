@@ -24,15 +24,12 @@ jobs:
         run: |
           pacman -Sy --noconfirm git chezmoi bash zsh tmux mise jq
 
-      - name: Checkout into chezmoi source location
-        uses: actions/checkout@v4
-        with:
-          path: chezmoi-source
+      - uses: actions/checkout@v4
 
-      - name: Move repo to chezmoi source dir
+      - name: Copy repo to chezmoi source dir
         run: |
           mkdir -p "$HOME/.local/share"
-          mv "${{ github.workspace }}/chezmoi-source" "$HOME/.local/share/chezmoi"
+          cp -a . "$HOME/.local/share/chezmoi"
 
       - name: Write chezmoi config (CI mode)
         # Shared with the macOS job — see tests/ci/chezmoi.toml.
@@ -66,16 +63,14 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
-        with:
-          path: chezmoi-source
 
       - name: Install chezmoi
         run: brew install chezmoi
 
-      - name: Move repo to chezmoi source dir
+      - name: Copy repo to chezmoi source dir
         run: |
           mkdir -p "$HOME/.local/share"
-          mv "${{ github.workspace }}/chezmoi-source" "$HOME/.local/share/chezmoi"
+          cp -a . "$HOME/.local/share/chezmoi"
 
       - name: Write chezmoi config (CI mode)
         # Shared with the Linux job — see tests/ci/chezmoi.toml.
@@ -87,5 +82,4 @@ jobs:
         run: chezmoi apply --force --keep-going
 
       - name: Run test suite
-        run: bash tests/run.sh
-        working-directory: ~/.local/share/chezmoi
+        run: cd "$HOME/.local/share/chezmoi" && bash tests/run.sh

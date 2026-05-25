@@ -1,0 +1,4 @@
+# Follow source directives (equivalent to -x flag).
+# Without this, SC1091 fires on every `source "..."` even when
+# `# shellcheck source=<path>` is provided above it.
+external-sources=true

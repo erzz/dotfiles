@@ -3,7 +3,12 @@
 set -euo pipefail
 
 [ -L "${HOME}/.zshrc" ] || { echo ".zshrc not a symlink"; exit 1; }
-[ -d "${HOME}/.oh-my-zsh" ] || { echo "Oh My Zsh missing"; exit 1; }
+
+# OMZ is installed by bootstrap (Phase 4), not by chezmoi apply.
+# Skip in CI where only chezmoi apply runs.
+if [ -z "${CI:-}" ]; then
+  [ -d "${HOME}/.oh-my-zsh" ] || { echo "Oh My Zsh missing"; exit 1; }
+fi
 
 # Skip default-shell check in CI (chsh requires password)
 if [ -z "${CI:-}" ]; then
