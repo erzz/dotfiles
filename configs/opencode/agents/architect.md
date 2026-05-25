@@ -1,5 +1,6 @@
 ---
 description: Deep reasoning reviewer. Used for hard architectural tradeoffs, repeated failed attempts, or thorny debugging.
+disable: true
 mode: subagent
 model: github-copilot/gpt-5.4
 variant: high

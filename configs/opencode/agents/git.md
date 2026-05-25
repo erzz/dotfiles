@@ -1,5 +1,6 @@
 ---
 description: Git and change-management specialist. Use for commit strategy, branch hygiene, PR preparation, and repository history tasks.
+disable: true
 mode: subagent
 model: github-copilot/gpt-5.4
 variant: medium

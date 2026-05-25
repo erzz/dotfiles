@@ -1,5 +1,6 @@
 ---
 description: Codebase exploration specialist. Maps unfamiliar project areas, patterns, and likely edit points before implementation begins.
+disable: true
 mode: subagent
 model: github-copilot/gpt-5.4-mini
 variant: medium

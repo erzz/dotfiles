@@ -1,5 +1,6 @@
 ---
 description: Deep execution specialist. Use for end-to-end, research-heavy implementation work that benefits from a steady generalist model.
+disable: true
 mode: subagent
 model: github-copilot/claude-sonnet-4.6
 variant: high

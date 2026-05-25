@@ -1,5 +1,6 @@
 ---
 description: Writing specialist. Use for technical documentation, explanations, migration notes, and polished prose.
+disable: true
 mode: subagent
 model: github-copilot/claude-sonnet-4.6
 variant: high

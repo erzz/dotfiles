@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 # Brew: minimum tools available (these are in both Brewfile and Brewfile.ci).
+# Skip on non-macOS — brew is macOS-specific.
 set -euo pipefail
+
+if [ "$(uname -s)" != "Darwin" ]; then
+  exit 0
+fi
 
 REQUIRED=(bat delta direnv eza fd fzf git jq mise rg starship tmux zsh chezmoi)
 missing=()

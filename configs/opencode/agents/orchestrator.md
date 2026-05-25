@@ -1,5 +1,6 @@
 ---
 description: Execution orchestrator. Drives non-trivial work from planning through implementation and verification using explicit native delegation.
+disable: true
 mode: subagent
 hidden: true
 model: github-copilot/claude-opus-4.6

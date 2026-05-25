@@ -1,5 +1,6 @@
 ---
 description: Hard-problem specialist. Use for unusually difficult reasoning, architecture, and algorithmic tradeoffs.
+disable: true
 mode: subagent
 model: github-copilot/gpt-5.4
 variant: xhigh

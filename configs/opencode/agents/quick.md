@@ -1,5 +1,6 @@
 ---
 description: Quick task specialist. Use for trivial, low-risk work where fast turnaround matters more than deep deliberation.
+disable: true
 mode: subagent
 model: github-copilot/gpt-5.4-mini
 variant: low

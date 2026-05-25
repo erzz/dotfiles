@@ -1,5 +1,6 @@
 ---
 description: Plan reviewer. Evaluates plans for clarity, completeness, verifiability, and execution readiness.
+disable: true
 mode: subagent
 model: github-copilot/gpt-5.4
 variant: xhigh

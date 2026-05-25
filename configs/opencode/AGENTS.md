@@ -2,18 +2,27 @@
 
 These rules apply across every OpenCode session, in every project. They are loaded both as the user-level `AGENTS.md` and as merged instructions in any project that has its own `AGENTS.md`.
 
-The setup is intentionally **plugin-free**. The source of truth lives in plain files under `~/.config/opencode/`:
+This setup uses **oh-my-openagent (OMO) v4.4.0** as the primary agent harness. The source of truth lives in:
 
-- `opencode.json` — native OpenCode configuration and MCP servers
-- `agents/*.md` — dedicated agents and delegation targets
+- `opencode.json` — OpenCode configuration, MCP servers, and plugin registration
+- `oh-my-openagent.json` — OMO agent/category model configuration
+- `agents/*.md` — supplementary specialist agents (frontend, cicd, framing, etc.)
 - `skills/**/SKILL.md` — reusable workflow guidance
 - `commands/*.md` — native planning, review, and orchestration shortcuts
 
 ## Working Model
 
-The default agent is `@engineer`. That is the main conversational entrypoint for normal use.
+The default agent is **Sisyphus** (via OMO). That is the main conversational entrypoint.
 
-Use `/start-work <task>` only when you want an explicit orchestration run in an isolated subtask.
+OMO provides its own orchestration: type `ultrawork` (or `ulw`) in your prompt for full
+parallel-agent execution. Use `/start-work` via Prometheus for interview-mode strategic planning.
+
+### Available Custom Specialists
+
+These agents remain available alongside OMO's built-in agents for domain-specific work:
+
+- `@frontend` — Skapa Design System-aware frontend development (has `skapa_*` MCP tools)
+- `@cicd` — INGKA reusable workflow pipelines (has `workflows_*` MCP tools)
 
 ## Information Gathering
 
@@ -94,44 +103,14 @@ Things that surprised you. Things the agent has gotten wrong before.
 If the brief grows past ~120 lines it is wrong — split details into separate
 files referenced by path, and let the agent read those on demand.
 
-## Delegation Defaults
+## Delegation
 
-These are **defaults the engineer must follow**, not options to consider. If
-you skip a default, state which step and why in one sentence before proceeding.
-Silent skipping is a bug.
+OMO's Sisyphus handles orchestration and delegation internally via categories
+(`visual-engineering`, `deep`, `ultrabrain`, `quick`, `writing`, etc.). For
+domain-specific work with MCP tools, use the custom specialists:
 
-For any task that touches code:
-
-1. **Unfamiliar area in this session?** → `@explore` first. Skip only if you
-   have already read the relevant files in this session, or if grounding
-   covered it.
-2. **More than ~30 lines of new code, or >2 files?** → `@planner` first.
-3. **After implementation of any non-trivial change** → `@reviewer` before
-   declaring done.
-
-State your delegation choice explicitly at the start of a code-touching task,
-e.g. *"Plan: explore=N (already read these files), planner=Y, reviewer=Y."*
-
-### Specialist Routing
-
-When the defaults above call for delegation, or when a task obviously fits a
-specialist, route to:
-
-- `@framing` — request wording may hide ambiguity or unstated intent
-- `@planner` — non-trivial planning (loads the `planning` skill)
-- `@plan-reviewer` — plan matters or spans multiple files/systems
-- `@explore` — map unfamiliar codebases, return file paths with brief notes
-- `@librarian` — external documentation or library behavior
-- `@frontend` — frontend implementation
-- `@cicd` — GitHub Actions, reusable workflows, releases, pipeline design
-- `@quick` — trivial, low-risk tasks only
-- `@deep` — research-heavy end-to-end implementation across multiple moving parts
-- `@ultrabrain` — the hardest reasoning or architecture work
-- `@writing` — documentation and polished prose
-- `@git` — git strategy, branches, commits, PR-oriented repository work
-- `@reviewer` — critique completed work for quality, edge cases, risks
-- `@architect` — unusually hard debugging or architecture decisions after normal approaches fail
-- `@orchestrator` — only through `/start-work` for explicit isolated orchestration runs
+- **Frontend/UI work needing Skapa** → `@frontend`
+- **CI/CD pipelines needing INGKA workflows** → `@cicd`
 
 ## Handoff Standard
 
@@ -154,17 +133,21 @@ verbatim, treating the task as paused rather than complete. Reserve `BLOCKED:` f
 decisions; for minor ambiguities, subagents should pick the most reasonable option, document the
 assumption, and continue.
 
-## Native-First Principle
+## MCP Servers
 
-Prefer native OpenCode features over external installers or opaque package behavior. If a behavior can
-be expressed with agents, skills, commands, `AGENTS.md`, or `opencode.json`, keep it there.
+Two domain-specific MCP servers are configured globally:
 
-## Native Commands
+- **skapa** — Skapa Design System component documentation, usage examples, and styling guidance
+- **workflows** — INGKA reusable GitHub Actions workflow search, details, and YAML generation
 
-- `/plan <task>` uses `@planner` to produce a short execution plan
-- `/review <change>` uses `@reviewer` to critique completed work
-- `/start-work <task>` uses `@orchestrator` to run the native orchestration flow
-- `/ground` uses `@explore` to perform a deep project orientation pass and offer to write a project `AGENTS.md`
+These are available to all agents. The `@frontend` and `@cicd` specialists are tuned to use them
+effectively.
+
+## Reverting to Pre-OMO Setup
+
+To revert: `git checkout main` in `~/.local/share/chezmoi` and restart OpenCode. The symlink
+at `~/.config/opencode` points at `configs/opencode/` in the source tree, so the branch switch
+immediately restores the original plugin-free configuration.
 
 ## Project-Specific Rules
 
