@@ -119,5 +119,3 @@ eval "$(mise activate zsh)"
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
-# herdr
-export PATH="/Users/sean.erswell-liljefelt/.local/bin:$PATH"
