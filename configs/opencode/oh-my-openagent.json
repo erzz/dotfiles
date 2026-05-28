@@ -95,6 +95,11 @@
       ]
     }
   },
+  "sisyphus": {
+    "tasks": {
+      "storage_path": "~/.local/state/omo/tasks"
+    }
+  },
   "categories": {
     "visual-engineering": {
       "model": "github-copilot/gemini-2.5-pro",
