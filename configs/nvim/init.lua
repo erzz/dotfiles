@@ -8,6 +8,10 @@
 --   lua/lsp.lua       vim.lsp.config / vim.lsp.enable per server
 --   lua/plugin-config/*.lua  per-plugin setup
 
+-- Suppress OSC 11 background query before TUI init (prevents response leaking
+-- into shell when exiting nvim quickly through tmux).
+vim.g.terminal_color_background = "#242424"
+
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
