@@ -11,7 +11,10 @@
       "oracle": {
         "model": "github-copilot/gpt-5.5",
         "variant": "high",
-        "skills": ["simplify"],
+        "skills": [
+          "simplify",
+          "codemap"
+        ],
         "mcps": []
       },
       "council": {
@@ -21,13 +24,18 @@
       },
       "librarian": {
         "model": "github-copilot/gpt-5.4-mini",
-        "skills": [],
+        "skills": [
+          "clonedeps"
+        ],
         "mcps": ["websearch", "context7", "grep_app"]
       },
       "explorer": {
         "model": "github-copilot/gpt-5.4-mini",
         "variant": "low",
-        "skills": [],
+        "skills": [
+          "codemap",
+          "clonedeps"
+        ],
         "mcps": []
       },
       "designer": {
