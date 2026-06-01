@@ -40,6 +40,5 @@
     "general": {
       "disable": true
     }
-  },
-  "lsp": true
+  }
 }

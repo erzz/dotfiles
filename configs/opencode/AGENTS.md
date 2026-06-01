@@ -6,7 +6,7 @@ This setup uses **oh-my-openagent (OMO) v4.4.0** as the primary agent harness. T
 
 - `opencode.json` — OpenCode configuration, MCP servers, and plugin registration
 - `oh-my-openagent.json` — OMO agent/category model configuration
-- `agents/*.md` — supplementary specialist agents (frontend, cicd, framing, etc.)
+- `agents/*.md` — supplementary specialist agents (designer, cicd, framing, etc.)
 - `skills/**/SKILL.md` — reusable workflow guidance
 - `commands/*.md` — native planning, review, and orchestration shortcuts
 
@@ -21,7 +21,7 @@ parallel-agent execution. Use `/start-work` via Prometheus for interview-mode st
 
 These agents remain available alongside OMO's built-in agents for domain-specific work:
 
-- `@frontend` — Skapa Design System-aware frontend development (has `skapa_*` MCP tools)
+- `@designer` — UI/UX design, frontend implementation, and Skapa Design System compliance (has `skapa_*` MCP tools)
 - `@cicd` — INGKA reusable workflow pipelines (has `workflows_*` MCP tools)
 
 ## Information Gathering
@@ -109,7 +109,7 @@ OMO's Sisyphus handles orchestration and delegation internally via categories
 (`visual-engineering`, `deep`, `ultrabrain`, `quick`, `writing`, etc.). For
 domain-specific work with MCP tools, use the custom specialists:
 
-- **Frontend/UI work needing Skapa** → `@frontend`
+- **Frontend/UI work needing Skapa** → `@designer`
 - **CI/CD pipelines needing INGKA workflows** → `@cicd`
 
 ## Handoff Standard
@@ -140,7 +140,7 @@ Two domain-specific MCP servers are configured globally:
 - **skapa** — Skapa Design System component documentation, usage examples, and styling guidance
 - **workflows** — INGKA reusable GitHub Actions workflow search, details, and YAML generation
 
-These are available to all agents. The `@frontend` and `@cicd` specialists are tuned to use them
+These are available to all agents. The `@designer` and `@cicd` specialists are tuned to use them
 effectively.
 
 ## Reverting to Pre-OMO Setup
