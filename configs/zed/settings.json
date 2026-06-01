@@ -27,6 +27,7 @@
     }
   },
   "agent": {
+    "dock": "right",
     "tool_permissions": {
       "default": "allow"
     },
@@ -47,6 +48,7 @@
     "button": "when_in_call"
   },
   "collaboration_panel": {
+    "dock": "left",
     "button": false
   },
   "diagnostics": {
@@ -231,6 +233,7 @@
     "button": false
   },
   "outline_panel": {
+    "dock": "left",
     "button": false
   },
   "preferred_line_length": 100,
