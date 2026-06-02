@@ -1,27 +1,33 @@
 # Global OpenCode Rules
 
-These rules apply across every OpenCode session, in every project. They are loaded both as the user-level `AGENTS.md` and as merged instructions in any project that has its own `AGENTS.md`.
+These rules apply across every OpenCode session, in every project. They are loaded both as the
+user-level `AGENTS.md` and as merged instructions in any project that has its own `AGENTS.md`.
 
-This setup uses **oh-my-openagent (OMO) v4.4.0** as the primary agent harness. The source of truth lives in:
+This setup uses **oh-my-opencode-slim** as the primary agent harness. The source of truth lives in:
 
 - `opencode.json` — OpenCode configuration, MCP servers, and plugin registration
-- `oh-my-openagent.json` — OMO agent/category model configuration
-- `agents/*.md` — supplementary specialist agents (designer, cicd, framing, etc.)
+- `oh-my-opencode-slim.json` — plugin preset, model, skill, and MCP routing configuration
+- `agents/*.md` — supplementary local specialists that sit alongside plugin agents
 - `skills/**/SKILL.md` — reusable workflow guidance
 - `commands/*.md` — native planning, review, and orchestration shortcuts
 
 ## Working Model
 
-The default agent is **Sisyphus** (via OMO). That is the main conversational entrypoint.
+The default agent is **orchestrator** from oh-my-opencode-slim. That is the main conversational
+entrypoint and the agent that owns planning, implementation, delegation, and verification.
 
-OMO provides its own orchestration: type `ultrawork` (or `ulw`) in your prompt for full
-parallel-agent execution. Use `/start-work` via Prometheus for interview-mode strategic planning.
+oh-my-opencode-slim provides native OpenCode agents and delegation tools. Use natural language for
+normal work; the Orchestrator decides when to delegate. You can also delegate manually with
+`@agentName <task>`.
 
 ### Available Custom Specialists
 
-These agents remain available alongside OMO's built-in agents for domain-specific work:
+The plugin provides `@explorer`, `@librarian`, `@oracle`, `@designer`, `@fixer`, and `@council`
+agents. These local agents remain available alongside the plugin agents for domain-specific MCP
+workflows:
 
-- `@designer` — UI/UX design, frontend implementation, and Skapa Design System compliance (has `skapa_*` MCP tools)
+- `@designer` — UI/UX design, frontend implementation, and Skapa Design System compliance (has
+  `skapa_*` MCP tools)
 - `@cicd` — INGKA reusable workflow pipelines (has `workflows_*` MCP tools)
 
 ## Information Gathering
@@ -33,8 +39,8 @@ output, and configuration values.
 Acceptable to ask the user for:
 
 - Intent, preferences, priorities, or trade-offs
-- Information that genuinely lives outside the workspace (credentials, external system state,
-  things only they know)
+- Information that genuinely lives outside the workspace (credentials, external system state, things
+  only they know)
 - Confirmation before destructive or irreversible actions
 
 Not acceptable to ask the user for:
@@ -45,69 +51,72 @@ Not acceptable to ask the user for:
 - "Is tool Z installed?"
 - Any factual question answerable by `read`, `glob`, `grep`, or `bash`
 
-If you catch yourself drafting a question, ask first: *can a tool answer this?* If yes, run the
+If you catch yourself drafting a question, ask first: _can a tool answer this?_ If yes, run the
 tool. Asking the user is the slower, more expensive path.
 
 ## Project Grounding
 
-At the start of any session in a project directory, before answering substantive
-questions or editing code:
+At the start of any session in a project directory, before answering substantive questions or
+editing code:
 
-1. **Project `AGENTS.md` present?** OpenCode has already loaded it. Use it. Do
-   not re-read it as a tool call.
-2. **No project `AGENTS.md` and the task is non-trivial?** Do a 30-second
-   self-orientation: read `README.md` (or its top), list the top-level
-   directory, and skim the manifest (`package.json`, `go.mod`, `pyproject.toml`,
-   `Cargo.toml`, `flake.nix`, equivalent). This is ~3 cheap tool calls — not
-   `@explore`.
+1. **Project `AGENTS.md` present?** OpenCode has already loaded it. Use it. Do not re-read it as a
+   tool call.
+2. **No project `AGENTS.md` and the task is non-trivial?** Do a 30-second self-orientation: read
+   `README.md` (or its top), list the top-level directory, and skim the manifest (`package.json`,
+   `go.mod`, `pyproject.toml`, `Cargo.toml`, `flake.nix`, equivalent). This is ~3 cheap tool calls —
+   not `@explorer`.
 3. **Only after that** may you ask the user project-shape questions.
 
-For trivial requests ("what does this command do", "fix this typo", pure
-conversation) skip grounding entirely.
+For trivial requests ("what does this command do", "fix this typo", pure conversation) skip
+grounding entirely.
 
-If the project is non-trivial and has no `AGENTS.md`, **offer once at the end
-of the session** to draft one based on what you learned. Use the shape defined
-under "Project Brief Shape" below.
+If the project is non-trivial and has no `AGENTS.md`, **offer once at the end of the session** to
+draft one based on what you learned. Use the shape defined under "Project Brief Shape" below.
 
-For an explicit deeper pass (new contributor, returning to a project after a
-long absence, big refactor incoming), use `/ground`.
+For an explicit deeper pass (new contributor, returning to a project after a long absence, big
+refactor incoming), use `/ground`.
 
 ### Project Brief Shape
 
-When drafting or updating a project `AGENTS.md`, keep it under ~120 lines and
-use this shape. No prose padding.
+When drafting or updating a project `AGENTS.md`, keep it under ~120 lines and use this shape. No
+prose padding.
 
 ```markdown
 # Project: <name>
 
 ## Stack
+
 One line. e.g. "Go 1.22, Echo, Postgres via sqlc, Tofu for infra"
 
 ## Layout
+
 5–10 bullets. Top-level dirs and what lives there.
 
 ## How to run / test / build
+
 Exact commands. No prose.
 
 ## Conventions
-Bullets only. Linters, formatters, naming, error handling style.
-Anything an outsider would get wrong on first try.
+
+Bullets only. Linters, formatters, naming, error handling style. Anything an outsider would get
+wrong on first try.
 
 ## Entry points
+
 Where to start reading for common tasks.
 
 ## Gotchas
+
 Things that surprised you. Things the agent has gotten wrong before.
 ```
 
-If the brief grows past ~120 lines it is wrong — split details into separate
-files referenced by path, and let the agent read those on demand.
+If the brief grows past ~120 lines it is wrong — split details into separate files referenced by
+path, and let the agent read those on demand.
 
 ## Delegation
 
-OMO's Sisyphus handles orchestration and delegation internally via categories
-(`visual-engineering`, `deep`, `ultrabrain`, `quick`, `writing`, etc.). For
-domain-specific work with MCP tools, use the custom specialists:
+The Orchestrator handles orchestration and delegation internally using the oh-my-opencode-slim
+specialist agents. For domain-specific work with MCP tools, use the custom specialists:
 
 - **Frontend/UI work needing Skapa** → `@designer`
 - **CI/CD pipelines needing INGKA workflows** → `@cicd`
@@ -143,12 +152,9 @@ Two domain-specific MCP servers are configured globally:
 These are available to all agents. The `@designer` and `@cicd` specialists are tuned to use them
 effectively.
 
-## Reverting to Pre-OMO Setup
-
-To revert: `git checkout main` in `~/.local/share/chezmoi` and restart OpenCode. The symlink
-at `~/.config/opencode` points at `configs/opencode/` in the source tree, so the branch switch
-immediately restores the original plugin-free configuration.
-
 ## Project-Specific Rules
 
-If the project provides its own `AGENTS.md`, it sits alongside these global rules. Project rules describe the project; these globals describe the workflow. When they conflict, project-specific guidance about that project's code, conventions, or commands wins. Workflow conventions (delegation, handoff shape, blocking questions) stay as defined here.
+If the project provides its own `AGENTS.md`, it sits alongside these global rules. Project rules
+describe the project; these globals describe the workflow. When they conflict, project-specific
+guidance about that project's code, conventions, or commands wins. Workflow conventions (delegation,
+handoff shape, blocking questions) stay as defined here.

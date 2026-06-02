@@ -1,6 +1,6 @@
 ---
 description: Force a deeper project orientation pass and offer to write a project AGENTS.md.
-agent: explore
+agent: explorer
 subtask: true
 ---
 
