@@ -2,6 +2,7 @@
 bun = "latest"
 java = "latest"
 node = "24"
+"npm:agent-browser" = "latest"
 "npm:@ingka-group-digital/skapa-design-system-mcp" = "0.5.5"
 "npm:@ingka-group-digital/workflows-mcp" = "latest"
 "npm:@playwright/mcp" = "latest"
