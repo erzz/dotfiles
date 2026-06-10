@@ -5,6 +5,14 @@
 token-usage-output.txt
 
 # Runtime artifacts in symlinked config directories
+configs/colima/default/daemon/
+configs/colima/default/docker.sock
+configs/colima/default/containerd.sock
+configs/colima/docker.sock
+configs/colima/ssh_config
+configs/colima/_lima/
+configs/colima/_store/
+configs/colima/_templates/
 configs/opencode/node_modules/
 configs/opencode/package.json
 configs/opencode/package-lock.json

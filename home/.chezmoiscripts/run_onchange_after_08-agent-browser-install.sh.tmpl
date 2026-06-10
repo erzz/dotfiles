@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# Install agent-browser browser assets after the CLI is installed by mise.
+# Re-runs whenever the mise tool list changes.
+#
+# mise config hash:
+# {{ output "sha256sum" (joinPath .chezmoi.workingTree "configs" "mise" "config.toml") }}
+{{- if not .ci }}
+set -euo pipefail
+
+# Ensure brew (and tools installed via brew like mise) are on PATH even if
+# this is the first apply on a fresh machine where the user's shell config
+# hasn't been sourced yet.
+if [ -x /opt/homebrew/bin/brew ] && ! command -v brew >/dev/null 2>&1; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
+
+if ! command -v mise >/dev/null 2>&1; then
+  echo "==> mise not found; skipping agent-browser install"
+  exit 0
+fi
+
+if ! mise where npm:agent-browser >/dev/null 2>&1; then
+  echo "==> mise-managed agent-browser not found; run mise install --yes first"
+  exit 0
+fi
+
+echo "==> Installing agent-browser browser assets..."
+mise x npm:agent-browser -- agent-browser install
+{{- else }}
+echo "==> CI mode — skipping agent-browser install"
+{{- end }}

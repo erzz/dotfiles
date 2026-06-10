@@ -97,8 +97,7 @@ precmd() {
 export EDITOR="zed"
 
 ### DOCKER
-# Set the Docker host to use Colima's socket
-export DOCKER_HOST="unix://${XDG_CONFIG_HOME:-$HOME/.config}/colima/default/docker.sock"
+# Do not set DOCKER_HOST; Docker contexts select Colima.
 
 ### PRETTIERD
 export PRETTIERD_DEFAULT_CONFIG=~/.config/prettierd/global.json
@@ -118,4 +117,3 @@ eval "$(mise activate zsh)"
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
-
