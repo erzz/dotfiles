@@ -14,11 +14,33 @@ This setup uses **oh-my-opencode-slim** as the primary agent harness. The source
 ## Working Model
 
 The default agent is **orchestrator** from oh-my-opencode-slim. That is the main conversational
-entrypoint and the agent that owns planning, implementation, delegation, and verification.
+entrypoint and the agent that owns planning, scheduling, delegation, reconciliation, and
+verification.
 
 oh-my-opencode-slim provides native OpenCode agents and delegation tools. Use natural language for
 normal work; the Orchestrator decides when to delegate. You can also delegate manually with
 `@agentName <task>`.
+
+### OMO v2 Scheduler Model
+
+For non-trivial coding work, treat the Orchestrator as a workflow manager rather than the default
+implementation worker:
+
+- Build a short work graph before acting: independent lanes, dependencies, ownership, and
+  verification.
+- Prefer background specialist agents for bounded work that can run independently.
+- Give writer agents explicit non-overlapping file or directory ownership.
+- Track task/session IDs and reuse completed specialist sessions only when the context still fits.
+- Do not poll running background jobs; wait for hook-driven completion or cancel only when obsolete,
+  conflicting, or explicitly requested.
+- Reconcile all completed specialist and terminal results before final responses.
+- Use `@explorer` for broad codebase discovery, `@librarian` for external/current docs,
+  `@fixer` for bounded mechanical implementation, `@designer` for visible UI/UX, `@oracle` for
+  architecture/review/debugging strategy, and `@cicd` for reusable workflow pipelines.
+- Use `deepwork` for large, risky, or multi-phase implementation sessions.
+- Use `worktrees` for isolated risky or parallel coding lanes.
+- Use `reflect` when repeated workflow friction should become a reusable rule, skill, command, or
+  config improvement.
 
 ### Available Custom Specialists
 
@@ -149,8 +171,12 @@ Two domain-specific MCP servers are configured globally:
 - **skapa** — Skapa Design System component documentation, usage examples, and styling guidance
 - **workflows** — INGKA reusable GitHub Actions workflow search, details, and YAML generation
 
-These are available to all agents. The `@designer` and `@cicd` specialists are tuned to use them
-effectively.
+These are globally defined but intentionally restricted by permission and routing:
+
+- `skapa_*` tools are for `@designer` only. Other agents must hand off UI/design-system work to
+  `@designer` rather than calling Skapa tools directly.
+- `workflows_*` tools are for `@cicd` only. Other agents must hand off CI/CD reusable-workflow work
+  to `@cicd` rather than calling workflows tools directly.
 
 ## Project-Specific Rules
 

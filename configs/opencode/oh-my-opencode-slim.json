@@ -1,18 +1,28 @@
 {
-  "$schema": "https://unpkg.com/oh-my-opencode-slim@latest/oh-my-opencode-slim.schema.json",
+  "$schema": "https://unpkg.com/oh-my-opencode-slim@2.0.5/oh-my-opencode-slim.schema.json",
   "preset": "copilot",
   "presets": {
     "copilot": {
       "orchestrator": {
         "model": "github-copilot/gpt-5.5",
         "variant": "medium",
-        "skills": ["*"],
-        "mcps": ["grep_app"]
+        "skills": [
+          "oh-my-opencode-slim",
+          "deepwork",
+          "reflect",
+          "worktrees",
+          "source-control"
+        ],
+        "mcps": [
+          "grep_app"
+        ]
       },
       "oracle": {
         "model": "github-copilot/gpt-5.5",
         "variant": "high",
-        "skills": ["simplify", "codemap"],
+        "skills": [
+          "simplify"
+        ],
         "mcps": []
       },
       "council": {
@@ -23,19 +33,31 @@
       "librarian": {
         "model": "github-copilot/gpt-5.4-mini",
         "variant": "low",
-        "skills": ["clonedeps"],
-        "mcps": ["websearch", "context7", "grep_app"]
+        "skills": [
+          "clonedeps"
+        ],
+        "mcps": [
+          "websearch",
+          "context7",
+          "grep_app"
+        ]
       },
       "explorer": {
         "model": "github-copilot/gpt-5.4-mini",
         "variant": "low",
-        "skills": ["codemap", "clonedeps"],
+        "skills": [
+          "codemap"
+        ],
         "mcps": []
       },
       "designer": {
         "model": "github-copilot/gemini-2.5-pro",
-        "skills": ["agent-browser"],
-        "mcps": ["skapa"]
+        "skills": [
+          "agent-browser"
+        ],
+        "mcps": [
+          "skapa"
+        ]
       },
       "fixer": {
         "model": "github-copilot/gpt-5.4-mini",
@@ -43,89 +65,18 @@
         "skills": [],
         "mcps": []
       }
-    },
-    "openai": {
-      "orchestrator": {
-        "model": "openai/gpt-5.5",
-        "skills": ["*"],
-        "mcps": ["*", "!context7"]
-      },
-      "oracle": {
-        "model": "openai/gpt-5.5",
-        "variant": "high",
-        "skills": ["simplify"],
-        "mcps": []
-      },
-      "librarian": {
-        "model": "openai/gpt-5.4-mini",
-        "variant": "low",
-        "skills": [],
-        "mcps": ["websearch", "context7", "grep_app"]
-      },
-      "explorer": {
-        "model": "openai/gpt-5.4-mini",
-        "variant": "low",
-        "skills": [],
-        "mcps": []
-      },
-      "designer": {
-        "model": "openai/gpt-5.4-mini",
-        "variant": "medium",
-        "skills": ["agent-browser"],
-        "mcps": []
-      },
-      "fixer": {
-        "model": "openai/gpt-5.4-mini",
-        "variant": "low",
-        "skills": [],
-        "mcps": []
-      }
-    },
-    "opencode-go": {
-      "orchestrator": {
-        "model": "opencode-go/glm-5.1",
-        "skills": ["*"],
-        "mcps": ["*", "!context7"]
-      },
-      "oracle": {
-        "model": "opencode-go/deepseek-v4-pro",
-        "variant": "max",
-        "skills": ["simplify"],
-        "mcps": []
-      },
-      "council": {
-        "model": "opencode-go/deepseek-v4-pro",
-        "variant": "high",
-        "skills": [],
-        "mcps": []
-      },
-      "librarian": {
-        "model": "opencode-go/minimax-m2.7",
-        "skills": [],
-        "mcps": ["websearch", "context7", "grep_app"]
-      },
-      "explorer": {
-        "model": "opencode-go/minimax-m2.7",
-        "skills": [],
-        "mcps": []
-      },
-      "designer": {
-        "model": "opencode-go/kimi-k2.6",
-        "variant": "medium",
-        "skills": ["agent-browser"],
-        "mcps": []
-      },
-      "fixer": {
-        "model": "opencode-go/deepseek-v4-flash",
-        "variant": "high",
-        "skills": [],
-        "mcps": []
-      },
-      "observer": {
-        "model": "opencode-go/kimi-k2.6",
-        "skills": [],
-        "mcps": []
-      }
+    }
+  },
+  "agents": {
+    "cicd": {
+      "model": "github-copilot/claude-sonnet-4.6",
+      "variant": "high",
+      "skills": [],
+      "mcps": [
+        "workflows"
+      ],
+      "prompt": "You are a CI/CD pipeline specialist with deep expertise in GitHub Actions and the INGKA reusable workflows ecosystem. You design, implement, and troubleshoot CI/CD pipelines by composing reusable workflows, not by copying their implementation inline. Use the workflows MCP tools proactively: workflows_list_workflows, workflows_search_workflows, workflows_get_workflow_details, workflows_get_workflow_input_details, and workflows_generate_workflow_usage. Always look up workflow interfaces, inputs, secrets, outputs, permissions, and examples before recommending or generating YAML; do not guess. Inspect the workspace first for tech stack, deployment targets, and existing workflow conventions. If a true user decision is required, return `BLOCKED: <question>` on its own line rather than asking directly. Pipeline principles: use workflow_call for reusable workflows, set least-privilege permissions, use needs for meaningful dependencies, pass secrets with secrets: inherit or explicit mappings as appropriate, use concurrency to prevent duplicate runs, prefer pull_request for quality/test jobs, push to main branches for branch automation, workflow_dispatch for release/ad-hoc jobs, and order multi-stage pipelines as lint/quality -> test -> security -> build -> deploy. For non-default branch workflows, maximize useful parallelism and avoid unnecessary needs dependencies. When producing a workflow file, return the complete YAML with a filename comment, inline comments for non-obvious choices, then a brief explanation of jobs and dependencies. For consultative work, use the compact handoff shape: summary, files, steps, risks, verification. You do not execute, deploy, or create custom actions; you produce and review workflow configuration only.",
+      "orchestratorPrompt": "Delegate to @cicd for GitHub Actions, INGKA reusable workflows, CI/CD pipeline setup or troubleshooting, quality/security/build/deploy workflow design, Terraform/OpenTofu pipeline automation, and release automation. Other agents must hand off to @cicd instead of calling workflows_* MCP tools directly. Do not use @cicd for general code implementation, application architecture, or non-CI/CD YAML edits."
     }
   }
 }

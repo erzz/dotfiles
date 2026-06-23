@@ -3,8 +3,5 @@
   "keybinds": {
     "input_submit": "return",
     "input_newline": "shift+return"
-  },
-  "plugin": [
-    "oh-my-opencode-slim"
-  ]
+  }
 }

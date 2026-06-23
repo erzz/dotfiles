@@ -1,9 +1,14 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "model": "github-copilot/claude-sonnet-4.6",
-  "plugin": ["@ramtinj95/opencode-tokenscope", "oh-my-opencode-slim"],
+  "plugin": [
+    "@ramtinj95/opencode-tokenscope@1.7.1",
+    "oh-my-opencode-slim@2.0.5"
+  ],
   "default_agent": "orchestrator",
-  "instructions": ["~/.config/opencode/AGENTS.md"],
+  "instructions": [
+    "~/.config/opencode/AGENTS.md"
+  ],
   "permission": {
     "skapa_*": "deny",
     "workflows_*": "deny"
@@ -11,14 +16,36 @@
   "mcp": {
     "skapa": {
       "type": "local",
-      "command": ["mise", "exec", "--", "skapa-design-system-mcp"]
+      "command": [
+        "mise",
+        "exec",
+        "--",
+        "skapa-design-system-mcp"
+      ]
     },
     "workflows": {
       "type": "local",
-      "command": ["mise", "exec", "--", "workflows-mcp"]
+      "command": [
+        "mise",
+        "exec",
+        "--",
+        "workflows-mcp"
+      ]
     }
   },
   "agent": {
+    "cicd": {
+      "permission": {
+        "question": "deny",
+        "skapa_*": "deny",
+        "workflows_*": "allow"
+      }
+    },
+    "designer": {
+      "permission": {
+        "skapa_*": "allow"
+      }
+    },
     "explore": {
       "disable": true
     },
