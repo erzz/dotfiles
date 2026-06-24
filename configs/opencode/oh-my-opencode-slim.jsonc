@@ -1,69 +1,92 @@
 {
   "$schema": "https://unpkg.com/oh-my-opencode-slim@2.0.5/oh-my-opencode-slim.schema.json",
   "preset": "copilot",
+
+  // Multiplexer: auto-detect tmux or Zellij and open live subagent panes.
+  // Requires OpenCode launched via oc() shell function (sets --port + OPENCODE_PORT).
   "multiplexer": {
     "type": "auto",
     "layout": "main-vertical",
     "main_pane_size": 65
   },
+
   "presets": {
     "copilot": {
+      // Orchestrator: primary entrypoint and scheduler. Medium reasoning is enough for
+      // work-graph planning and delegation; heavy thinking lives in oracle.
       "orchestrator": {
         "model": "github-copilot/gpt-5.5",
         "variant": "medium",
         "skills": [
-          "oh-my-opencode-slim",
-          "deepwork",
-          "reflect",
-          "worktrees",
-          "source-control"
+          "oh-my-opencode-slim", // core OMO workflow guidance
+          "deepwork",            // multi-phase heavy implementation sessions
+          "reflect",             // turn friction into reusable rules
+          "worktrees",           // isolated lanes for risky/parallel work
+          "source-control"       // git commits, branches, PRs
         ],
         "mcps": [
-          "grep_app"
+          "grep_app" // code search across public repos
         ]
       },
+
+      // Oracle: architecture, debugging strategy, code review. High reasoning justified.
       "oracle": {
         "model": "github-copilot/gpt-5.5",
         "variant": "high",
         "skills": [
-          "simplify"
+          "simplify" // readability/complexity review
         ],
         "mcps": []
       },
+
+      // Council: multi-model synthesis for high-stakes decisions. Sonnet for
+      // complementary reasoning to the gpt-5.5 orchestrator/oracle pair.
       "council": {
         "model": "github-copilot/claude-sonnet-4.6",
         "skills": [],
         "mcps": []
       },
+
+      // Librarian: external docs, changelogs, API research. Mini model is fine;
+      // task is retrieval and summarisation, not deep reasoning.
       "librarian": {
         "model": "github-copilot/gpt-5.4-mini",
         "variant": "low",
         "skills": [
-          "clonedeps"
+          "clonedeps" // clone dependency source for local inspection
         ],
         "mcps": [
-          "websearch",
-          "context7",
-          "grep_app"
+          "websearch", // current web search
+          "context7",  // official library docs
+          "grep_app"   // real-world code examples
         ]
       },
+
+      // Explorer: codebase search and pattern mapping. Mini model is appropriate;
+      // task is read-only file traversal and pattern matching.
       "explorer": {
         "model": "github-copilot/gpt-5.4-mini",
         "variant": "low",
         "skills": [
-          "codemap"
+          "codemap" // generate hierarchical codebase maps
         ],
         "mcps": []
       },
+
+      // Designer: UI/UX, frontend, Skapa Design System. Gemini for multimodal/visual
+      // reasoning and design-system fluency. Skapa MCP is allow-listed only here.
       "designer": {
         "model": "github-copilot/gemini-2.5-pro",
         "skills": [
-          "agent-browser"
+          "agent-browser" // browser automation for visual QA and testing
         ],
         "mcps": [
-          "skapa"
+          "skapa" // Skapa Design System docs and component guidance
         ]
       },
+
+      // Fixer: bounded mechanical implementation. Mini model is intentional;
+      // tasks are well-scoped and do not require deep reasoning.
       "fixer": {
         "model": "github-copilot/gpt-5.4-mini",
         "variant": "low",
@@ -72,13 +95,17 @@
       }
     }
   },
+
+  // Custom agents: domain specialists with MCP access beyond the built-in set.
   "agents": {
+    // cicd: GitHub Actions and INGKA reusable workflows. workflows_* MCP is
+    // restricted globally and allow-listed only here (see opencode.json permissions).
     "cicd": {
       "model": "github-copilot/claude-sonnet-4.6",
       "variant": "high",
       "skills": [],
       "mcps": [
-        "workflows"
+        "workflows" // INGKA reusable workflow search and YAML generation
       ],
       "prompt": "You are a CI/CD pipeline specialist with deep expertise in GitHub Actions and the INGKA reusable workflows ecosystem. You design, implement, and troubleshoot CI/CD pipelines by composing reusable workflows, not by copying their implementation inline. Use the workflows MCP tools proactively: workflows_list_workflows, workflows_search_workflows, workflows_get_workflow_details, workflows_get_workflow_input_details, and workflows_generate_workflow_usage. Always look up workflow interfaces, inputs, secrets, outputs, permissions, and examples before recommending or generating YAML; do not guess. Inspect the workspace first for tech stack, deployment targets, and existing workflow conventions. If a true user decision is required, return `BLOCKED: <question>` on its own line rather than asking directly. Pipeline principles: use workflow_call for reusable workflows, set least-privilege permissions, use needs for meaningful dependencies, pass secrets with secrets: inherit or explicit mappings as appropriate, use concurrency to prevent duplicate runs, prefer pull_request for quality/test jobs, push to main branches for branch automation, workflow_dispatch for release/ad-hoc jobs, and order multi-stage pipelines as lint/quality -> test -> security -> build -> deploy. For non-default branch workflows, maximize useful parallelism and avoid unnecessary needs dependencies. When producing a workflow file, return the complete YAML with a filename comment, inline comments for non-obvious choices, then a brief explanation of jobs and dependencies. For consultative work, use the compact handoff shape: summary, files, steps, risks, verification. You do not execute, deploy, or create custom actions; you produce and review workflow configuration only.",
       "orchestratorPrompt": "Delegate to @cicd for GitHub Actions, INGKA reusable workflows, CI/CD pipeline setup or troubleshooting, quality/security/build/deploy workflow design, Terraform/OpenTofu pipeline automation, and release automation. Other agents must hand off to @cicd instead of calling workflows_* MCP tools directly. Do not use @cicd for general code implementation, application architecture, or non-CI/CD YAML edits."
