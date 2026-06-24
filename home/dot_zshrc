@@ -126,3 +126,11 @@ export PATH="$PATH:/Users/sean.erswell-liljefelt/.lmstudio/bin"
 # >>> oh-my-opencode-slim background subagents >>>
 export OPENCODE_EXPERIMENTAL_BACKGROUND_SUBAGENTS=true
 # <<< oh-my-opencode-slim background subagents <<<
+
+# >>> oh-my-opencode-slim multiplexer launcher >>>
+oc() {
+  local port
+  port=$(jot -r 1 49152 65535)
+  OPENCODE_PORT="$port" opencode --port "$port" "$@"
+}
+# <<< oh-my-opencode-slim multiplexer launcher <<<

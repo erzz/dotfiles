@@ -1,6 +1,11 @@
 {
   "$schema": "https://unpkg.com/oh-my-opencode-slim@2.0.5/oh-my-opencode-slim.schema.json",
   "preset": "copilot",
+  "multiplexer": {
+    "type": "auto",
+    "layout": "main-vertical",
+    "main_pane_size": 65
+  },
   "presets": {
     "copilot": {
       "orchestrator": {
