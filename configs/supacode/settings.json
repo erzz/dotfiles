@@ -1,0 +1,68 @@
+{
+  "global" : {
+    "agentPresenceBadgesEnabled" : true,
+    "analyticsEnabled" : false,
+    "appearanceMode" : "dark",
+    "autoUpdateAgentIntegrationsEnabled" : true,
+    "automatedActionPolicy" : "cliOnly",
+    "confirmQuitMode" : "auto",
+    "copyIgnoredOnWorktreeCreate" : false,
+    "copyUntrackedOnWorktreeCreate" : false,
+    "crashReportsEnabled" : false,
+    "defaultEditorID" : "zed",
+    "deleteBranchOnDeleteWorktree" : true,
+    "fetchOriginBeforeWorktreeCreation" : true,
+    "githubIntegrationEnabled" : true,
+    "globalScripts" : [
+
+    ],
+    "hideSingleTabBar" : false,
+    "inAppNotificationsEnabled" : true,
+    "moveNotifiedWorktreeToTop" : true,
+    "notificationSoundEnabled" : true,
+    "promptForWorktreeCreation" : true,
+    "pullRequestMergeStrategy" : "merge",
+    "richAgentNotificationsEnabled" : true,
+    "shortcutOverrides" : {
+
+    },
+    "systemNotificationsEnabled" : true,
+    "terminalThemeSyncEnabled" : true,
+    "terminateSessionsOnQuit" : false,
+    "updateChannel" : "stable",
+    "updatesAutomaticallyCheckForUpdates" : true,
+    "updatesAutomaticallyDownloadUpdates" : false
+  },
+  "pinnedWorktreeIDs" : [
+
+  ],
+  "remoteRepositoryRoots" : [
+
+  ],
+  "repositories" : {
+    "\/Users\/sean.erswell-liljefelt\/.local\/share\/chezmoi\/" : {
+      "archiveScript" : "",
+      "deleteScript" : "",
+      "openActionID" : "auto",
+      "runScript" : "",
+      "scripts" : [
+
+      ],
+      "setupScript" : ""
+    },
+    "\/Users\/sean.erswell-liljefelt\/sites\/wedsite\/" : {
+      "archiveScript" : "",
+      "deleteScript" : "",
+      "openActionID" : "auto",
+      "runScript" : "",
+      "scripts" : [
+
+      ],
+      "setupScript" : ""
+    }
+  },
+  "repositoryRoots" : [
+    "\/Users\/sean.erswell-liljefelt\/sites\/wedsite\/",
+    "\/Users\/sean.erswell-liljefelt\/.local\/share\/chezmoi\/"
+  ]
+}

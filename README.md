@@ -152,6 +152,7 @@ Edit `~/.config/mise/config.toml` (which is symlinked into the repo at `configs/
 | `nvim` | Neovim 0.12 with native `vim.pack` (no framework) |
 | `opencode` | OpenCode AI assistant config |
 | `prettierd` | Global prettier daemon config |
+| `supacode` | Supacode app settings (`~/.supacode/settings.json`); terminal keybindings come from Ghostty |
 | `zed` | Zed editor config with MCP servers |
 | `zellij` | Zellij terminal multiplexer config |
 

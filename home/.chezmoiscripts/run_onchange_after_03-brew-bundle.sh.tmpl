@@ -33,6 +33,20 @@ if ! [ -t 0 ] || ! [ -t 1 ]; then
 fi
 
 echo "==> Running brew bundle..."
+if brew help trust >/dev/null 2>&1; then
+  # Required when HOMEBREW_REQUIRE_TAP_TRUST is enabled; otherwise brew bundle
+  # aborts before later entries (for example casks) can be installed.
+  brew trust --tap \
+    anomalyco/tap \
+    anchore/grant \
+    anchore/grype \
+    anchore/syft \
+    buo/cask-upgrade \
+    dart-lang/dart \
+    fsouza/prettierd \
+    goodwithtech/r \
+    sass/sass >/dev/null 2>&1 || true
+fi
 # The "${arr[@]+"${arr[@]}"}" idiom safely expands an empty array under
 # `set -u` on macOS's stock bash 3.2, where bare "${arr[@]}" errors with
 # "unbound variable" if the array has no elements.
