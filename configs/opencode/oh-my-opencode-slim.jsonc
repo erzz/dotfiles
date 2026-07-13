@@ -15,7 +15,7 @@
       // Orchestrator: primary entrypoint and scheduler. Medium reasoning is enough for
       // work-graph planning and delegation; heavy thinking lives in oracle.
       "orchestrator": {
-        "model": "github-copilot/gpt-5.5",
+        "model": "github-copilot/gpt-5.6-terra",
         "variant": "medium",
         "skills": [
           "oh-my-opencode-slim", // core OMO workflow guidance
@@ -31,7 +31,7 @@
 
       // Oracle: architecture, debugging strategy, code review. High reasoning justified.
       "oracle": {
-        "model": "github-copilot/gpt-5.5",
+        "model": "github-copilot/gpt-5.6-sol",
         "variant": "high",
         "skills": [
           "simplify" // readability/complexity review
@@ -50,7 +50,7 @@
       // Librarian: external docs, changelogs, API research. Mini model is fine;
       // task is retrieval and summarisation, not deep reasoning.
       "librarian": {
-        "model": "github-copilot/gpt-5.4-mini",
+        "model": "github-copilot/gpt-5.6-luna",
         "variant": "low",
         "skills": [
           "clonedeps" // clone dependency source for local inspection
@@ -65,7 +65,7 @@
       // Explorer: codebase search and pattern mapping. Mini model is appropriate;
       // task is read-only file traversal and pattern matching.
       "explorer": {
-        "model": "github-copilot/gpt-5.4-mini",
+        "model": "github-copilot/gpt-5.6-luna",
         "variant": "low",
         "skills": [
           "codemap" // generate hierarchical codebase maps
@@ -88,7 +88,7 @@
       // Fixer: bounded mechanical implementation. Mini model is intentional;
       // tasks are well-scoped and do not require deep reasoning.
       "fixer": {
-        "model": "github-copilot/gpt-5.4-mini",
+        "model": "github-copilot/gpt-5.6-luna",
         "variant": "low",
         "skills": [],
         "mcps": []
