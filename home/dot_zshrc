@@ -134,3 +134,4 @@ oc() {
   OPENCODE_PORT="$port" opencode --port "$port" "$@"
 }
 # <<< oh-my-opencode-slim multiplexer launcher <<<
+export PATH="$HOME/.local/bin:$PATH"

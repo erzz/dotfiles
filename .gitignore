@@ -21,6 +21,8 @@ configs/opencode/antigravity-accounts.json
 configs/opencode/antigravity-accounts.json.*.tmp
 configs/opencode/antigravity-signature-cache.json
 configs/opencode/antigravity-logs/
+configs/opencode/plugins/herdr-agent-state.js
+configs/herdr/session.json
 configs/zed/.tmp*
 configs/zed/conversations/
 configs/zed/embeddings/
