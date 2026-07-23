@@ -50,7 +50,7 @@ keybind = ctrl+l=unbind
 keybind = alt+arrow_left=unbind
 keybind = alt+arrow_right=unbind
 
-# Splits: super+hjkl focus, super+shift+hjkl create
+# Splits: Command+H/J/K/L focus, Command+Shift+H/J/K/L create.
 keybind = super+h=goto_split:left
 keybind = super+j=goto_split:down
 keybind = super+k=goto_split:up

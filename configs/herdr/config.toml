@@ -1,0 +1,44 @@
+onboarding = false
+# Herdr terminal multiplexer configuration.
+
+[terminal]
+# New panes, tabs, and workspaces inherit the focused pane's directory.
+new_cwd = "follow"
+
+[keys]
+# Keep Herdr's familiar tmux-style prefix workflow.
+prefix = "ctrl+b"
+
+# Tabs and panes
+new_tab = "prefix+c"
+previous_tab = "prefix+p"
+next_tab = "prefix+n"
+split_vertical = "prefix+v"
+split_horizontal = "prefix+minus"
+close_pane = "prefix+x"
+zoom = "prefix+z"
+
+# Prefix navigation works in every terminal without conflicting with Ghostty.
+focus_pane_left = "prefix+h"
+focus_pane_down = "prefix+j"
+focus_pane_up = "prefix+k"
+focus_pane_right = "prefix+l"
+
+# Directly switch among the first nine tabs after the prefix.
+switch_tab = "prefix+1..9"
+
+[ui]
+# Avoid accidentally closing an active workspace.
+confirm_close = true
+# Prompt for a name when creating a workspace.
+prompt_new_workspace_name = true
+# Copy a selection to the system clipboard automatically.
+copy_on_select = true
+
+[[keys.command]]
+key = "prefix+g"
+type = "popup"
+command = "lazygit"
+description = "Open lazygit"
+width = "80%"
+height = "80%"
