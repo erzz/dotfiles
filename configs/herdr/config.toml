@@ -35,6 +35,7 @@ prompt_new_workspace_name = true
 # Copy a selection to the system clipboard automatically.
 copy_on_select = true
 
+agent_panel_sort = "priority"
 [[keys.command]]
 key = "prefix+g"
 type = "popup"
