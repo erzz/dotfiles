@@ -92,9 +92,10 @@ The orchestrator owns final approval. Before cloning:
 1. Verify refs manually where possible with `git ls-remote`.
 2. Prefer pinned tags or commit SHAs. If no exact tag exists, ask librarian to
    find the correct module-specific tag/commit or explain the fallback.
-3. Only use HTTPS GitHub/GitLab-style repository URLs by default. Reject
-   `file://`, SSH URLs, local paths, URLs with embedded credentials, and private
-   or auth-required repositories unless the user explicitly approves that case.
+3. Use HTTPS GitHub/GitLab-style repository URLs by default. Reject `file://`,
+   local paths, and URLs with embedded credentials as unsafe. A separately
+   explicitly approved safe exception may use another transport or a private
+   or auth-required repository when necessary.
 4. Present the plan to the user with dependency, repo URL, ref, reason, and
    caveats.
 5. Ask for confirmation before network cloning unless the user explicitly asked
@@ -120,6 +121,35 @@ per-version folders. If two different source repositories normalize to the same
 safe name, disambiguate manually and record the chosen path in
 `.slim/clonedeps.json`.
 
+Before creating any clone artifacts, inspect the repository's existing
+`.gitignore` and `.ignore` files. Protect the clone directory first: normalize
+any existing managed clonedeps marker block to the exact full block below, or
+append exactly one full block if it is absent. Do not alter unrelated ignore
+rules or add duplicate blocks. Only after both ignore files are protected may
+you create a clone or temporary clone directory.
+
+The managed `.gitignore` block is:
+
+```gitignore
+# BEGIN oh-my-opencode-slim clonedeps
+.slim/clonedeps/repos/
+# END oh-my-opencode-slim clonedeps
+```
+
+The managed `.ignore` block is:
+
+```ignore
+# BEGIN oh-my-opencode-slim clonedeps
+!.slim/
+!.slim/clonedeps.json
+!.slim/clonedeps/
+!.slim/clonedeps/repos/
+!.slim/clonedeps/repos/**
+.slim/clonedeps/repos/**/.git/
+.slim/clonedeps/repos/**/.git/**
+# END oh-my-opencode-slim clonedeps
+```
+
 Clone/fetch with normal git commands. For an existing clone, first verify that
 `git remote get-url origin` matches the approved repo URL. If it does not match,
 stop and ask whether to clean/reclone.
@@ -127,11 +157,14 @@ stop and ask whether to clean/reclone.
 Safe manual git pattern:
 
 1. `git ls-remote <repoUrl> <ref>` to verify the ref where practical.
-2. Clone without submodules/recursive behavior.
-3. Prefer shallow fetch/clone where practical.
-4. Clone into a temporary directory under `.slim/clonedeps/repos/`, then move it
+2. Clone using the approved URL (HTTPS by default, or a separately explicitly
+   approved safe exception), pinned to the approved ref, shallow where
+   practical, and without submodules or recursive behavior.
+3. Clone into a temporary directory under `.slim/clonedeps/repos/`, then move it
    into the final safe-name path after checkout succeeds.
-5. Remove failed temporary clones.
+4. Remove failed temporary clones and do not leave partial clones or partial
+   manifest entries. Write state only for complete, successfully checked-out
+   repositories.
 
 Do not run dependency install/build/test scripts from cloned repositories.
 
@@ -166,41 +199,14 @@ Write `.slim/clonedeps.json` so future agents know what exists:
 }
 ```
 
-If a clone fails after earlier clones succeeded, still write state for the
-successful clones so future inspection is not misleading.
+If a clone fails after earlier clones succeeded, write state only for those
+complete successful clones; never record a failed or partial clone.
 
 Do not add `.slim/clonedeps.json` to `.gitignore`. It is small, reviewable
 project metadata that can be committed. Only the cloned repository contents
 under `.slim/clonedeps/repos/` should be ignored.
 
-### Step 6: Update Ignore Files
-
-Update `.gitignore` with an idempotent marker block:
-
-```gitignore
-# BEGIN oh-my-opencode-slim clonedeps
-.slim/clonedeps/repos/
-# END oh-my-opencode-slim clonedeps
-```
-
-Update `.ignore` so OpenCode can read the cloned source while git still ignores
-it:
-
-```ignore
-# BEGIN oh-my-opencode-slim clonedeps
-!.slim/
-!.slim/clonedeps.json
-!.slim/clonedeps/
-!.slim/clonedeps/repos/
-!.slim/clonedeps/repos/**
-.slim/clonedeps/repos/**/.git/
-.slim/clonedeps/repos/**/.git/**
-# END oh-my-opencode-slim clonedeps
-```
-
-Only edit content inside these marker blocks.
-
-### Step 7: Register Dependency Source in AGENTS.md
+### Step 6: Register Dependency Source in AGENTS.md
 
 After successful cloning, update the repository root `AGENTS.md` so future
 agents know why the dependency source exists and where to look.
@@ -233,5 +239,7 @@ When the user asks to clean cloned dependencies, remove:
 - `.slim/clonedeps/repos/`
 - the managed clonedeps marker blocks from `.gitignore` and `.ignore`
 
-Ask before removing `.slim/clonedeps.json` or the `AGENTS.md` section because
-they may be intentional project metadata.
+Before cleanup, ask for confirmation before removing clone contents, ignore
+metadata, `.slim/clonedeps.json`, or the `AGENTS.md` section. Cleanup removes
+existing managed marker blocks only after clone removal; it never adds a
+missing block merely to remove it. Leave unrelated ignore rules untouched.

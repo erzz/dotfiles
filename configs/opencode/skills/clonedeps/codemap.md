@@ -14,7 +14,7 @@ directly.
 - No helper script is bundled. The skill avoids brittle cross-ecosystem parsing
   and keeps repo-specific judgment in librarian/orchestrator.
 - State is trackable project metadata stored in `.slim/clonedeps.json`; clone
-  contents live under `.slim/clonedeps/repos/<safe-dependency-name>/` and are
+  contents live under `.slim/clonedeps/repos/<safe-repo-name>/` and are
   ignored by git.
 - The workflow updates `.gitignore`, `.ignore`, and root `AGENTS.md` with
   concise marker sections so cloned source stays out of git but visible to
@@ -26,13 +26,29 @@ directly.
    when they satisfy the current task.
 2. Orchestrator asks librarian for a small source-resolution plan across the
    repository's actual languages/ecosystems.
-3. Orchestrator verifies refs where possible and asks the user to approve.
-4. Orchestrator clones/fetches each approved source repo once into
-   `.slim/clonedeps/repos/<safe-repo-name>/`.
-5. Orchestrator writes `.slim/clonedeps.json` with paths, refs, and reasons.
-6. Orchestrator updates `.gitignore`, `.ignore`, and root `AGENTS.md`; the
+3. Orchestrator verifies refs and URLs where possible, uses HTTPS by default,
+   rejects unsafe URL forms, and requires separate explicit approval for any
+   safe transport/private-repository exception before network cloning unless
+   cloning was explicitly requested.
+4. Orchestrator inspects `.gitignore` and `.ignore`, normalizes or appends one
+   complete managed block without changing unrelated rules, and clones only
+   after protection is in place.
+5. Orchestrator clones each approved source repo once into a temporary location
+   using the approved URL, a pinned ref, shallow history where practical, and no
+   submodules, then moves
+   only complete clones into `.slim/clonedeps/repos/<safe-repo-name>/`.
+6. Orchestrator writes `.slim/clonedeps.json` only for complete successful
+   clones, never leaves partial state, and never runs scripts from clones.
+7. Orchestrator updates root `AGENTS.md`; the
    AGENTS section lists each read-only clone path directly with a one-sentence
    purpose.
+
+Cloning requires network access. Later inspection of an already cloned source
+can be performed offline.
+
+Cleanup requires confirmation for clone and metadata removal, removes existing
+managed ignore blocks only after clone removal, and never adds a missing block
+just to remove it.
 
 ## Integration
 
