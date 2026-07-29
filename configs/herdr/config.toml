@@ -9,6 +9,9 @@ new_cwd = "follow"
 # Keep Herdr's familiar tmux-style prefix workflow.
 prefix = "ctrl+b"
 
+# Goto/Find — g stands for Go (tmux heritage) / Find.
+goto = "prefix+g"
+
 # Tabs and panes
 new_tab = "prefix+c"
 previous_tab = "prefix+p"
@@ -37,7 +40,7 @@ copy_on_select = true
 
 agent_panel_sort = "priority"
 [[keys.command]]
-key = "prefix+g"
+key = "prefix+f"
 type = "popup"
 command = "lazygit"
 description = "Open lazygit"
