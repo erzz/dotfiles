@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-07-25T09:08:24.936Z",
+  "updatedAt": "2026-07-28T09:43:59.385Z",
   "skills": {
     "simplify": {
       "status": "customized",
@@ -9,7 +9,7 @@
       "lastManagedHash": "",
       "lastSeenHash": "61361b7d3bb63154d622cb5c6ab32aa727180aae738307e7f1b434690ec66210",
       "stagedPath": "/Users/sean.erswell-liljefelt/.config/opencode/.oh-my-opencode-slim/skill-updates/2.2.8/simplify",
-      "updatedAt": "2026-07-25T09:08:24.924Z"
+      "updatedAt": "2026-07-28T09:43:59.375Z"
     },
     "codemap": {
       "status": "customized",
@@ -18,7 +18,7 @@
       "lastManagedHash": "",
       "lastSeenHash": "b7abed1aad2ac0fca6c87eca1ebbd16480c9fac2afa23283a4fb721434c10b97",
       "stagedPath": "/Users/sean.erswell-liljefelt/.config/opencode/.oh-my-opencode-slim/skill-updates/2.2.8/codemap",
-      "updatedAt": "2026-07-25T09:08:24.928Z"
+      "updatedAt": "2026-07-28T09:43:59.378Z"
     },
     "clonedeps": {
       "status": "customized",
@@ -27,7 +27,7 @@
       "lastManagedHash": "",
       "lastSeenHash": "a9bd26b80d28bdaa261bc78b57d6182aa99b78f98f50adcba8e3640cdb3b035c",
       "stagedPath": "/Users/sean.erswell-liljefelt/.config/opencode/.oh-my-opencode-slim/skill-updates/2.2.8/clonedeps",
-      "updatedAt": "2026-07-25T09:08:24.930Z"
+      "updatedAt": "2026-07-28T09:43:59.380Z"
     },
     "deepwork": {
       "status": "customized",
@@ -36,7 +36,7 @@
       "lastManagedHash": "",
       "lastSeenHash": "3dcd0e26b16f91555fe08371e0302f377dc894675ec1aaca7d6417ded88efa9b",
       "stagedPath": "/Users/sean.erswell-liljefelt/.config/opencode/.oh-my-opencode-slim/skill-updates/2.2.8/deepwork",
-      "updatedAt": "2026-07-25T09:08:24.931Z"
+      "updatedAt": "2026-07-28T09:43:59.381Z"
     },
     "verification-planning": {
       "status": "managed",
@@ -44,7 +44,7 @@
       "sourceHash": "f59c06476d484287418b595a6ff2fc809eeffb1ea020d253481084e0862066c3",
       "lastManagedHash": "f59c06476d484287418b595a6ff2fc809eeffb1ea020d253481084e0862066c3",
       "lastSeenHash": "f59c06476d484287418b595a6ff2fc809eeffb1ea020d253481084e0862066c3",
-      "updatedAt": "2026-07-25T09:08:24.932Z"
+      "updatedAt": "2026-07-28T09:43:59.383Z"
     },
     "reflect": {
       "status": "customized",
@@ -53,7 +53,7 @@
       "lastManagedHash": "",
       "lastSeenHash": "d6549f0261c224c300c1b2285221172cd2e44204e777dd74d4dc604766adf4b1",
       "stagedPath": "/Users/sean.erswell-liljefelt/.config/opencode/.oh-my-opencode-slim/skill-updates/2.2.8/reflect",
-      "updatedAt": "2026-07-25T09:08:24.933Z"
+      "updatedAt": "2026-07-28T09:43:59.384Z"
     },
     "oh-my-opencode-slim": {
       "status": "managed",
@@ -61,7 +61,7 @@
       "sourceHash": "0625f93779ce32291cd90e2f78fbb8ccdfc355a2cd526ba1c77704dfc2058871",
       "lastManagedHash": "0625f93779ce32291cd90e2f78fbb8ccdfc355a2cd526ba1c77704dfc2058871",
       "lastSeenHash": "0625f93779ce32291cd90e2f78fbb8ccdfc355a2cd526ba1c77704dfc2058871",
-      "updatedAt": "2026-07-25T09:08:24.935Z"
+      "updatedAt": "2026-07-28T09:43:59.384Z"
     },
     "worktrees": {
       "status": "managed",
@@ -69,7 +69,7 @@
       "sourceHash": "bdf7212ba2c5f8512afd5159d0462e05ec670cea676c6932e0a0f3ebb68bb77b",
       "lastManagedHash": "bdf7212ba2c5f8512afd5159d0462e05ec670cea676c6932e0a0f3ebb68bb77b",
       "lastSeenHash": "bdf7212ba2c5f8512afd5159d0462e05ec670cea676c6932e0a0f3ebb68bb77b",
-      "updatedAt": "2026-07-25T09:08:24.936Z"
+      "updatedAt": "2026-07-28T09:43:59.385Z"
     }
   }
 }

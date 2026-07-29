@@ -1,6 +1,6 @@
 {
   "$schema": "https://unpkg.com/oh-my-opencode-slim@2.0.5/oh-my-opencode-slim.schema.json",
-  "preset": "copilot",
+  "preset": "free",
 
   // Multiplexer: auto-detect tmux or Zellij and open live subagent panes.
   // Requires OpenCode launched via oc() shell function (sets --port + OPENCODE_PORT).
@@ -94,6 +94,71 @@
         "mcps": [],
       },
     },
+
+    // Free Zen endpoints are temporary; do not use them with sensitive code.
+    "free": {
+      "orchestrator": {
+        "model": "opencode/deepseek-v4-flash-free",
+        "variant": "high",
+        "skills": [
+          "oh-my-opencode-slim",
+          "deepwork",
+          "reflect",
+          "worktrees",
+          "source-control",
+        ],
+        "mcps": [
+          "grep_app",
+        ],
+      },
+      "oracle": {
+        "model": "opencode/deepseek-v4-flash-free",
+        "variant": "high",
+        "skills": [
+          "simplify",
+        ],
+        "mcps": [],
+      },
+      "council": {
+        "model": "opencode/nemotron-3-ultra-free",
+        "skills": [],
+        "mcps": [],
+      },
+      "librarian": {
+        "model": "opencode/north-mini-code-free",
+        "variant": "none",
+        "skills": [
+          "clonedeps",
+        ],
+        "mcps": [
+          "websearch",
+          "context7",
+          "grep_app",
+        ],
+      },
+      "explorer": {
+        "model": "opencode/north-mini-code-free",
+        "variant": "none",
+        "skills": [
+          "codemap",
+        ],
+        "mcps": [],
+      },
+      "designer": {
+        "model": "opencode/mimo-v2.5-free",
+        "skills": [
+          "agent-browser",
+        ],
+        "mcps": [
+          "skapa",
+        ],
+      },
+      "fixer": {
+        "model": "opencode/mimo-v2.5-free",
+        "skills": [],
+        "mcps": [],
+      },
+    },
   },
 
   // Custom agents: domain specialists with MCP access beyond the built-in set.
@@ -101,8 +166,7 @@
     // cicd: GitHub Actions and INGKA reusable workflows. workflows_* MCP is
     // restricted globally and allow-listed only here (see opencode.json permissions).
     "cicd": {
-      "model": "github-copilot/claude-sonnet-4.6",
-      "variant": "high",
+      "model": "opencode/nemotron-3-ultra-free",
       "skills": [],
       "mcps": [
         "workflows", // INGKA reusable workflow search and YAML generation
