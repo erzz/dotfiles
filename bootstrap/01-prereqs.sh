@@ -20,18 +20,8 @@ else
 fi
 
 step "Homebrew"
-# Check the binary path directly: a fresh shell on a new Mac may not have
-# brew on PATH yet (added by ~/.zprofile, which only sources for new login
-# shells). `command -v brew` would falsely report missing.
-if [ -x /opt/homebrew/bin/brew ] || [ -x /usr/local/bin/brew ]; then
-  ok "already installed"
-else
-  warn "installing..."
-  # NONINTERACTIVE=1 skips Homebrew's "Press RETURN to continue" prompt;
-  # sudo is already cached above so no password prompt either.
-  NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-  ok "installed"
-fi
+bash "${BOOTSTRAP_DIR}/ensure-native-homebrew.sh"
+ok "available"
 # Make brew available in this script's environment.
 if [ -x /opt/homebrew/bin/brew ]; then
   eval "$(/opt/homebrew/bin/brew shellenv)"

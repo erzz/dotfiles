@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
-# Tmux: config symlinked, TPM installed.
+# Tmux: repository owns the configuration; host plugin installation is optional.
 set -euo pipefail
 
-[ -L "${HOME}/.tmux.conf" ] || { echo ".tmux.conf not a symlink"; exit 1; }
-[ -d "${HOME}/.tmux/plugins/tpm" ] || { echo "TPM not installed"; exit 1; }
-command -v tmux >/dev/null || { echo "tmux not on PATH"; exit 1; }
+root="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+[ -f "$root/home/dot_tmux.conf" ] || { echo "repository tmux configuration missing"; exit 1; }
+if command -v tmux >/dev/null; then
+  tmux -f "$root/home/dot_tmux.conf" -C "list-commands" >/dev/null 2>&1 || {
+    echo "tmux configuration failed to parse"; exit 1;
+  }
+fi

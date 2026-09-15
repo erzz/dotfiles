@@ -11,9 +11,9 @@ plugins=(
 )
 
 # <------------------ PRIVATE INCLUDES ------------------->
-# Secrets rendered by chezmoi from 1Password into ~/.local/state/secrets.env
-# (mode 0600). Loaded before mise activation so private npm tools can
-# authenticate via $GH_TOKEN. Refresh with `chezmoi apply`.
+# Secrets rendered/refreshed by `mise run sync` through fnox into
+# ~/.local/state/secrets.env (mode 0600). Loaded before mise activation so
+# private npm tools can authenticate via $GH_TOKEN.
 if [ -r "$HOME/.local/state/secrets.env" ]; then
   set -a
   # shellcheck disable=SC1091
@@ -22,8 +22,16 @@ if [ -r "$HOME/.local/state/secrets.env" ]; then
 fi
 
 # <--------------------- OH-MY-ZSH ----------------------->
-# Eza completions (must be on FPATH before OMZ runs compinit)
-FPATH="/opt/homebrew/share/zsh/site-functions:${FPATH}"
+# Select the installed Homebrew prefix on Intel or Apple Silicon before
+# loading plugins that provide completions and shell integrations.
+if command -v brew >/dev/null 2>&1; then
+  export HOMEBREW_PREFIX="$(brew --prefix)"
+elif [[ -x /opt/homebrew/bin/brew ]]; then
+  export HOMEBREW_PREFIX="/opt/homebrew"
+elif [[ -x /usr/local/bin/brew ]]; then
+  export HOMEBREW_PREFIX="/usr/local"
+fi
+FPATH="${HOMEBREW_PREFIX:+$HOMEBREW_PREFIX/share/zsh/site-functions:}${FPATH}"
 # init zsh
 export ZSH=~/.oh-my-zsh
 export ZSH_THEME=""
@@ -38,9 +46,6 @@ source $ZSH/oh-my-zsh.sh
   fi
 # shellcheck disable=SC1035,SC1072
 } &!
-
-# <----------------------- DRIFT ------------------------->
-~/.local/share/chezmoi/drift/detect.sh &>/dev/null &
 
 # <---------------------- HELPERS ------------------------>
 # zsh-autosuggestions
@@ -70,7 +75,7 @@ alias lT="eza -T --icons"
 export XDG_CONFIG_HOME="$HOME/.config"
 
 # HOMEBREW
-export PATH="${HOMEBREW_PREFIX}/sbin:/sbin:/usr/local/bin:$PATH"
+export PATH="${HOMEBREW_PREFIX:+$HOMEBREW_PREFIX/bin:$HOMEBREW_PREFIX/sbin:}/sbin:/usr/local/bin:$PATH"
 export HOMEBREW_AUTO_UPDATE_SECS=2629746
 
 ### DIRENV
@@ -84,13 +89,6 @@ precmd() {
   # sets the tab title to current dir
   echo -ne "\e]2;${PWD##*/}\a"
 
-  # One-shot drift notification (written by background detect.sh).
-  # Per-user path; matches DRIFT_FLAG in drift/detect.sh.
-  local drift_flag="${TMPDIR:-/tmp}/dotfiles-drift.${UID}"
-  if [[ -f "$drift_flag" ]]; then
-    cat "$drift_flag"
-    rm -f "$drift_flag"
-  fi
 }
 
 ### EDITOR
@@ -108,6 +106,7 @@ eval "$(starship init zsh)"
 ### Zoxide
 eval "$(zoxide init zsh)"
 
+export PATH="$HOME/.local/bin:$PATH"
 eval "$(mise activate zsh)"
 
 ### BUN
@@ -118,9 +117,8 @@ eval "$(mise activate zsh)"
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
-# Added by LM Studio CLI (lms)
-export PATH="$PATH:/Users/sean.erswell-liljefelt/.lmstudio/bin"
-# End of LM Studio CLI section
+# LM Studio CLI, when installed for this user.
+[[ -d "$HOME/.lmstudio/bin" ]] && export PATH="$PATH:$HOME/.lmstudio/bin"
 
 
 # >>> oh-my-opencode-slim background subagents >>>
@@ -134,4 +132,3 @@ oc() {
   OPENCODE_PORT="$port" opencode --port "$port" "$@"
 }
 # <<< oh-my-opencode-slim multiplexer launcher <<<
-export PATH="$HOME/.local/bin:$PATH"

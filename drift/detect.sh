@@ -1,83 +1,112 @@
 #!/usr/bin/env bash
-# Detect drift between the dotfiles repo and the live machine.
-# Writes any messages to /tmp/dotfiles-drift, which the shell prompt
-# (see home/dot_zshrc) consumes on the next prompt.
+# Check local repository, mise, and native Homebrew state.
 #
-# Drift sources checked:
-#   1. Repo: uncommitted changes, behind remote
-#   2. Symlinks/files: chezmoi diff (catches replaced symlinks, missing files)
-#   3. Brew: packages declared in Brewfile but not installed
-#   4. Mise: tools declared in mise config but not installed
+# This is intentionally an explicit check. It does not fetch, authenticate, or
+# prompt for network access, so it is safe to run from a terminal when needed.
+#
+# Exit contract: detected drift and check failures are reported or flagged but
+# this script exits 0 because it may be called by a shell prompt. A successful
+# exit must never turn an incomplete check into "Native checks passed.".
 
 COLOUR='\033[0;33m'
 NC='\033[0m'
-# Per-user flag path: avoids cross-user collisions on shared machines, and
-# keeps each user's drift signal isolated.
 DRIFT_FLAG="${TMPDIR:-/tmp}/dotfiles-drift.${UID}"
-# Temp file for atomic write: build the message in a sibling file, then
-# rename into place. Without this, two shells starting near-simultaneously
-# could race and produce a half-written file the prompt reader would garble.
 DRIFT_TMP="${DRIFT_FLAG}.$$"
+CHECK_FAILURES=()
 
-REPO="${HOME}/.local/share/chezmoi"
-# `return` would only be valid if this script were sourced; it's executed
-# from a zsh background job, so `exit 0` is correct (and silent — drift
-# detection failing should never spam the prompt).
-cd "${REPO}" || exit 0
-
-# Never block on auth prompts: this script runs in the background from
-# zsh's precmd hook, and a tty-input prompt would suspend the shell.
-export GIT_TERMINAL_PROMPT=0
-git fetch -q </dev/null 2>/dev/null || true
+SCRIPT_ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." 2>/dev/null && pwd -P) || exit 0
+ROOT=''
+if [ -n "${MISE_CONFIG_ROOT:-}" ] && [ -f "$MISE_CONFIG_ROOT/mise.toml" ]; then
+	ROOT="$MISE_CONFIG_ROOT"
+elif [ -f "$SCRIPT_ROOT/mise.toml" ]; then
+	ROOT="$SCRIPT_ROOT"
+fi
+[ -d "$ROOT" ] || exit 0
+cd "$ROOT" || exit 0
 
 MESSAGES=()
 
-# 1. Local uncommitted changes
-if [ -n "$(git status --porcelain)" ]; then
-	MESSAGES+=("${COLOUR}Dotfiles have uncommitted changes${NC}")
+# Local repository state only. In particular, do not fetch or inspect a remote.
+GIT_STATUS=$(git status --short 2>/dev/null)
+GIT_STATUS_CODE=$?
+if [ "$GIT_STATUS_CODE" -ne 0 ]; then
+	CHECK_FAILURES+=("git status check failed")
+elif [ -n "$GIT_STATUS" ]; then
+	MESSAGES+=("${COLOUR}Repository has uncommitted changes${NC}")
 fi
 
-# 2. Local branch behind remote
-BEHIND=$(git rev-list --count 'HEAD..@{u}' 2>/dev/null)
-if [ -n "$BEHIND" ] && [ "$BEHIND" -gt 0 ]; then
-	MESSAGES+=("${COLOUR}Dotfiles are ${BEHIND} commit(s) behind remote${NC}")
-fi
-
-# 3. Chezmoi-managed file/symlink drift (replaced files, broken links, etc.)
-# `chezmoi status` prints one line per drifted entry and always exits 0,
-# so we check whether its output is non-empty (`chezmoi diff` always exits 0
-# regardless of drift, so its exit code is useless here).
-#
-# We pass --no-tty plus OP_BIOMETRIC_UNLOCK_ENABLED=false so any template
-# that calls `onepasswordRead` fails fast instead of popping a Touch ID
-# prompt on every shell start. The trade-off: drift in those specific
-# templated files (e.g. ~/.npmrc, ~/.local/state/secrets.env) won't be
-# detected here — which is fine, since their content reflects remote
-# 1Password state, not local edits.
-if command -v chezmoi >/dev/null 2>&1; then
-	if [ -n "$(OP_BIOMETRIC_UNLOCK_ENABLED=false chezmoi status --no-tty --exclude=scripts 2>/dev/null)" ]; then
-		MESSAGES+=("${COLOUR}chezmoi reports file drift (run: chezmoi diff)${NC}")
-	fi
-fi
-
-# 4. Brew bundle drift (packages in Brewfile not installed)
-if command -v brew >/dev/null 2>&1 && [ -f "${REPO}/brew/Brewfile" ]; then
-	if ! brew bundle check --quiet --file="${REPO}/brew/Brewfile" >/dev/null 2>&1; then
-		MESSAGES+=("${COLOUR}Brewfile drift (run: brew bundle check)${NC}")
-	fi
-fi
-
-# 5. Mise drift (tools in mise config but not installed)
 if command -v mise >/dev/null 2>&1; then
-	if mise ls --missing 2>/dev/null | grep -q .; then
-		MESSAGES+=("${COLOUR}mise tools missing (run: mise install)${NC}")
+	# Bootstrap status is read-only. Exit 1 with normal status output means
+	# drift; an error or unsupported command must remain a check failure.
+	MISE_BOOTSTRAP_STDERR="${DRIFT_TMP}.bootstrap.stderr"
+	MISE_BOOTSTRAP_STATUS=$(mise bootstrap status --missing 2>"$MISE_BOOTSTRAP_STDERR")
+	MISE_BOOTSTRAP_CODE=$?
+	MISE_BOOTSTRAP_ERROR=$(<"$MISE_BOOTSTRAP_STDERR")
+	rm -f "$MISE_BOOTSTRAP_STDERR"
+	if [ "$MISE_BOOTSTRAP_CODE" -eq 0 ] && [ -n "$MISE_BOOTSTRAP_STATUS" ]; then
+		MESSAGES+=("${COLOUR}mise bootstrap items are missing or differ (run: mise run sync)${NC}")
+	elif [ "$MISE_BOOTSTRAP_CODE" -eq 1 ] && [ -n "$MISE_BOOTSTRAP_STATUS" ] && [ -z "$MISE_BOOTSTRAP_ERROR" ]; then
+		MESSAGES+=("${COLOUR}mise bootstrap items are missing or differ (run: mise run sync)${NC}")
+	elif [ "$MISE_BOOTSTRAP_CODE" -ne 0 ]; then
+		CHECK_FAILURES+=("mise bootstrap status check failed")
 	fi
+
+	MISE_MISSING=$(mise ls --missing 2>/dev/null)
+	MISE_MISSING_CODE=$?
+	if [ "$MISE_MISSING_CODE" -ne 0 ]; then
+		CHECK_FAILURES+=("mise missing-tools check failed")
+	elif [ -n "$MISE_MISSING" ]; then
+		MESSAGES+=("${COLOUR}mise tools are missing (run: mise install)${NC}")
+	fi
+else
+  CHECK_FAILURES+=("mise is unavailable")
 fi
 
-if [ ${#MESSAGES[@]} -gt 0 ]; then
-	# Atomic write: build in $DRIFT_TMP, then mv into place. The prompt reader
-	# only ever sees a complete file (or no file at all), never a partial one.
+# Casks and fonts remain dedicated native owners. The aggregate Brewfile is
+# intentionally not checked here.
+BREW_AVAILABLE=1
+if ! command -v brew >/dev/null 2>&1; then
+	BREW_AVAILABLE=0
+	CHECK_FAILURES+=("brew is unavailable")
+fi
+
+if [ "$BREW_AVAILABLE" -eq 1 ]; then
+	for brewfile in Brewfile.casks Brewfile.fonts; do
+		if [ -f "$ROOT/brew/$brewfile" ]; then
+			BREW_BUNDLE_STDOUT="${DRIFT_TMP}.${brewfile}.stdout"
+			BREW_BUNDLE_STDERR="${DRIFT_TMP}.${brewfile}.stderr"
+			brew bundle check --file="$ROOT/brew/$brewfile" >"$BREW_BUNDLE_STDOUT" 2>"$BREW_BUNDLE_STDERR"
+			BREW_BUNDLE_CODE=$?
+			BREW_BUNDLE_OUTPUT=$(<"$BREW_BUNDLE_STDOUT")
+			BREW_BUNDLE_ERROR=$(<"$BREW_BUNDLE_STDERR")
+			rm -f "$BREW_BUNDLE_STDOUT" "$BREW_BUNDLE_STDERR"
+
+			case "$brewfile" in
+				Brewfile.casks) label='Cask Brewfile' ;;
+				Brewfile.fonts) label='Font Brewfile' ;;
+			esac
+			# brew bundle check normally reports missing packages on stdout and
+			# returns 1. Diagnostic stderr, no output, or another status means
+			# the check itself failed; do not turn that into a false drift result.
+			if [ "$BREW_BUNDLE_CODE" -eq 1 ] && [ -n "$BREW_BUNDLE_OUTPUT" ] && [ -z "$BREW_BUNDLE_ERROR" ]; then
+				MESSAGES+=("${COLOUR}${label} has missing packages (run: brew bundle check --file=brew/$brewfile)${NC}")
+			elif [ "$BREW_BUNDLE_CODE" -ne 0 ] || [ -n "$BREW_BUNDLE_ERROR" ]; then
+				CHECK_FAILURES+=("$label check failed")
+			fi
+		fi
+	done
+fi
+
+if [ "${#CHECK_FAILURES[@]}" -gt 0 ]; then
+	for failure in "${CHECK_FAILURES[@]}"; do
+		MESSAGES+=("${COLOUR}Unable to complete ${failure}; native state may be unknown${NC}")
+	done
+fi
+
+if [ "${#MESSAGES[@]}" -gt 0 ]; then
 	printf '%b\n' "${MESSAGES[@]}" >"$DRIFT_TMP" && mv -f "$DRIFT_TMP" "$DRIFT_FLAG"
+	printf '%b\n' "${MESSAGES[@]}"
 else
 	rm -f "$DRIFT_FLAG" "$DRIFT_TMP"
+	printf '%s\n' 'Native checks passed.'
 fi

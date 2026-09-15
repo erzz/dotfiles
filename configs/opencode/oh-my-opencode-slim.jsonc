@@ -1,6 +1,6 @@
 {
   "$schema": "https://unpkg.com/oh-my-opencode-slim@2.0.5/oh-my-opencode-slim.schema.json",
-  "preset": "free",
+  "preset": "copilot",
 
   // Multiplexer: auto-detect tmux or Zellij and open live subagent panes.
   // Requires OpenCode launched via oc() shell function (sets --port + OPENCODE_PORT).
@@ -15,8 +15,8 @@
       // Orchestrator: primary entrypoint and scheduler. Medium reasoning is enough for
       // work-graph planning and delegation; heavy thinking lives in oracle.
       "orchestrator": {
-        "model": "github-copilot/gpt-5.6-terra",
-        "variant": "medium",
+        "model": "github-copilot/gpt-5.6-luna",
+        "variant": "high",
         "skills": [
           "oh-my-opencode-slim", // core OMO workflow guidance
           "deepwork", // multi-phase heavy implementation sessions
@@ -32,7 +32,7 @@
       // Oracle: architecture, debugging strategy, code review. High reasoning justified.
       "oracle": {
         "model": "github-copilot/gpt-5.6-sol",
-        "variant": "high",
+        "variant": "xhigh",
         "skills": [
           "simplify", // readability/complexity review
         ],
@@ -42,7 +42,7 @@
       // Council: multi-model synthesis for high-stakes decisions. Sonnet for
       // complementary reasoning to the gpt-5.5 orchestrator/oracle pair.
       "council": {
-        "model": "github-copilot/claude-sonnet-4.6",
+        "model": "github-copilot/claude-sonnet-5",
         "skills": [],
         "mcps": [],
       },
@@ -76,7 +76,8 @@
       // Designer: UI/UX, frontend, Skapa Design System. Gemini for multimodal/visual
       // reasoning and design-system fluency. Skapa MCP is allow-listed only here.
       "designer": {
-        "model": "github-copilot/gemini-2.5-pro",
+        "model": "github-copilot/gpt-5.6-luna",
+        "variant": "high",
         "skills": [
           "agent-browser", // browser automation for visual QA and testing
         ],
@@ -89,7 +90,7 @@
       // tasks are well-scoped and do not require deep reasoning.
       "fixer": {
         "model": "github-copilot/gpt-5.6-luna",
-        "variant": "low",
+        "variant": "medium",
         "skills": [],
         "mcps": [],
       },
@@ -100,23 +101,13 @@
       "orchestrator": {
         "model": "opencode/deepseek-v4-flash-free",
         "variant": "high",
-        "skills": [
-          "oh-my-opencode-slim",
-          "deepwork",
-          "reflect",
-          "worktrees",
-          "source-control",
-        ],
-        "mcps": [
-          "grep_app",
-        ],
+        "skills": ["oh-my-opencode-slim", "deepwork", "reflect", "worktrees", "source-control"],
+        "mcps": ["grep_app"],
       },
       "oracle": {
         "model": "opencode/deepseek-v4-flash-free",
         "variant": "high",
-        "skills": [
-          "simplify",
-        ],
+        "skills": ["simplify"],
         "mcps": [],
       },
       "council": {
@@ -127,31 +118,19 @@
       "librarian": {
         "model": "opencode/north-mini-code-free",
         "variant": "none",
-        "skills": [
-          "clonedeps",
-        ],
-        "mcps": [
-          "websearch",
-          "context7",
-          "grep_app",
-        ],
+        "skills": ["clonedeps"],
+        "mcps": ["websearch", "context7", "grep_app"],
       },
       "explorer": {
         "model": "opencode/north-mini-code-free",
         "variant": "none",
-        "skills": [
-          "codemap",
-        ],
+        "skills": ["codemap"],
         "mcps": [],
       },
       "designer": {
         "model": "opencode/mimo-v2.5-free",
-        "skills": [
-          "agent-browser",
-        ],
-        "mcps": [
-          "skapa",
-        ],
+        "skills": ["agent-browser"],
+        "mcps": ["skapa"],
       },
       "fixer": {
         "model": "opencode/mimo-v2.5-free",
@@ -166,7 +145,8 @@
     // cicd: GitHub Actions and INGKA reusable workflows. workflows_* MCP is
     // restricted globally and allow-listed only here (see opencode.json permissions).
     "cicd": {
-      "model": "opencode/nemotron-3-ultra-free",
+      "model": "github-copilot/gpt-5.6-luna",
+      "variant": "high",
       "skills": [],
       "mcps": [
         "workflows", // INGKA reusable workflow search and YAML generation

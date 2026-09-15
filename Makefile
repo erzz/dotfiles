@@ -1,29 +1,25 @@
 .PHONY: apply diff test update tools drift status
 
-# Apply chezmoi state (idempotent)
 apply:
-	@chezmoi apply
+	@mise run sync
 
-# Show pending changes
 diff:
-	@chezmoi diff
+	@mise bootstrap status --missing
 
 # Run the test suite
 test:
 	@./tests/run.sh
 
-# Pull latest from git and apply
 update:
-	@chezmoi update
+	@git pull --rebase
+	@mise run sync
 
-# Show chezmoi status
 status:
-	@chezmoi status
+	@mise bootstrap status --missing
 
-# Run drift detection
 drift:
-	@./drift/detect.sh
+	@printf '%s\n' 'Drift detection is provided by: mise bootstrap status --missing'
+	@mise bootstrap status --missing
 
-# Install optional/ad-hoc tools (driven by .chezmoidata.toml install.* flags)
 tools:
-	@chezmoi apply --force
+	@mise run install

@@ -11,8 +11,8 @@ jobs:
           # zsh syntax (e.g. `&!` disown) trips up shellcheck
           ignore_paths: configs/zsh
 
-  # Fast Linux container job: exercises file/symlink behaviour and
-  # idempotency without needing a macOS runner. Runs on every push.
+  # Fast Linux container job: validates the native mise configuration and
+  # repository-owned checks without credentials or host package installs.
   test-linux:
     runs-on: ubuntu-latest
     container: archlinux:base-devel
@@ -22,64 +22,40 @@ jobs:
     steps:
       - name: Install prerequisites
         run: |
-          pacman -Sy --noconfirm git chezmoi bash zsh tmux mise jq
+          pacman -Sy --noconfirm git bash zsh tmux mise jq
 
       - uses: actions/checkout@v4
 
-      - name: Copy repo to chezmoi source dir
+      - name: Validate mise configuration and tasks
         run: |
-          mkdir -p "$HOME/.local/share"
-          cp -a . "$HOME/.local/share/chezmoi"
-
-      - name: Write chezmoi config (CI mode)
-        # Shared with the macOS job — see tests/ci/chezmoi.toml.
-        run: |
-          mkdir -p "$HOME/.config/chezmoi"
-          cp "$HOME/.local/share/chezmoi/tests/ci/chezmoi.toml" "$HOME/.config/chezmoi/chezmoi.toml"
-
-      - name: First apply
-        run: chezmoi apply --force --keep-going
-
-      - name: Second apply (must be no-op for files)
-        run: |
-          chezmoi apply --force --keep-going
-          # `chezmoi diff` always exits 0; check `chezmoi status` for drift.
-          drift="$(chezmoi status --exclude=scripts)"
-          if [ -n "$drift" ]; then
-            echo "::error::chezmoi reports file drift after second apply"
-            echo "$drift"
-            chezmoi diff --exclude=scripts
-            exit 1
-          fi
+          mise tasks validate
+          mise config ls >/dev/null
+          mise -E apps config ls >/dev/null
+          mise bootstrap status >/dev/null
+          mise -E apps bootstrap status >/dev/null
 
       - name: Run test suite
         run: bash tests/run.sh
-        working-directory: /root/.local/share/chezmoi
+        working-directory: ${{ github.workspace }}
 
-  # Full macOS E2E: runs the full apply (brew, mise, etc.). Slow,
-  # so kept on the canonical job for merges to main.
+  # macOS validates the same repository-native checks. It intentionally does
+  # not run authenticated sync or install casks/apps.
   test-macos:
     runs-on: macos-latest
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install chezmoi
-        run: brew install chezmoi
+      - name: Install mise
+        run: brew install mise
 
-      - name: Copy repo to chezmoi source dir
+      - name: Validate mise configuration and tasks
         run: |
-          mkdir -p "$HOME/.local/share"
-          cp -a . "$HOME/.local/share/chezmoi"
-
-      - name: Write chezmoi config (CI mode)
-        # Shared with the Linux job — see tests/ci/chezmoi.toml.
-        run: |
-          mkdir -p "$HOME/.config/chezmoi"
-          cp "$HOME/.local/share/chezmoi/tests/ci/chezmoi.toml" "$HOME/.config/chezmoi/chezmoi.toml"
-
-      - name: First apply
-        run: chezmoi apply --force --keep-going
+          mise tasks validate
+          mise config ls >/dev/null
+          mise -E apps config ls >/dev/null
+          mise bootstrap status >/dev/null
+          mise -E apps bootstrap status >/dev/null
 
       - name: Run test suite
-        run: cd "$HOME/.local/share/chezmoi" && bash tests/run.sh
+        run: bash tests/run.sh

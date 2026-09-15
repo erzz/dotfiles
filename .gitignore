@@ -28,3 +28,6 @@ configs/zed/conversations/
 configs/zed/embeddings/
 configs/zed/prompts/
 configs/zed/settings_backup.json
+
+# Local deepwork progress state
+.slim/deepwork/

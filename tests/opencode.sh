@@ -1,12 +1,6 @@
 #!/usr/bin/env bash
-# Opencode: config dir symlinked into the chezmoi configs/ tree.
+# Opencode: repository owns the configuration.
 set -euo pipefail
 
-target="${HOME}/.config/opencode"
-[ -L "$target" ] || { echo "$target not a symlink"; exit 1; }
-
-resolved="$(readlink "$target")"
-case "$resolved" in
-  *chezmoi/configs/opencode*) ;;
-  *) echo "$target points to $resolved (expected chezmoi configs/opencode)"; exit 1 ;;
-esac
+root="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+[ -d "$root/configs/opencode" ] || { echo "repository opencode configuration missing"; exit 1; }

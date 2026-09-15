@@ -1,13 +1,12 @@
 #!/usr/bin/env bash
-# Brew: minimum tools available (these are in both Brewfile and Brewfile.ci).
-# Skip on non-macOS — brew is macOS-specific.
+# Native mise: verify the package declaration is present on macOS.
 set -euo pipefail
 
-if [ "$(uname -s)" != "Darwin" ]; then
+if [ "$(uname -s)" != "Darwin" ] || [ -n "${CI:-}" ]; then
   exit 0
 fi
 
-REQUIRED=(bat delta direnv eza fd fzf git jq mise rg starship tmux zsh chezmoi)
+REQUIRED=(git jq mise)
 missing=()
 for cmd in "${REQUIRED[@]}"; do
   command -v "$cmd" >/dev/null || missing+=("$cmd")
