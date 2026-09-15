@@ -1,0 +1,287 @@
+# Parallel package migration: Brewfile remains authoritative until clean-machine
+# validation. Mise's package inventory does not cover all Homebrew DSL/service behavior.
+
+[tools]
+bun = "latest"
+java = "latest"
+node = "24"
+"npm:agent-browser" = "latest"
+"npm:@ingka-group-digital/skapa-design-system-mcp" = "0.5.5"
+"npm:@tarquinen/opencode-dcp" = "3.1.14"
+"npm:@ingka-group-digital/workflows-mcp" = "latest"
+"npm:@playwright/mcp" = "latest"
+terraform = "latest"
+maven = "latest"
+"npm:mcp-remote" = "latest"
+
+# Staged finalizer migration: repo cloning replaces the clone portion of the
+# legacy finalizers. Oh My Zsh uses its documented default branch for now;
+# pinning it remains a follow-up because no justified repository version is
+# present in the current configuration.
+[bootstrap.repos."~/.oh-my-zsh"]
+url = "https://github.com/ohmyzsh/ohmyzsh.git"
+
+[bootstrap.repos."~/.tmux/plugins/tpm"]
+url = "https://github.com/tmux-plugins/tpm.git"
+
+[bootstrap.repos."~/.tmux/plugins/tmux-power"]
+url = "https://github.com/wfxr/tmux-power.git"
+
+[bootstrap.repos."~/.tmux/plugins/tmux-resurrect"]
+url = "https://github.com/tmux-plugins/tmux-resurrect.git"
+
+[bootstrap.repos."~/.tmux/plugins/tmux-continuum"]
+url = "https://github.com/tmux-plugins/tmux-continuum.git"
+
+# Intentionally not claimed declaratively here: TPM's install_plugins,
+# gh-dash extension installation, the computed Docker Buildx symlink, and
+# agent-browser asset installation remain outside this staged migration.
+
+[bootstrap.brew.taps]
+"buo/cask-upgrade" = "https://github.com/buo/homebrew-cask-upgrade.git"
+"dart-lang/dart" = "https://github.com/dart-lang/homebrew-dart.git"
+"fsouza/prettierd" = "https://github.com/fsouza/homebrew-prettierd.git"
+"anomalyco/tap" = "https://github.com/anomalyco/homebrew-tap.git"
+"goodwithtech/r" = "https://github.com/goodwithtech/homebrew-r.git"
+"sass/sass" = "https://github.com/sass/homebrew-sass.git"
+"anchore/grant" = "https://github.com/anchore/homebrew-grant.git"
+"anchore/syft" = "https://github.com/anchore/homebrew-syft.git"
+"anchore/grype" = "https://github.com/anchore/homebrew-grype.git"
+
+[bootstrap.packages]
+"brew:act" = { os = ["macos"] }
+"brew:adr-tools" = { os = ["macos"] }
+"brew:aspell" = { os = ["macos"] }
+"brew:bash" = { os = ["macos"] }
+"brew:bash-completion" = { os = ["macos"] }
+"brew:bat" = { os = ["macos"] }
+"brew:bfg" = { os = ["macos"] }
+"brew:binutils" = { os = ["macos"] }
+"brew:btop" = { os = ["macos"] }
+"brew:ccache" = { os = ["macos"] }
+"brew:chezmoi" = { os = ["macos"] }
+# Brewfile's restart_service: true has no mise package equivalent.
+"brew:colima" = { os = ["macos"] }
+"brew:coreutils" = { os = ["macos"] }
+"brew:curl" = { os = ["macos"] }
+"brew:d2" = { os = ["macos"] }
+"brew:git" = { os = ["macos"] }
+"brew:gh" = { os = ["macos"] }
+"brew:direnv" = { os = ["macos"] }
+"brew:mas" = { os = ["macos"] }
+"brew:dive" = { os = ["macos"] }
+"brew:docker" = { os = ["macos"] }
+"brew:docker-buildx" = { os = ["macos"] }
+"brew:docker-compose" = { os = ["macos"] }
+"brew:eza" = { os = ["macos"] }
+"brew:fastfetch" = { os = ["macos"] }
+"brew:fd" = { os = ["macos"] }
+"brew:flac" = { os = ["macos"] }
+"brew:fzf" = { os = ["macos"] }
+"brew:git-delta" = { os = ["macos"] }
+"brew:git-extras" = { os = ["macos"] }
+"brew:gitleaks" = { os = ["macos"] }
+"brew:go" = { os = ["macos"] }
+"brew:gnupg" = { os = ["macos"] }
+"brew:gnuplot" = { os = ["macos"] }
+"brew:gnu-sed" = { os = ["macos"] }
+"brew:gnutls" = { os = ["macos"] }
+"brew:golangci-lint" = { os = ["macos"] }
+"brew:goodwithtech/r/dockle" = { os = ["macos"] }
+"brew:gradle" = { os = ["macos"] }
+"brew:grant" = { os = ["macos"] }
+"brew:graphviz" = { os = ["macos"] }
+"brew:grep" = { os = ["macos"] }
+"brew:grype" = { os = ["macos"] }
+"brew:hadolint" = { os = ["macos"] }
+"brew:helm" = { os = ["macos"] }
+"brew:herdr" = { os = ["macos"] }
+"brew:hostess" = { os = ["macos"] }
+"brew:htop" = { os = ["macos"] }
+"brew:httpie" = { os = ["macos"] }
+"brew:hugo" = { os = ["macos"] }
+"brew:imagemagick" = { os = ["macos"] }
+"brew:inframap" = { os = ["macos"] }
+"brew:jq" = { os = ["macos"] }
+"brew:k9s" = { os = ["macos"] }
+"brew:kotlin" = { os = ["macos"] }
+"brew:kubernetes-cli" = { os = ["macos"] }
+"brew:lame" = { os = ["macos"] }
+"brew:lazygit" = { os = ["macos"] }
+"brew:libheif" = { os = ["macos"] }
+"brew:librsvg" = { os = ["macos"] }
+"brew:lima" = { os = ["macos"] }
+"brew:mise" = { os = ["macos"] }
+"brew:mongosh" = { os = ["macos"] }
+"brew:moreutils" = { os = ["macos"] }
+"brew:neovim" = { os = ["macos"] }
+# Neovim LSPs (also used by other editors / OpenCode)
+"brew:bash-language-server" = { os = ["macos"] }
+"brew:dockerfile-language-server" = { os = ["macos"] }
+"brew:docker-language-server" = { os = ["macos"] }
+"brew:gopls" = { os = ["macos"] }
+"brew:jdtls" = { os = ["macos"] }
+"brew:lua-language-server" = { os = ["macos"] }
+"brew:marksman" = { os = ["macos"] }
+"brew:pyright" = { os = ["macos"] }
+"brew:terraform-ls" = { os = ["macos"] }
+"brew:typescript-language-server" = { os = ["macos"] }
+"brew:vscode-langservers-extracted" = { os = ["macos"] }
+"brew:yaml-language-server" = { os = ["macos"] }
+# Formatters & linters used by Neovim
+"brew:black" = { os = ["macos"] }
+"brew:eslint_d" = { os = ["macos"] }
+"brew:gofumpt" = { os = ["macos"] }
+"brew:google-java-format" = { os = ["macos"] }
+"brew:markdownlint-cli" = { os = ["macos"] }
+"brew:stylua" = { os = ["macos"] }
+"brew:nuclei" = { os = ["macos"] }
+"brew:anomalyco/tap/opencode" = { os = ["macos"] }
+"brew:p7zip" = { os = ["macos"] }
+"brew:pipenv" = { os = ["macos"] }
+"brew:poetry" = { os = ["macos"] }
+"brew:prettierd" = { os = ["macos"] }
+"brew:pstree" = { os = ["macos"] }
+"brew:qemu" = { os = ["macos"] }
+"brew:qt" = { os = ["macos"] }
+"brew:qt@5" = { os = ["macos"] }
+"brew:ripgrep" = { os = ["macos"] }
+"brew:rsync" = { os = ["macos"] }
+"brew:ruff" = { os = ["macos"] }
+"brew:rust" = { os = ["macos"] }
+"brew:sass/sass/sass" = { os = ["macos"] }
+"brew:sesh" = { os = ["macos"] }
+"brew:shellcheck" = { os = ["macos"] }
+"brew:shfmt" = { os = ["macos"] }
+"brew:starship" = { os = ["macos"] }
+"brew:syft" = { os = ["macos"] }
+"brew:terraformer" = { os = ["macos"] }
+"brew:tflint" = { os = ["macos"] }
+"brew:the_silver_searcher" = { os = ["macos"] }
+"brew:tmux" = { os = ["macos"] }
+"brew:tree" = { os = ["macos"] }
+"brew:tree-sitter" = { os = ["macos"] }
+"brew:tree-sitter-cli" = { os = ["macos"] }
+"brew:trivy" = { os = ["macos"] }
+"brew:vim" = { os = ["macos"] }
+"brew:wget" = { os = ["macos"] }
+"brew:xz" = { os = ["macos"] }
+"brew:yamllint" = { os = ["macos"] }
+"brew:yarn" = { os = ["macos"] }
+"brew:yq" = { os = ["macos"] }
+"brew:zellij" = { os = ["macos"] }
+"brew:zoxide" = { os = ["macos"] }
+"brew:zplug" = { os = ["macos"] }
+"brew:zsh" = { os = ["macos"] }
+"brew:zsh-autosuggestions" = { os = ["macos"] }
+"brew:zsh-syntax-highlighting" = { os = ["macos"] }
+
+# Casks, including fonts
+"brew-cask:1password" = { os = ["macos"] }
+"brew-cask:1password-cli" = { os = ["macos"] }
+"brew-cask:appcleaner" = { os = ["macos"] }
+"brew-cask:bambu-studio" = { os = ["macos"] }
+"brew-cask:bazecor" = { os = ["macos"] }
+"brew-cask:bbedit" = { os = ["macos"] }
+"brew-cask:bruno" = { os = ["macos"] }
+"brew-cask:chromedriver" = { os = ["macos"] }
+"brew-cask:daisydisk" = { os = ["macos"] }
+"brew-cask:discord" = { os = ["macos"] }
+"brew-cask:disk-inventory-x" = { os = ["macos"] }
+"brew-cask:displaylink" = { os = ["macos"] }
+"brew-cask:firefox" = { os = ["macos"] }
+"brew-cask:font-awesome-terminal-fonts" = { os = ["macos"] }
+"brew-cask:font-cousine" = { os = ["macos"] }
+"brew-cask:font-fira-code" = { os = ["macos"] }
+"brew-cask:font-fira-mono" = { os = ["macos"] }
+"brew-cask:font-fira-mono-nerd-font" = { os = ["macos"] }
+"brew-cask:font-fontawesome" = { os = ["macos"] }
+"brew-cask:font-hack" = { os = ["macos"] }
+"brew-cask:font-hack-nerd-font" = { os = ["macos"] }
+"brew-cask:font-handlee" = { os = ["macos"] }
+"brew-cask:font-hasklig" = { os = ["macos"] }
+"brew-cask:font-inconsolata" = { os = ["macos"] }
+"brew-cask:font-iosevka-nerd-font" = { os = ["macos"] }
+"brew-cask:font-jetbrains-mono-nerd-font" = { os = ["macos"] }
+"brew-cask:font-montserrat" = { os = ["macos"] }
+"brew-cask:font-noto-color-emoji" = { os = ["macos"] }
+"brew-cask:font-noto-emoji" = { os = ["macos"] }
+"brew-cask:font-noto-sans" = { os = ["macos"] }
+"brew-cask:font-noto-serif" = { os = ["macos"] }
+"brew-cask:font-open-sans" = { os = ["macos"] }
+"brew-cask:font-roboto" = { os = ["macos"] }
+"brew-cask:font-roboto-mono" = { os = ["macos"] }
+"brew-cask:font-ubuntu" = { os = ["macos"] }
+"brew-cask:garmin-express" = { os = ["macos"] }
+"brew-cask:ghostty" = { os = ["macos"] }
+"brew-cask:google-chrome" = { os = ["macos"] }
+"brew-cask:gcloud-cli" = { os = ["macos"] }
+"brew-cask:microsoft-auto-update" = { os = ["macos"] }
+"brew-cask:microsoft-office" = { os = ["macos"] }
+"brew-cask:microsoft-teams" = { os = ["macos"] }
+"brew-cask:miro" = { os = ["macos"] }
+"brew-cask:orion" = { os = ["macos"] }
+"brew-cask:raycast" = { os = ["macos"] }
+"brew-cask:shottr" = { os = ["macos"] }
+"brew-cask:slack" = { os = ["macos"] }
+"brew-cask:sourcetree" = { os = ["macos"] }
+"brew-cask:spotify" = { os = ["macos"] }
+"brew-cask:supacode" = { os = ["macos"] }
+"brew-cask:telegram" = { os = ["macos"] }
+"brew-cask:textmate" = { os = ["macos"] }
+"brew-cask:the-unarchiver" = { os = ["macos"] }
+"brew-cask:via" = { os = ["macos"] }
+"brew-cask:visual-studio-code" = { os = ["macos"] }
+"brew-cask:vlc" = { os = ["macos"] }
+"brew-cask:webex" = { os = ["macos"] }
+"brew-cask:whatsapp" = { os = ["macos"] }
+"brew-cask:zed" = { os = ["macos"] }
+
+# Mac App Store entries from Brewfile (requires App Store sign-in).
+"mas:1287239339" = { os = ["macos"] }
+"mas:6741814079" = { os = ["macos"] }
+"mas:1025822138" = { os = ["macos"] }
+"mas:413897608" = { os = ["macos"] }
+"mas:6445813049" = { os = ["macos"] }
+"mas:1448916662" = { os = ["macos"] }
+"mas:904280696" = { os = ["macos"] }
+
+[bootstrap.user]
+login_shell = "/bin/zsh"
+
+[bootstrap.mise_shell_activate]
+zsh = "activate"
+
+[bootstrap.secrets]
+npm_org_scope = "NPM_ORG_SCOPE"
+npm_registry_host = "NPM_REGISTRY_HOST"
+github_org_scope = "GITHUB_ORG_SCOPE"
+GH_TOKEN = "GH_TOKEN"
+ARTIFACTORY_AUTH_TOKEN = "ARTIFACTORY_AUTH_TOKEN"
+NPM_TOKEN = "NPM_TOKEN"
+LINEARB_API_KEY = "LINEARB_API_KEY"
+
+# Parallel migration sources retain the current chezmoi repository layout.
+# ~/.local/state/secrets.env is intentionally not declared yet: explicit 0600
+# behavior and user-relative bootstrap.files semantics remain unverified.
+# Legacy Chezmoi remains authoritative for this file during the migration.
+[dotfiles]
+"~/.zshrc" = { source = "home/dot_zshrc", mode = "symlink" }
+"~/.gitconfig" = { source = "home/dot_gitconfig", mode = "symlink" }
+"~/.tmux.conf" = { source = "home/dot_tmux.conf", mode = "symlink" }
+"~/.config/mise/config.toml" = { source = "configs/mise/config.toml", mode = "symlink" }
+"~/.config/nvim" = { source = "configs/nvim", mode = "symlink" }
+"~/.config/opencode" = { source = "configs/opencode", mode = "symlink" }
+"~/.config/zed" = { source = "configs/zed", mode = "symlink" }
+"~/.config/ghostty" = { source = "configs/ghostty", mode = "symlink" }
+"~/.config/zellij" = { source = "configs/zellij", mode = "symlink" }
+"~/.config/starship.toml" = { source = "home/dot_config/starship.toml", mode = "symlink" }
+"~/.config/direnv" = { source = "configs/direnv", mode = "symlink" }
+"~/.config/colima/default/colima.yaml" = { source = "configs/colima/default/colima.yaml", mode = "symlink" }
+"~/.config/gh-dash" = { source = "configs/gh-dash", mode = "symlink" }
+"~/.config/herdr" = { source = "configs/herdr", mode = "symlink" }
+"~/.supacode/settings.json" = { source = "configs/supacode/settings.json", mode = "symlink" }
+"~/.config/git" = { source = "configs/git", mode = "symlink" }
+"~/.config/prettierd" = { source = "configs/prettierd", mode = "symlink" }
+# Legacy Chezmoi .npmrc template remains during parallel migration; this mise declaration is not applied yet.
+"~/.npmrc" = { source = "dotfiles/.npmrc.tmpl", mode = "template" }
