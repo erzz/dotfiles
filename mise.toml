@@ -1,18 +1,63 @@
-# Parallel package migration: Brewfile remains authoritative until clean-machine
-# validation. Mise's package inventory does not cover all Homebrew DSL/service behavior.
+# Canonical common mise configuration: tools, repositories, shell activation, dotfiles,
+# tasks, and the small control-plane package set live here. The apps overlay owns
+# the bulk of host packages. Legacy Brewfile/chezmoi remain authoritative until
+# clean-machine validation confirms this migration.
+
+[settings.task]
+run_auto_install = false
 
 [tools]
 bun = "latest"
+fnox = "latest"
 java = "latest"
 node = "24"
 "npm:agent-browser" = "latest"
 "npm:@ingka-group-digital/skapa-design-system-mcp" = "0.5.5"
-"npm:@tarquinen/opencode-dcp" = "3.1.14"
+"npm:@tarquinen/opencode-dcp" = { version = "3.1.15", trust_policy_excludes = ["effect@4.0.0-beta.83"] }
 "npm:@ingka-group-digital/workflows-mcp" = "latest"
 "npm:@playwright/mcp" = "latest"
 terraform = "latest"
+"aqua:terraform-linters/tflint" = "latest"
 maven = "latest"
 "npm:mcp-remote" = "latest"
+
+[tasks.prepare]
+description = "Install pre-auth packages and deploy fnox config, without project tools"
+run = "export PATH=\"/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH\"; mise --no-config bootstrap packages apply --yes brew:git brew:gh && brew install --cask 1password 1password-cli && mise bootstrap --force-dotfiles dotfiles apply --yes ~/.config/fnox"
+
+# Ensure fnox can find 1Password's `op` on Apple Silicon or Intel Homebrew.
+[tasks.sync]
+description = "Authenticate and converge root and apps declarations through fnox"
+run = "export PATH=\"/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH\"; export MISE_CONFIG_DIR=\"${TMPDIR:-/tmp}/mise-sync-config-$$\"; mkdir -p \"$MISE_CONFIG_DIR\"; export MISE_GLOBAL_CONFIG_FILE=\"$MISE_CONFIG_DIR/global.toml\"; : > \"$MISE_GLOBAL_CONFIG_FILE\"; trap 'rm -rf \"$MISE_CONFIG_DIR\"' EXIT; MISE_GITHUB_TOKEN=\"$(gh auth token)\" && export MISE_GITHUB_TOKEN && test -n \"$MISE_GITHUB_TOKEN\" || { printf '%s\\n' 'GitHub authentication is required: run gh auth login.' >&2; exit 1; }; printf '%s\\n' '[sync] installing fnox'; mise install fnox@latest && printf '%s\\n' '[sync] deploying configuration'; mise bootstrap --force-dotfiles dotfiles apply --yes ~/.config/fnox && mise bootstrap --force-dotfiles dotfiles apply --yes ~/.config/mise/config.toml && printf '%s\\n' '[sync] converging apps and remaining declarations'; mise exec fnox -- fnox exec --replace -- mise -E apps bootstrap --force-dotfiles --yes && mise run casks && mise run fonts"
+
+[tasks.casks]
+description = "Install application casks with native Homebrew"
+run = "export PATH=\"/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH\"; brew bundle install --no-upgrade --file=\"{{ config_root }}/brew/Brewfile.casks\""
+
+[tasks.fonts]
+description = "Install fonts with native Homebrew"
+run = "export PATH=\"/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH\"; brew bundle install --no-upgrade --file=\"{{ config_root }}/brew/Brewfile.fonts\""
+
+[tasks.install]
+description = "Install all tools declared in the canonical mise.toml"
+run = "export PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"; MISE_GITHUB_TOKEN=\"$(gh auth token)\" && export MISE_GITHUB_TOKEN && test -n \"$MISE_GITHUB_TOKEN\" || { printf '%s\\n' 'GitHub authentication is required: run gh auth login.' >&2; exit 1; }; mise install fnox && mise exec fnox -- fnox exec --replace -- mise install --jobs=4"
+
+[tasks.apps]
+description = "Install applications, fonts, and Mac App Store apps"
+output = "interleave"
+run = "export PATH=\"/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH\"; MISE_GITHUB_TOKEN=\"$(gh auth token)\" && export MISE_GITHUB_TOKEN && test -n \"$MISE_GITHUB_TOKEN\" || { printf '%s\\n' 'GitHub authentication is required: run gh auth login.' >&2; exit 1; }; mise -E apps bootstrap packages apply --yes brew:mas && MISE_TERMINAL_PROGRESS=true mise -E apps bootstrap --only packages --yes && mise run casks && mise run fonts"
+
+[tasks.setup]
+description = "Compatibility alias for sync"
+run = "mise run sync"
+
+[tasks.macos]
+description = "Apply root macOS defaults"
+run = "mise bootstrap --only macos-defaults --yes"
+
+[tasks.check]
+description = "Show pending mise bootstrap changes"
+run = "mise bootstrap status --missing"
 
 # Staged finalizer migration: repo cloning replaces the clone portion of the
 # legacy finalizers. Oh My Zsh uses its documented default branch for now;
@@ -37,214 +82,65 @@ url = "https://github.com/tmux-plugins/tmux-continuum.git"
 # gh-dash extension installation, the computed Docker Buildx symlink, and
 # agent-browser asset installation remain outside this staged migration.
 
-[bootstrap.brew.taps]
-"buo/cask-upgrade" = "https://github.com/buo/homebrew-cask-upgrade.git"
-"dart-lang/dart" = "https://github.com/dart-lang/homebrew-dart.git"
-"fsouza/prettierd" = "https://github.com/fsouza/homebrew-prettierd.git"
-"anomalyco/tap" = "https://github.com/anomalyco/homebrew-tap.git"
-"goodwithtech/r" = "https://github.com/goodwithtech/homebrew-r.git"
-"sass/sass" = "https://github.com/sass/homebrew-sass.git"
-"anchore/grant" = "https://github.com/anchore/homebrew-grant.git"
-"anchore/syft" = "https://github.com/anchore/homebrew-syft.git"
-"anchore/grype" = "https://github.com/anchore/homebrew-grype.git"
-
 [bootstrap.packages]
-"brew:act" = { os = ["macos"] }
-"brew:adr-tools" = { os = ["macos"] }
-"brew:aspell" = { os = ["macos"] }
-"brew:bash" = { os = ["macos"] }
-"brew:bash-completion" = { os = ["macos"] }
-"brew:bat" = { os = ["macos"] }
-"brew:bfg" = { os = ["macos"] }
-"brew:binutils" = { os = ["macos"] }
-"brew:btop" = { os = ["macos"] }
-"brew:ccache" = { os = ["macos"] }
-"brew:chezmoi" = { os = ["macos"] }
-# Brewfile's restart_service: true has no mise package equivalent.
-"brew:colima" = { os = ["macos"] }
-"brew:coreutils" = { os = ["macos"] }
-"brew:curl" = { os = ["macos"] }
-"brew:d2" = { os = ["macos"] }
 "brew:git" = { os = ["macos"] }
 "brew:gh" = { os = ["macos"] }
-"brew:direnv" = { os = ["macos"] }
-"brew:mas" = { os = ["macos"] }
-"brew:dive" = { os = ["macos"] }
-"brew:docker" = { os = ["macos"] }
-"brew:docker-buildx" = { os = ["macos"] }
-"brew:docker-compose" = { os = ["macos"] }
-"brew:eza" = { os = ["macos"] }
-"brew:fastfetch" = { os = ["macos"] }
-"brew:fd" = { os = ["macos"] }
-"brew:flac" = { os = ["macos"] }
-"brew:fzf" = { os = ["macos"] }
-"brew:git-delta" = { os = ["macos"] }
-"brew:git-extras" = { os = ["macos"] }
-"brew:gitleaks" = { os = ["macos"] }
-"brew:go" = { os = ["macos"] }
-"brew:gnupg" = { os = ["macos"] }
-"brew:gnuplot" = { os = ["macos"] }
-"brew:gnu-sed" = { os = ["macos"] }
-"brew:gnutls" = { os = ["macos"] }
-"brew:golangci-lint" = { os = ["macos"] }
-"brew:goodwithtech/r/dockle" = { os = ["macos"] }
-"brew:gradle" = { os = ["macos"] }
-"brew:grant" = { os = ["macos"] }
-"brew:graphviz" = { os = ["macos"] }
-"brew:grep" = { os = ["macos"] }
-"brew:grype" = { os = ["macos"] }
-"brew:hadolint" = { os = ["macos"] }
-"brew:helm" = { os = ["macos"] }
-"brew:herdr" = { os = ["macos"] }
-"brew:hostess" = { os = ["macos"] }
-"brew:htop" = { os = ["macos"] }
-"brew:httpie" = { os = ["macos"] }
-"brew:hugo" = { os = ["macos"] }
-"brew:imagemagick" = { os = ["macos"] }
-"brew:inframap" = { os = ["macos"] }
-"brew:jq" = { os = ["macos"] }
-"brew:k9s" = { os = ["macos"] }
-"brew:kotlin" = { os = ["macos"] }
-"brew:kubernetes-cli" = { os = ["macos"] }
-"brew:lame" = { os = ["macos"] }
-"brew:lazygit" = { os = ["macos"] }
-"brew:libheif" = { os = ["macos"] }
-"brew:librsvg" = { os = ["macos"] }
-"brew:lima" = { os = ["macos"] }
-"brew:mise" = { os = ["macos"] }
-"brew:mongosh" = { os = ["macos"] }
-"brew:moreutils" = { os = ["macos"] }
-"brew:neovim" = { os = ["macos"] }
-# Neovim LSPs (also used by other editors / OpenCode)
-"brew:bash-language-server" = { os = ["macos"] }
-"brew:dockerfile-language-server" = { os = ["macos"] }
-"brew:docker-language-server" = { os = ["macos"] }
-"brew:gopls" = { os = ["macos"] }
-"brew:jdtls" = { os = ["macos"] }
-"brew:lua-language-server" = { os = ["macos"] }
-"brew:marksman" = { os = ["macos"] }
-"brew:pyright" = { os = ["macos"] }
-"brew:terraform-ls" = { os = ["macos"] }
-"brew:typescript-language-server" = { os = ["macos"] }
-"brew:vscode-langservers-extracted" = { os = ["macos"] }
-"brew:yaml-language-server" = { os = ["macos"] }
-# Formatters & linters used by Neovim
-"brew:black" = { os = ["macos"] }
-"brew:eslint_d" = { os = ["macos"] }
-"brew:gofumpt" = { os = ["macos"] }
-"brew:google-java-format" = { os = ["macos"] }
-"brew:markdownlint-cli" = { os = ["macos"] }
-"brew:stylua" = { os = ["macos"] }
-"brew:nuclei" = { os = ["macos"] }
-"brew:anomalyco/tap/opencode" = { os = ["macos"] }
-"brew:p7zip" = { os = ["macos"] }
-"brew:pipenv" = { os = ["macos"] }
-"brew:poetry" = { os = ["macos"] }
-"brew:prettierd" = { os = ["macos"] }
-"brew:pstree" = { os = ["macos"] }
-"brew:qemu" = { os = ["macos"] }
-"brew:qt" = { os = ["macos"] }
-"brew:qt@5" = { os = ["macos"] }
-"brew:ripgrep" = { os = ["macos"] }
-"brew:rsync" = { os = ["macos"] }
-"brew:ruff" = { os = ["macos"] }
-"brew:rust" = { os = ["macos"] }
-"brew:sass/sass/sass" = { os = ["macos"] }
-"brew:sesh" = { os = ["macos"] }
-"brew:shellcheck" = { os = ["macos"] }
-"brew:shfmt" = { os = ["macos"] }
-"brew:starship" = { os = ["macos"] }
-"brew:syft" = { os = ["macos"] }
-"brew:terraformer" = { os = ["macos"] }
-"brew:tflint" = { os = ["macos"] }
-"brew:the_silver_searcher" = { os = ["macos"] }
-"brew:tmux" = { os = ["macos"] }
-"brew:tree" = { os = ["macos"] }
-"brew:tree-sitter" = { os = ["macos"] }
-"brew:tree-sitter-cli" = { os = ["macos"] }
-"brew:trivy" = { os = ["macos"] }
-"brew:vim" = { os = ["macos"] }
-"brew:wget" = { os = ["macos"] }
-"brew:xz" = { os = ["macos"] }
-"brew:yamllint" = { os = ["macos"] }
-"brew:yarn" = { os = ["macos"] }
-"brew:yq" = { os = ["macos"] }
-"brew:zellij" = { os = ["macos"] }
-"brew:zoxide" = { os = ["macos"] }
-"brew:zplug" = { os = ["macos"] }
-"brew:zsh" = { os = ["macos"] }
-"brew:zsh-autosuggestions" = { os = ["macos"] }
-"brew:zsh-syntax-highlighting" = { os = ["macos"] }
 
-# Casks, including fonts
-"brew-cask:1password" = { os = ["macos"] }
-"brew-cask:1password-cli" = { os = ["macos"] }
-"brew-cask:appcleaner" = { os = ["macos"] }
-"brew-cask:bambu-studio" = { os = ["macos"] }
-"brew-cask:bazecor" = { os = ["macos"] }
-"brew-cask:bbedit" = { os = ["macos"] }
-"brew-cask:bruno" = { os = ["macos"] }
-"brew-cask:chromedriver" = { os = ["macos"] }
-"brew-cask:daisydisk" = { os = ["macos"] }
-"brew-cask:discord" = { os = ["macos"] }
-"brew-cask:disk-inventory-x" = { os = ["macos"] }
-"brew-cask:displaylink" = { os = ["macos"] }
-"brew-cask:firefox" = { os = ["macos"] }
-"brew-cask:font-awesome-terminal-fonts" = { os = ["macos"] }
-"brew-cask:font-cousine" = { os = ["macos"] }
-"brew-cask:font-fira-code" = { os = ["macos"] }
-"brew-cask:font-fira-mono" = { os = ["macos"] }
-"brew-cask:font-fira-mono-nerd-font" = { os = ["macos"] }
-"brew-cask:font-fontawesome" = { os = ["macos"] }
-"brew-cask:font-hack" = { os = ["macos"] }
-"brew-cask:font-hack-nerd-font" = { os = ["macos"] }
-"brew-cask:font-handlee" = { os = ["macos"] }
-"brew-cask:font-hasklig" = { os = ["macos"] }
-"brew-cask:font-inconsolata" = { os = ["macos"] }
-"brew-cask:font-iosevka-nerd-font" = { os = ["macos"] }
-"brew-cask:font-jetbrains-mono-nerd-font" = { os = ["macos"] }
-"brew-cask:font-montserrat" = { os = ["macos"] }
-"brew-cask:font-noto-color-emoji" = { os = ["macos"] }
-"brew-cask:font-noto-emoji" = { os = ["macos"] }
-"brew-cask:font-noto-sans" = { os = ["macos"] }
-"brew-cask:font-noto-serif" = { os = ["macos"] }
-"brew-cask:font-open-sans" = { os = ["macos"] }
-"brew-cask:font-roboto" = { os = ["macos"] }
-"brew-cask:font-roboto-mono" = { os = ["macos"] }
-"brew-cask:font-ubuntu" = { os = ["macos"] }
-"brew-cask:garmin-express" = { os = ["macos"] }
-"brew-cask:ghostty" = { os = ["macos"] }
-"brew-cask:google-chrome" = { os = ["macos"] }
-"brew-cask:gcloud-cli" = { os = ["macos"] }
-"brew-cask:microsoft-auto-update" = { os = ["macos"] }
-"brew-cask:microsoft-office" = { os = ["macos"] }
-"brew-cask:microsoft-teams" = { os = ["macos"] }
-"brew-cask:miro" = { os = ["macos"] }
-"brew-cask:orion" = { os = ["macos"] }
-"brew-cask:raycast" = { os = ["macos"] }
-"brew-cask:shottr" = { os = ["macos"] }
-"brew-cask:slack" = { os = ["macos"] }
-"brew-cask:sourcetree" = { os = ["macos"] }
-"brew-cask:spotify" = { os = ["macos"] }
-"brew-cask:supacode" = { os = ["macos"] }
-"brew-cask:telegram" = { os = ["macos"] }
-"brew-cask:textmate" = { os = ["macos"] }
-"brew-cask:the-unarchiver" = { os = ["macos"] }
-"brew-cask:via" = { os = ["macos"] }
-"brew-cask:visual-studio-code" = { os = ["macos"] }
-"brew-cask:vlc" = { os = ["macos"] }
-"brew-cask:webex" = { os = ["macos"] }
-"brew-cask:whatsapp" = { os = ["macos"] }
-"brew-cask:zed" = { os = ["macos"] }
+# Safe declarative defaults only. Unsafe legacy operations (chflags,
+# systemsetup, process kills, and reboot) are intentionally excluded.
+[bootstrap.macos.defaults."NSGlobalDomain"]
+"com.apple.springing.enabled" = true
+"com.apple.springing.delay" = 0.0
+AppleShowAllExtensions = true
+NSNavPanelExpandedStateForSaveMode = true
+NSAutomaticQuoteSubstitutionEnabled = false
+NSAutomaticDashSubstitutionEnabled = false
+"com.apple.swipescrolldirection" = false
+ApplePressAndHoldEnabled = false
 
-# Mac App Store entries from Brewfile (requires App Store sign-in).
-"mas:1287239339" = { os = ["macos"] }
-"mas:6741814079" = { os = ["macos"] }
-"mas:1025822138" = { os = ["macos"] }
-"mas:413897608" = { os = ["macos"] }
-"mas:6445813049" = { os = ["macos"] }
-"mas:1448916662" = { os = ["macos"] }
-"mas:904280696" = { os = ["macos"] }
+[bootstrap.macos.defaults."com.apple.dock"]
+tilesize = 48
+"minimize-to-application" = true
+"show-process-indicators" = true
+
+[bootstrap.macos.defaults."com.apple.desktopservices"]
+DSDontWriteNetworkStores = true
+DSDontWriteUSBStores = true
+
+[bootstrap.macos.defaults."com.apple.finder"]
+FXPreferredViewStyle = "Nlsv"
+ShowExternalHardDrivesOnDesktop = true
+ShowRemovableMediaOnDesktop = true
+ShowMountedServersOnDesktop = true
+ShowHardDrivesOnDesktop = true
+AppleShowAllFiles = true
+ShowStatusBar = true
+ShowPathbar = true
+_FXShowPosixPathInTitle = true
+_FXSortFoldersFirst = true
+NewWindowTarget = "PfHm"
+FXDefaultSearchScope = "SCev"
+FXEnableExtensionChangeWarning = false
+
+[bootstrap.macos.defaults."com.apple.frameworks.diskimages"]
+"skip-verify" = true
+"skip-verify-locked" = true
+"skip-verify-remote" = true
+
+[bootstrap.macos.defaults."com.apple.loginwindow"]
+SHOWFULLNAME = true
+
+[bootstrap.macos.defaults."com.apple.NetworkBrowser"]
+BrowseAllInterfaces = true
+
+[bootstrap.macos.defaults."com.apple.screencapture"]
+type = "png"
+
+[bootstrap.macos.defaults."com.apple.TimeMachine"]
+DoNotOfferNewDisksForBackup = true
+
+[bootstrap.macos.defaults."com.apple.LaunchServices"]
+LSQuarantine = false
 
 [bootstrap.user]
 login_shell = "/bin/zsh"
@@ -270,6 +166,7 @@ LINEARB_API_KEY = "LINEARB_API_KEY"
 "~/.gitconfig" = { source = "home/dot_gitconfig", mode = "symlink" }
 "~/.tmux.conf" = { source = "home/dot_tmux.conf", mode = "symlink" }
 "~/.config/mise/config.toml" = { source = "configs/mise/config.toml", mode = "symlink" }
+"~/.config/fnox" = { source = "configs/fnox", mode = "symlink" }
 "~/.config/nvim" = { source = "configs/nvim", mode = "symlink" }
 "~/.config/opencode" = { source = "configs/opencode", mode = "symlink" }
 "~/.config/zed" = { source = "configs/zed", mode = "symlink" }

@@ -1,0 +1,18 @@
+# 1Password-backed credentials for private mise/npm tools.
+# The boolean form is supported by the fnox version installed through mise.
+# `fnox exec` injects these into its child command; this repository does not
+# enable fnox shell activation, so they are not added to normal shell startup.
+
+[providers.op]
+type = "1password"
+vault = "Employee"
+account = "ikea.1password.com"
+
+[secrets]
+GH_TOKEN = { provider = "op", value = "op://Employee/Dev Tokens/GH_TOKEN", env = true, if_missing = "error" }
+ARTIFACTORY_AUTH_TOKEN = { provider = "op", value = "op://Employee/Dev Tokens/ARTIFACTORY_AUTH_TOKEN", env = true, if_missing = "error" }
+NPM_TOKEN = { provider = "op", value = "op://Employee/Dev Tokens/NPM_TOKEN", env = true, if_missing = "error" }
+LINEARB_API_KEY = { provider = "op", value = "op://Employee/Dev Tokens/LINEARB_API_KEY", env = true, if_missing = "error" }
+NPM_ORG_SCOPE = { provider = "op", value = "op://Employee/ingka-npmrc/org-scope", env = true, if_missing = "error" }
+NPM_REGISTRY_HOST = { provider = "op", value = "op://Employee/ingka-npmrc/registry-host", env = true, if_missing = "error" }
+GITHUB_ORG_SCOPE = { provider = "op", value = "op://Employee/ingka-npmrc/gh-org-scope", env = true, if_missing = "error" }

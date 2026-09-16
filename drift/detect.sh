@@ -67,6 +67,20 @@ if command -v brew >/dev/null 2>&1 && [ -f "${REPO}/brew/Brewfile" ]; then
 	fi
 fi
 
+# 4b. Native application cask Brewfile drift
+if command -v brew >/dev/null 2>&1 && [ -f "${REPO}/brew/Brewfile.casks" ]; then
+	if ! brew bundle check --quiet --file="${REPO}/brew/Brewfile.casks" >/dev/null 2>&1; then
+		MESSAGES+=("${COLOUR}Cask Brewfile drift (run: brew bundle check)${NC}")
+	fi
+fi
+
+# 4c. Dedicated font Brewfile drift
+if command -v brew >/dev/null 2>&1 && [ -f "${REPO}/brew/Brewfile.fonts" ]; then
+	if ! brew bundle check --quiet --file="${REPO}/brew/Brewfile.fonts" >/dev/null 2>&1; then
+		MESSAGES+=("${COLOUR}Font Brewfile drift (run: brew bundle check)${NC}")
+	fi
+fi
+
 # 5. Mise drift (tools in mise config but not installed)
 if command -v mise >/dev/null 2>&1; then
 	if mise ls --missing 2>/dev/null | grep -q .; then
