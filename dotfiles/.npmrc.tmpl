@@ -1,0 +1,12 @@
+{% if env?.CI %}
+# CI build — private registries omitted (no auth available).
+{% else %}
+# GH_TOKEN is consumed at npm invocation time; values are supplied externally
+# (fnox/environment) and are not stored in git.
+{% if get_env(name="NPM_ORG_SCOPE", default="") == "" or get_env(name="NPM_REGISTRY_HOST", default="") == "" or get_env(name="GITHUB_ORG_SCOPE", default="") == "" %}
+{{ throw(message="NPM_ORG_SCOPE, NPM_REGISTRY_HOST, and GITHUB_ORG_SCOPE must be supplied") }}
+{% endif %}
+{{ get_env(name="NPM_ORG_SCOPE", default="") }}:registry=https://{{ get_env(name="NPM_REGISTRY_HOST", default="") }}
+@{{ get_env(name="GITHUB_ORG_SCOPE", default="") }}:registry=https://npm.pkg.github.com/
+//npm.pkg.github.com/:_authToken=${GH_TOKEN}
+{% endif %}

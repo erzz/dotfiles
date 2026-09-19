@@ -3,7 +3,7 @@
   "model": "github-copilot/gpt-5.6-terra",
   "plugin": [
     "@ramtinj95/opencode-tokenscope@1.7.1",
-    "@tarquinen/opencode-dcp@3.1.14",
+    "@tarquinen/opencode-dcp@3.1.15",
     "oh-my-opencode-slim@2.2.8"
   ],
   "default_agent": "orchestrator",

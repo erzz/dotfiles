@@ -13,6 +13,8 @@
 # {{ output "sha256sum" (joinPath .chezmoi.workingTree "brew" "Brewfile.ci") }}
 {{- else }}
 # {{ output "sha256sum" (joinPath .chezmoi.workingTree "brew" "Brewfile") }}
+# {{ output "sha256sum" (joinPath .chezmoi.workingTree "brew" "Brewfile.casks") }}
+# {{ output "sha256sum" (joinPath .chezmoi.workingTree "brew" "Brewfile.fonts") }}
 {{- end }}
 {{- if eq .chezmoi.os "darwin" }}
 set -uo pipefail
@@ -42,10 +44,8 @@ if brew help trust >/dev/null 2>&1; then
     anchore/grype \
     anchore/syft \
     buo/cask-upgrade \
-    dart-lang/dart \
     fsouza/prettierd \
-    goodwithtech/r \
-    sass/sass >/dev/null 2>&1 || true
+    goodwithtech/r >/dev/null 2>&1 || true
 fi
 # The "${arr[@]+"${arr[@]}"}" idiom safely expands an empty array under
 # `set -u` on macOS's stock bash 3.2, where bare "${arr[@]}" errors with
@@ -61,6 +61,9 @@ brew bundle ${BUNDLE_FLAGS[@]+"${BUNDLE_FLAGS[@]}"} --file "${DOTFILES}/brew/Bre
   echo "      - Sudo prompt dismissed (re-run from a tty)"
   echo "      - App Store not signed in"
 }
+{{- end }}
+{{- if not .ci }}
+brew bundle install --no-upgrade --file="${DOTFILES}/brew/Brewfile.fonts"
 {{- end }}
 brew cleanup || true
 {{- end }}

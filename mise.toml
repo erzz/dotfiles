@@ -1,0 +1,184 @@
+# Canonical common mise configuration: tools, repositories, shell activation, dotfiles,
+# tasks, and the small control-plane package set live here. The apps overlay owns
+# the bulk of host packages. Legacy Brewfile/chezmoi remain authoritative until
+# clean-machine validation confirms this migration.
+
+[settings.task]
+run_auto_install = false
+
+[tools]
+bun = "latest"
+fnox = "latest"
+java = "latest"
+node = "24"
+"npm:agent-browser" = "latest"
+"npm:@ingka-group-digital/skapa-design-system-mcp" = "0.5.5"
+"npm:@tarquinen/opencode-dcp" = { version = "3.1.15", trust_policy_excludes = ["effect@4.0.0-beta.83"] }
+"npm:@ingka-group-digital/workflows-mcp" = "latest"
+"npm:@playwright/mcp" = "latest"
+terraform = "latest"
+"aqua:terraform-linters/tflint" = "latest"
+maven = "latest"
+"npm:mcp-remote" = "latest"
+
+[tasks.prepare]
+description = "Install pre-auth packages and deploy fnox config, without project tools"
+run = "export PATH=\"/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH\"; mise --no-config bootstrap packages apply --yes brew:git brew:gh && brew install --cask 1password 1password-cli && mise bootstrap --force-dotfiles dotfiles apply --yes ~/.config/fnox"
+
+# Ensure fnox can find 1Password's `op` on Apple Silicon or Intel Homebrew.
+[tasks.sync]
+description = "Authenticate and converge root and apps declarations through fnox"
+run = "export PATH=\"/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH\"; export MISE_CONFIG_DIR=\"${TMPDIR:-/tmp}/mise-sync-config-$$\"; mkdir -p \"$MISE_CONFIG_DIR\"; export MISE_GLOBAL_CONFIG_FILE=\"$MISE_CONFIG_DIR/global.toml\"; : > \"$MISE_GLOBAL_CONFIG_FILE\"; trap 'rm -rf \"$MISE_CONFIG_DIR\"' EXIT; MISE_GITHUB_TOKEN=\"$(gh auth token)\" && export MISE_GITHUB_TOKEN && test -n \"$MISE_GITHUB_TOKEN\" || { printf '%s\\n' 'GitHub authentication is required: run gh auth login.' >&2; exit 1; }; printf '%s\\n' '[sync] installing fnox'; mise install fnox@latest && printf '%s\\n' '[sync] deploying configuration'; mise bootstrap --force-dotfiles dotfiles apply --yes ~/.config/fnox && mise bootstrap --force-dotfiles dotfiles apply --yes ~/.config/mise/config.toml && printf '%s\\n' '[sync] converging apps and remaining declarations'; mise exec fnox -- fnox exec --replace -- mise -E apps bootstrap --force-dotfiles --yes && mise run casks && mise run fonts"
+
+[tasks.casks]
+description = "Install application casks with native Homebrew"
+run = "export PATH=\"/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH\"; brew bundle install --no-upgrade --file=\"{{ config_root }}/brew/Brewfile.casks\""
+
+[tasks.fonts]
+description = "Install fonts with native Homebrew"
+run = "export PATH=\"/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH\"; brew bundle install --no-upgrade --file=\"{{ config_root }}/brew/Brewfile.fonts\""
+
+[tasks.install]
+description = "Install all tools declared in the canonical mise.toml"
+run = "export PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"; MISE_GITHUB_TOKEN=\"$(gh auth token)\" && export MISE_GITHUB_TOKEN && test -n \"$MISE_GITHUB_TOKEN\" || { printf '%s\\n' 'GitHub authentication is required: run gh auth login.' >&2; exit 1; }; mise install fnox && mise exec fnox -- fnox exec --replace -- mise install --jobs=4"
+
+[tasks.apps]
+description = "Install applications, fonts, and Mac App Store apps"
+output = "interleave"
+run = "export PATH=\"/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH\"; MISE_GITHUB_TOKEN=\"$(gh auth token)\" && export MISE_GITHUB_TOKEN && test -n \"$MISE_GITHUB_TOKEN\" || { printf '%s\\n' 'GitHub authentication is required: run gh auth login.' >&2; exit 1; }; mise -E apps bootstrap packages apply --yes brew:mas && MISE_TERMINAL_PROGRESS=true mise -E apps bootstrap --only packages --yes && mise run casks && mise run fonts"
+
+[tasks.setup]
+description = "Compatibility alias for sync"
+run = "mise run sync"
+
+[tasks.macos]
+description = "Apply root macOS defaults"
+run = "mise bootstrap --only macos-defaults --yes"
+
+[tasks.check]
+description = "Show pending mise bootstrap changes"
+run = "mise bootstrap status --missing"
+
+# Staged finalizer migration: repo cloning replaces the clone portion of the
+# legacy finalizers. Oh My Zsh uses its documented default branch for now;
+# pinning it remains a follow-up because no justified repository version is
+# present in the current configuration.
+[bootstrap.repos."~/.oh-my-zsh"]
+url = "https://github.com/ohmyzsh/ohmyzsh.git"
+
+[bootstrap.repos."~/.tmux/plugins/tpm"]
+url = "https://github.com/tmux-plugins/tpm.git"
+
+[bootstrap.repos."~/.tmux/plugins/tmux-power"]
+url = "https://github.com/wfxr/tmux-power.git"
+
+[bootstrap.repos."~/.tmux/plugins/tmux-resurrect"]
+url = "https://github.com/tmux-plugins/tmux-resurrect.git"
+
+[bootstrap.repos."~/.tmux/plugins/tmux-continuum"]
+url = "https://github.com/tmux-plugins/tmux-continuum.git"
+
+# Intentionally not claimed declaratively here: TPM's install_plugins,
+# gh-dash extension installation, the computed Docker Buildx symlink, and
+# agent-browser asset installation remain outside this staged migration.
+
+[bootstrap.packages]
+"brew:git" = { os = ["macos"] }
+"brew:gh" = { os = ["macos"] }
+
+# Safe declarative defaults only. Unsafe legacy operations (chflags,
+# systemsetup, process kills, and reboot) are intentionally excluded.
+[bootstrap.macos.defaults."NSGlobalDomain"]
+"com.apple.springing.enabled" = true
+"com.apple.springing.delay" = 0.0
+AppleShowAllExtensions = true
+NSNavPanelExpandedStateForSaveMode = true
+NSAutomaticQuoteSubstitutionEnabled = false
+NSAutomaticDashSubstitutionEnabled = false
+"com.apple.swipescrolldirection" = false
+ApplePressAndHoldEnabled = false
+
+[bootstrap.macos.defaults."com.apple.dock"]
+tilesize = 48
+"minimize-to-application" = true
+"show-process-indicators" = true
+
+[bootstrap.macos.defaults."com.apple.desktopservices"]
+DSDontWriteNetworkStores = true
+DSDontWriteUSBStores = true
+
+[bootstrap.macos.defaults."com.apple.finder"]
+FXPreferredViewStyle = "Nlsv"
+ShowExternalHardDrivesOnDesktop = true
+ShowRemovableMediaOnDesktop = true
+ShowMountedServersOnDesktop = true
+ShowHardDrivesOnDesktop = true
+AppleShowAllFiles = true
+ShowStatusBar = true
+ShowPathbar = true
+_FXShowPosixPathInTitle = true
+_FXSortFoldersFirst = true
+NewWindowTarget = "PfHm"
+FXDefaultSearchScope = "SCev"
+FXEnableExtensionChangeWarning = false
+
+[bootstrap.macos.defaults."com.apple.frameworks.diskimages"]
+"skip-verify" = true
+"skip-verify-locked" = true
+"skip-verify-remote" = true
+
+[bootstrap.macos.defaults."com.apple.loginwindow"]
+SHOWFULLNAME = true
+
+[bootstrap.macos.defaults."com.apple.NetworkBrowser"]
+BrowseAllInterfaces = true
+
+[bootstrap.macos.defaults."com.apple.screencapture"]
+type = "png"
+
+[bootstrap.macos.defaults."com.apple.TimeMachine"]
+DoNotOfferNewDisksForBackup = true
+
+[bootstrap.macos.defaults."com.apple.LaunchServices"]
+LSQuarantine = false
+
+[bootstrap.user]
+login_shell = "/bin/zsh"
+
+[bootstrap.mise_shell_activate]
+zsh = "activate"
+
+[bootstrap.secrets]
+npm_org_scope = "NPM_ORG_SCOPE"
+npm_registry_host = "NPM_REGISTRY_HOST"
+github_org_scope = "GITHUB_ORG_SCOPE"
+GH_TOKEN = "GH_TOKEN"
+ARTIFACTORY_AUTH_TOKEN = "ARTIFACTORY_AUTH_TOKEN"
+NPM_TOKEN = "NPM_TOKEN"
+LINEARB_API_KEY = "LINEARB_API_KEY"
+
+# Parallel migration sources retain the current chezmoi repository layout.
+# ~/.local/state/secrets.env is intentionally not declared yet: explicit 0600
+# behavior and user-relative bootstrap.files semantics remain unverified.
+# Legacy Chezmoi remains authoritative for this file during the migration.
+[dotfiles]
+"~/.zshrc" = { source = "home/dot_zshrc", mode = "symlink" }
+"~/.gitconfig" = { source = "home/dot_gitconfig", mode = "symlink" }
+"~/.tmux.conf" = { source = "home/dot_tmux.conf", mode = "symlink" }
+"~/.config/mise/config.toml" = { source = "configs/mise/config.toml", mode = "symlink" }
+"~/.config/fnox" = { source = "configs/fnox", mode = "symlink" }
+"~/.config/nvim" = { source = "configs/nvim", mode = "symlink" }
+"~/.config/opencode" = { source = "configs/opencode", mode = "symlink" }
+"~/.config/zed" = { source = "configs/zed", mode = "symlink" }
+"~/.config/ghostty" = { source = "configs/ghostty", mode = "symlink" }
+"~/.config/zellij" = { source = "configs/zellij", mode = "symlink" }
+"~/.config/starship.toml" = { source = "home/dot_config/starship.toml", mode = "symlink" }
+"~/.config/direnv" = { source = "configs/direnv", mode = "symlink" }
+"~/.config/colima/default/colima.yaml" = { source = "configs/colima/default/colima.yaml", mode = "symlink" }
+"~/.config/gh-dash" = { source = "configs/gh-dash", mode = "symlink" }
+"~/.config/herdr" = { source = "configs/herdr", mode = "symlink" }
+"~/.supacode/settings.json" = { source = "configs/supacode/settings.json", mode = "symlink" }
+"~/.config/git" = { source = "configs/git", mode = "symlink" }
+"~/.config/prettierd" = { source = "configs/prettierd", mode = "symlink" }
+# Legacy Chezmoi .npmrc template remains during parallel migration; this mise declaration is not applied yet.
+"~/.npmrc" = { source = "dotfiles/.npmrc.tmpl", mode = "template" }
