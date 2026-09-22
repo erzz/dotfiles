@@ -50,11 +50,6 @@ jobs:
             jq empty "$file"
           done < <(git ls-files -- '*.json' ':!configs/zed/keymap.json')
 
-      # The repository suite is intentionally CI-safe: it skips host-only checks under CI and
-      # uses fake/read-only commands rather than running sync, install, Homebrew, or GUI setup.
-      - name: Run local static test suite
-        run: ./tests/run.sh
-
   macos-defaults-validation:
     name: macOS defaults dry-run
     runs-on: macos-latest

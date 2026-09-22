@@ -249,20 +249,6 @@ Edit the live symlinked file or its repository target, then inspect `git status`
 `configs/` and `home/` retain the repository's content layout while deployment is owned by mise.
 Private files are rendered by `mise run render-private-config`; they are not symlinked.
 
-## Make compatibility wrappers
-
-These Make targets remain available as compatibility wrappers around the current mise-native
-operations. They are not a separate synchronization path:
-
-```bash
-make apply       # mise sync wrapper
-make diff        # mise pending-change view wrapper
-make status      # mise pending-change view wrapper
-make update      # git pull + mise sync wrapper
-make test        # repository test-suite wrapper
-make drift       # mise drift-check wrapper
-```
-
 ## Adding configuration
 
 Declare deployment in the root `mise.toml` `[dotfiles]` table. Put whole-directory content under
