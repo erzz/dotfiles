@@ -1,0 +1,73 @@
+# .github/workflows/ci.yml
+name: CI
+
+on:
+  push:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  static-validation:
+    name: Static validation
+    runs-on: ubuntu-latest
+    steps:
+      # Pin third-party actions to the current release commit while retaining the release tag here.
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # Install only mise itself. The repository's tools and bootstrap declarations must not be
+      # installed or converged in CI.
+      - name: Set up mise
+        uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
+        with:
+          install: false
+          cache: false
+
+      - name: Validate mise tasks
+        run: mise tasks validate
+
+      - name: ShellCheck repository shell scripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Informational findings are allowed; warnings and errors fail CI.
+          while IFS= read -r file; do
+            [ -f "$file" ] && shellcheck --severity=warning "$file"
+          done < <(git ls-files -- '*.sh')
+
+      - name: Validate repository JSON syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Zed's keymap is JSONC despite its .json filename, so jq cannot parse it as JSON.
+          while IFS= read -r file; do
+            jq empty "$file"
+          done < <(git ls-files -- '*.json' ':!configs/zed/keymap.json')
+
+      # The repository suite is intentionally CI-safe: it skips host-only checks under CI and
+      # uses fake/read-only commands rather than running sync, install, Homebrew, or GUI setup.
+      - name: Run local static test suite
+        run: ./tests/run.sh
+
+  macos-defaults-validation:
+    name: macOS defaults dry-run
+    runs-on: macos-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up mise
+        uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
+        with:
+          install: false
+          cache: false
+
+      # Validate our macOS defaults declarations without applying changes or running sync.
+      - name: Validate macOS defaults declarations
+        run: mise bootstrap --only macos-defaults --dry-run
