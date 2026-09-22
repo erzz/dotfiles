@@ -3,35 +3,30 @@
   "model": "github-copilot/gpt-5.6-terra",
   "plugin": [
     "@ramtinj95/opencode-tokenscope@1.7.1",
-    "@tarquinen/opencode-dcp@3.1.14",
-    "oh-my-opencode-slim@2.2.8"
+    "@tarquinen/opencode-dcp@3.1.15",
+    "oh-my-opencode-slim@2.2.22"
   ],
   "default_agent": "orchestrator",
-  "instructions": [
-    "~/.config/opencode/AGENTS.md"
-  ],
+  "instructions": ["~/.config/opencode/AGENTS.md"],
   "permission": {
     "skapa_*": "deny",
     "workflows_*": "deny"
   },
   "mcp": {
+    "mise": {
+      "type": "local",
+      "command": ["/opt/homebrew/bin/mise", "--cd", "/Users/sean.erswell-liljefelt/dotfiles", "mcp"],
+      "environment": {
+        "MISE_EXPERIMENTAL": "1"
+      }
+    },
     "skapa": {
       "type": "local",
-      "command": [
-        "mise",
-        "exec",
-        "--",
-        "skapa-design-system-mcp"
-      ]
+      "command": ["mise", "exec", "--", "skapa-design-system-mcp"]
     },
     "workflows": {
       "type": "local",
-      "command": [
-        "mise",
-        "exec",
-        "--",
-        "workflows-mcp"
-      ]
+      "command": ["mise", "exec", "--", "workflows-mcp"]
     }
   },
   "agent": {
@@ -44,7 +39,8 @@
     },
     "designer": {
       "permission": {
-        "skapa_*": "allow"
+        "skapa_*": "allow",
+        "mise": "deny"
       }
     },
     "explore": {

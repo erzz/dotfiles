@@ -7,7 +7,7 @@ framework.
 
 - ~12 plugins, ~300 LOC of Lua you can fully read in one sitting
 - Native completion via `vim.lsp.completion` (no nvim-cmp / blink.cmp)
-- LSPs, formatters, linters installed via Homebrew (see top-level `brew/Brewfile`)
+- LSPs, formatters, linters installed via the native mise/Homebrew declarations
 - Format-on-save via `conform.nvim`; lint via `nvim-lint`
 - Snacks picker, mini.files explorer, gitsigns, lualine, tokyonight-night
 

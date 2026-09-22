@@ -40,7 +40,7 @@
 
   ],
   "repositories" : {
-    "\/Users\/sean.erswell-liljefelt\/.local\/share\/chezmoi\/" : {
+    "~\/dotfiles\/" : {
       "archiveScript" : "",
       "deleteScript" : "",
       "openActionID" : "auto",
@@ -63,6 +63,6 @@
   },
   "repositoryRoots" : [
     "\/Users\/sean.erswell-liljefelt\/sites\/wedsite\/",
-    "\/Users\/sean.erswell-liljefelt\/.local\/share\/chezmoi\/"
+    "~\/dotfiles\/"
   ]
 }
