@@ -4,16 +4,19 @@
 COLOUR='\033[0;33m'
 NC='\033[0m'
 DRIFT_FLAG="${TMPDIR:-/tmp}/dotfiles-drift.${UID}"
-DRIFT_TMP="${DRIFT_FLAG}.$$"
 CHECK_FAILURES=()
+
+# Keep all command captures private and on the same filesystem as one another.
+# The EXIT trap deliberately only removes the staging directory, never the
+# published flag: another process may consume that flag after this exits.
+DRIFT_TMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/dotfiles-drift.XXXXXX") || exit 0
+trap 'rm -rf "$DRIFT_TMP_DIR"' EXIT
 
 # CDPATH is intentionally assigned for the subshell running `cd`.
 # shellcheck disable=SC1007
 SCRIPT_ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." 2>/dev/null && pwd -P) || exit 0
-ROOT=''
-if [ -n "${MISE_CONFIG_ROOT:-}" ] && [ -f "$MISE_CONFIG_ROOT/mise.toml" ]; then
-  ROOT="$MISE_CONFIG_ROOT"
-elif [ -f "$SCRIPT_ROOT/mise.toml" ]; then
+ROOT="${HOME:-}/dotfiles"
+if [ ! -f "$ROOT/mise.toml" ]; then
   ROOT="$SCRIPT_ROOT"
 fi
 [ -d "$ROOT" ] || exit 0
@@ -33,7 +36,7 @@ fi
 if command -v mise >/dev/null 2>&1; then
   # Bootstrap status is read-only. Exit 1 with normal status output means
   # drift; an error or unsupported command must remain a check failure.
-  MISE_BOOTSTRAP_STDERR="${DRIFT_TMP}.bootstrap.stderr"
+  MISE_BOOTSTRAP_STDERR="$DRIFT_TMP_DIR/bootstrap.stderr"
   MISE_BOOTSTRAP_STATUS=$(mise bootstrap status --missing 2>"$MISE_BOOTSTRAP_STDERR")
   MISE_BOOTSTRAP_CODE=$?
   MISE_BOOTSTRAP_ERROR=$(<"$MISE_BOOTSTRAP_STDERR")
@@ -68,8 +71,8 @@ fi
 if [ "$BREW_AVAILABLE" -eq 1 ]; then
   for brewfile in Brewfile.casks Brewfile.fonts; do
     if [ -f "$ROOT/brew/$brewfile" ]; then
-      BREW_BUNDLE_STDOUT="${DRIFT_TMP}.${brewfile}.stdout"
-      BREW_BUNDLE_STDERR="${DRIFT_TMP}.${brewfile}.stderr"
+      BREW_BUNDLE_STDOUT="$DRIFT_TMP_DIR/${brewfile}.stdout"
+      BREW_BUNDLE_STDERR="$DRIFT_TMP_DIR/${brewfile}.stderr"
       brew bundle check --no-upgrade --file="$ROOT/brew/$brewfile" >"$BREW_BUNDLE_STDOUT" 2>"$BREW_BUNDLE_STDERR"
       BREW_BUNDLE_CODE=$?
       BREW_BUNDLE_OUTPUT=$(<"$BREW_BUNDLE_STDOUT")
@@ -107,9 +110,10 @@ if [ "${#CHECK_FAILURES[@]}" -gt 0 ]; then
 fi
 
 if [ "${#MESSAGES[@]}" -gt 0 ]; then
+  DRIFT_TMP="$DRIFT_TMP_DIR/final"
   printf '%b\n' "${MESSAGES[@]}" >"$DRIFT_TMP" && mv -f "$DRIFT_TMP" "$DRIFT_FLAG"
   printf '%b\n' "${MESSAGES[@]}"
 else
-  rm -f "$DRIFT_FLAG" "$DRIFT_TMP"
+  rm -f "$DRIFT_FLAG"
   printf '%s\n' 'Native checks passed.'
 fi

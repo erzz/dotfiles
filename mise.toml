@@ -6,43 +6,51 @@
 run_auto_install = false
 
 [tools]
-bun = "latest"
-fnox = "latest"
-java = "latest"
-node = "24"
-"npm:agent-browser" = "latest"
+bun = "1.3.13"
+fnox = "1.35.3"
+java = "26.0.1"
+node = "24.21.0"
+"npm:agent-browser" = "0.27.1"
 "npm:@ingka-group-digital/skapa-design-system-mcp" = "0.5.5"
 "npm:@tarquinen/opencode-dcp" = { version = "3.1.15", trust_policy_excludes = ["effect@4.0.0-beta.83"] }
-"npm:@ingka-group-digital/workflows-mcp" = "latest"
-"npm:@playwright/mcp" = "latest"
-terraform = "latest"
-"aqua:terraform-linters/tflint" = "latest"
-maven = "latest"
-"npm:mcp-remote" = "latest"
+"npm:@ingka-group-digital/workflows-mcp" = "3.11.0"
+"npm:@playwright/mcp" = "0.0.70"
+terraform = "1.16.1"
+"aqua:terraform-linters/tflint" = "0.64.0"
+maven = "3.9.15"
+"npm:mcp-remote" = "0.1.38"
+
+[tasks.preflight]
+description = "Check the supported host and canonical dotfiles checkout"
+run = "test \"$(uname -s)\" = Darwin || { printf '%s\\n' '[preflight] macOS (Darwin) is required.' >&2; exit 1; }; command -v brew >/dev/null 2>&1 || { printf '%s\\n' '[preflight] Homebrew is required.' >&2; exit 1; }; command -v mise >/dev/null 2>&1 || { printf '%s\\n' '[preflight] mise is required.' >&2; exit 1; }; test -d \"$HOME/dotfiles/.git\" && test -f \"$HOME/dotfiles/mise.toml\" || { printf '%s\\n' '[preflight] canonical checkout missing at $HOME/dotfiles.' >&2; exit 1; }"
 
 [tasks.prepare]
 description = "Install pre-auth packages and deploy fnox config, without project tools"
-run = """export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"; bash "${MISE_CONFIG_ROOT:?}/bootstrap/ensure-native-homebrew.sh" && mise --no-config bootstrap packages apply --yes brew:git brew:gh && bash "${MISE_CONFIG_ROOT:?}/bootstrap/ensure-native-homebrew.sh" brew install --cask 1password 1password-cli && mise bootstrap --force-dotfiles dotfiles apply --yes ~/.config/fnox"""
+run = """mise -C "$HOME/dotfiles" run preflight || exit $?; export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"; bash "$HOME/dotfiles/bootstrap/ensure-native-homebrew.sh" && mise --no-config -C "$HOME/dotfiles" bootstrap packages apply --yes brew:git brew:gh && bash "$HOME/dotfiles/bootstrap/ensure-native-homebrew.sh" brew install --cask 1password 1password-cli && mise -C "$HOME/dotfiles" bootstrap --force-dotfiles dotfiles apply --yes ~/.config/fnox"""
 
 [bootstrap.hooks.pre-packages]
-run = """bash "${MISE_CONFIG_ROOT:?}/bootstrap/ensure-native-homebrew.sh""""
+run = """bash "$HOME/dotfiles/bootstrap/ensure-native-homebrew.sh""""
 
 # Ensure fnox can find 1Password's `op` on Apple Silicon or Intel Homebrew.
 [tasks.sync]
 description = "Authenticate and fully converge root and apps declarations through fnox"
-run = """export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"; bash "${MISE_CONFIG_ROOT:?}/bootstrap/ensure-native-homebrew.sh" && export MISE_CONFIG_DIR="${TMPDIR:-/tmp}/mise-sync-config-$$"; mkdir -p "$MISE_CONFIG_DIR"; export MISE_GLOBAL_CONFIG_FILE="$MISE_CONFIG_DIR/global.toml"; : > "$MISE_GLOBAL_CONFIG_FILE"; trap 'rm -rf "$MISE_CONFIG_DIR"' EXIT; MISE_GITHUB_TOKEN="$(gh auth token)" && export MISE_GITHUB_TOKEN && test -n "$MISE_GITHUB_TOKEN" || { printf '%s\\n' 'GitHub authentication is required: run gh auth login.' >&2; exit 1; }; printf '%s\\n' '[sync] installing fnox'; mise install fnox@latest && printf '%s\\n' '[sync] deploying configuration'; mise bootstrap --force-dotfiles dotfiles apply --yes ~/.config/fnox && mise bootstrap --force-dotfiles dotfiles apply --yes ~/.config/mise/config.toml && renderer_path="${MISE_CONFIG_ROOT:?}/bootstrap/render-private-config.sh" && mise exec fnox -- fnox exec --replace -- /bin/bash "$renderer_path" && printf '%s\\n' '[sync] converging apps and remaining declarations' && mise exec fnox -- fnox exec --replace -- mise -E apps bootstrap --force-dotfiles --yes && mise run casks && mise run fonts && mise run post-install"""
+run = """mise -C "$HOME/dotfiles" run preflight || exit $?; export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"; bash "$HOME/dotfiles/bootstrap/ensure-native-homebrew.sh"; MISE_GITHUB_TOKEN="$(gh auth token)" && export MISE_GITHUB_TOKEN && test -n "$MISE_GITHUB_TOKEN" || { printf '%s\\n' 'GitHub authentication is required: run gh auth login.' >&2; exit 1; }; printf '%s\\n' '[sync] installing fnox'; mise -C "$HOME/dotfiles" install fnox && printf '%s\\n' '[sync] deploying configuration'; mise -C "$HOME/dotfiles" bootstrap --force-dotfiles dotfiles apply --yes ~/.config/fnox && mise -C "$HOME/dotfiles" bootstrap --force-dotfiles dotfiles apply --yes ~/.config/mise/config.toml && mise -C "$HOME/dotfiles" bootstrap --force-dotfiles dotfiles apply --yes ~/.config/mise/config.apps.toml && renderer_path="$HOME/dotfiles/bootstrap/render-private-config.sh" && mise -C "$HOME/dotfiles" exec fnox -- fnox exec --replace -- /bin/bash "$renderer_path" && printf '%s\\n' '[sync] converging apps and remaining declarations' && mise -C "$HOME/dotfiles" exec fnox -- fnox exec --replace -- mise -C "$HOME/dotfiles" -E apps bootstrap --force-dotfiles --yes && mise -C "$HOME/dotfiles" run casks && mise -C "$HOME/dotfiles" run fonts && mise -C "$HOME/dotfiles" run post-install"""
 
 [tasks.render-private-config]
 description = "Render fnox/1Password-backed private files (fnox and its config must already be installed)"
-run = """fnox exec --replace -- /bin/bash "${MISE_CONFIG_ROOT:?}/bootstrap/render-private-config.sh""""
+run = """fnox exec --replace -- /bin/bash "$HOME/dotfiles/bootstrap/render-private-config.sh""""
 
 [tasks.casks]
 description = "Install application casks with native Homebrew"
-run = """export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"; bash "${MISE_CONFIG_ROOT:?}/bootstrap/ensure-native-homebrew.sh" brew bundle install --no-upgrade --file="${MISE_CONFIG_ROOT:?}/brew/Brewfile.casks""""
+run = """export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"; bash "$HOME/dotfiles/bootstrap/ensure-native-homebrew.sh" brew bundle install --no-upgrade --file="$HOME/dotfiles/brew/Brewfile.casks""""
 
 [tasks.fonts]
 description = "Install fonts with native Homebrew"
-run = """export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"; bash "${MISE_CONFIG_ROOT:?}/bootstrap/ensure-native-homebrew.sh" brew bundle install --no-upgrade --file="${MISE_CONFIG_ROOT:?}/brew/Brewfile.fonts""""
+run = """export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"; bash "$HOME/dotfiles/bootstrap/ensure-native-homebrew.sh" brew bundle install --no-upgrade --file="$HOME/dotfiles/brew/Brewfile.fonts""""
+
+[tasks.office]
+description = "Opt in to installing Microsoft Office casks"
+run = "export PATH=\"/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH\"; bash \"$HOME/dotfiles/bootstrap/ensure-native-homebrew.sh\" brew bundle install --no-upgrade --file=\"$HOME/dotfiles/brew/Brewfile.office\""
 
 [tasks.post-install-tpm]
 description = "Install configured tmux plugins through TPM"
@@ -54,36 +62,36 @@ run = "if [ -n \"${CI:-}\" ]; then printf '%s\\n' '[post-install-gh-dash] CI mod
 
 [tasks.post-install-buildx]
 description = "Link native Homebrew Docker Buildx into Docker CLI plugins"
-run = """export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"; bash "${MISE_CONFIG_ROOT:?}/bootstrap/ensure-native-homebrew.sh"; brew_prefix="$(bash "${MISE_CONFIG_ROOT:?}/bootstrap/ensure-native-homebrew.sh" brew --prefix)"; buildx="$brew_prefix/bin/docker-buildx"; if [ ! -x "$buildx" ]; then printf '%s\\n' "[post-install-buildx] Homebrew docker-buildx binary not found at $buildx; install the brew:docker-buildx package first." >&2; exit 1; fi; mkdir -p "$HOME/.docker/cli-plugins"; ln -sfn "$buildx" "$HOME/.docker/cli-plugins/docker-buildx""""
+run = """export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"; bash "$HOME/dotfiles/bootstrap/ensure-native-homebrew.sh"; brew_prefix="$(bash "$HOME/dotfiles/bootstrap/ensure-native-homebrew.sh" brew --prefix)"; buildx="$brew_prefix/bin/docker-buildx"; if [ ! -x "$buildx" ]; then printf '%s\\n' "[post-install-buildx] Homebrew docker-buildx binary not found at $buildx; install the brew:docker-buildx package first." >&2; exit 1; fi; mkdir -p "$HOME/.docker/cli-plugins"; ln -sfn "$buildx" "$HOME/.docker/cli-plugins/docker-buildx""""
 
 [tasks.post-install-agent-browser]
 description = "Install agent-browser browser assets outside CI"
-run = "if [ -n \"${CI:-}\" ]; then printf '%s\\n' '[post-install-agent-browser] CI mode; skipping.'; exit 0; fi; if ! command -v mise >/dev/null 2>&1 || ! mise where npm:agent-browser >/dev/null 2>&1; then printf '%s\\n' '[post-install-agent-browser] agent-browser is not installed; skipping.'; exit 0; fi; mise x npm:agent-browser -- agent-browser install"
+run = "if [ -n \"${CI:-}\" ]; then printf '%s\\n' '[post-install-agent-browser] CI mode; skipping.'; exit 0; fi; if ! command -v mise >/dev/null 2>&1 || ! mise -C \"$HOME/dotfiles\" where npm:agent-browser >/dev/null 2>&1; then printf '%s\\n' '[post-install-agent-browser] agent-browser is not installed; skipping.'; exit 0; fi; mise -C \"$HOME/dotfiles\" x npm:agent-browser -- agent-browser install"
 
 [tasks.post-install]
 description = "Restore post-install integrations after convergence"
-run = "mise run post-install-tpm && mise run post-install-gh-dash && mise run post-install-buildx && mise run post-install-agent-browser"
+run = "mise -C \"$HOME/dotfiles\" run post-install-tpm && mise -C \"$HOME/dotfiles\" run post-install-gh-dash && mise -C \"$HOME/dotfiles\" run post-install-buildx && mise -C \"$HOME/dotfiles\" run post-install-agent-browser"
 
 [tasks.install]
 description = "Install all tools declared in the canonical mise.toml"
-run = "export PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"; MISE_GITHUB_TOKEN=\"$(gh auth token)\" && export MISE_GITHUB_TOKEN && test -n \"$MISE_GITHUB_TOKEN\" || { printf '%s\\n' 'GitHub authentication is required: run gh auth login.' >&2; exit 1; }; mise install fnox && mise exec fnox -- fnox exec --replace -- mise install --jobs=4"
+run = "export PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"; MISE_GITHUB_TOKEN=\"$(gh auth token)\" && export MISE_GITHUB_TOKEN && test -n \"$MISE_GITHUB_TOKEN\" || { printf '%s\\n' 'GitHub authentication is required: run gh auth login.' >&2; exit 1; }; mise -C \"$HOME/dotfiles\" install fnox && mise -C \"$HOME/dotfiles\" exec fnox -- fnox exec --replace -- mise -C \"$HOME/dotfiles\" install --jobs=4"
 
 [tasks.apps]
 description = "Install applications, fonts, and Mac App Store apps"
 output = "interleave"
-run = """export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"; bash "${MISE_CONFIG_ROOT:?}/bootstrap/ensure-native-homebrew.sh" && MISE_GITHUB_TOKEN="$(gh auth token)" && export MISE_GITHUB_TOKEN && test -n "$MISE_GITHUB_TOKEN" || { printf '%s\\n' 'GitHub authentication is required: run gh auth login.' >&2; exit 1; }; mise -E apps bootstrap packages apply --yes brew:mas && MISE_TERMINAL_PROGRESS=true mise -E apps bootstrap --only packages --yes && mise run render-private-config && mise run casks && mise run fonts && mise run post-install"""
+run = """export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"; bash "$HOME/dotfiles/bootstrap/ensure-native-homebrew.sh" && MISE_GITHUB_TOKEN="$(gh auth token)" && export MISE_GITHUB_TOKEN && test -n "$MISE_GITHUB_TOKEN" || { printf '%s\\n' 'GitHub authentication is required: run gh auth login.' >&2; exit 1; }; mise -C "$HOME/dotfiles" -E apps bootstrap packages apply --yes brew:mas && MISE_TERMINAL_PROGRESS=true mise -C "$HOME/dotfiles" -E apps bootstrap --only packages --yes && mise -C "$HOME/dotfiles" run render-private-config && mise -C "$HOME/dotfiles" run casks && mise -C "$HOME/dotfiles" run fonts && mise -C "$HOME/dotfiles" run post-install"""
 
 [tasks.setup]
 description = "Compatibility alias for sync"
-run = "mise run sync"
+run = "mise -C \"$HOME/dotfiles\" run sync"
 
 [tasks.macos]
 description = "Retry the safe root macOS defaults targeted by sync"
-run = "mise bootstrap --only macos-defaults --yes"
+run = "mise -C \"$HOME/dotfiles\" bootstrap --only macos-defaults --yes"
 
 [tasks.check]
 description = "Show pending mise bootstrap changes"
-run = "mise bootstrap status --missing"
+run = "mise -C \"$HOME/dotfiles\" bootstrap status --missing"
 
 # Repository cloning provides the repeatable native setup for these integrations. Pin repositories
 # where an upstream version tag exists; Oh My Zsh has no published stable release tag and remains
@@ -188,6 +196,7 @@ LINEARB_API_KEY = "LINEARB_API_KEY"
 "~/.gitconfig" = { source = "configs/git/.gitconfig", mode = "symlink" }
 "~/.tmux.conf" = { source = "configs/tmux/.tmux.conf", mode = "symlink" }
 "~/.config/mise/config.toml" = { source = "configs/mise/config.toml", mode = "symlink" }
+"~/.config/mise/config.apps.toml" = { source = "configs/mise/config.apps.toml", mode = "symlink" }
 "~/.config/fnox" = { source = "configs/fnox", mode = "symlink" }
 "~/.config/nvim" = { source = "configs/nvim", mode = "symlink" }
 "~/.config/opencode" = { source = "configs/opencode", mode = "symlink" }

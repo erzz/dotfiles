@@ -31,3 +31,4 @@ configs/zed/settings_backup.json
 
 # Local deepwork progress state
 .slim/deepwork/
+/configs/herdr/release-notes.json

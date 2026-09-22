@@ -59,7 +59,16 @@ Now you are ready and can run the following at any time:
 
 ## Keeping laptops in sync
 
-Git is the synchronization mechanism; `mise run sync` applies only the checked-out repository.
+Git is the synchronization mechanism; `mise run sync` applies only the checked-out repository and
+never pulls Git. The global control plane is usable from arbitrary directories:
+
+```bash
+mise run sync
+```
+
+Project-local tasks can collide with global task names. Use the deterministic fallback when needed:
+`mise -C "$HOME/dotfiles" run sync`. Avoid unqualified bootstrap commands from foreign projects;
+always scope control-plane commands to this checkout.
 Authenticate every laptop separately. On a laptop receiving changes, use:
 
 ```bash
@@ -104,16 +113,21 @@ Everyday use is simply `mise run sync`. It runs all the necessary mise tasks inc
 tasks below.
 
 - `mise run sync` is the canonical complete convergence command for declared state
-- `mise run apps` installs global versions of core tools like node, maven etc (overridden by project
-  level mise configs) + App Store apps via Mas and homebrew tools
+- `mise run apps` applies app-overlay bootstrap packages and App Store apps via Mas. With
+  `run_auto_install = false`, it does not install the root `[tools]` inventory; use `mise run install`
+  for that explicitly
 - `mise run casks` installs `brew/Brewfile.casks`
 - `mise run fonts` installs `brew/Brewfile.fonts`
 - `mise run macos` is a targeted application of macos settings such as Finder, Dock, Login window
   etc
 - `mise run check` shows pending mise changes
+- `mise run office` opts in to the Office casks with native Homebrew and `--no-upgrade`; Office is
+  deliberately excluded from `sync`, `apps`, `casks`, and post-install. Removing it from the
+  manifest does not uninstall already-installed Office applications.
 
-Both `sync` and `apps` use native Homebrew for the application casks in `brew/Brewfile.casks` and
-for fonts. Normal homebrew tools are installed via mise's native brew handler. This is hopefully
+Both `sync` and `apps` use native Homebrew for application casks in `brew/Brewfile.casks` and for
+fonts in `brew/Brewfile.fonts`. Those Brewfiles own casks and fonts; normal Homebrew tools are
+installed via mise's native brew handler. This is hopefully
 temporary as it seems mise can panic sometimes with casks and I just want it to be reliable.
 
 DisplayLink is intentionally excluded from automatic sync because its privileged pkg requires
@@ -128,6 +142,14 @@ Secrets, tokens, installed application state, and other machine-local state do n
 
 The root `mise.toml` owns common tools, repositories, shell activation, dotfiles, essential
 packages, safe defaults, and lifecycle tasks. `mise.apps.toml` owns the applications overlay.
+`configs/mise/config.toml` and `configs/mise/config.apps.toml` are tracked relative symlinks to
+those canonical inventories; there is no duplicate TOML inventory. Global `run_auto_install` is
+disabled. Tool versions are exact and intentionally have no `mise.lock`; update pins explicitly
+when a validated version is chosen.
+
+Normal sync applies security-sensitive macOS defaults (including disabling quarantine prompts for
+LaunchServices and disk images) for a consistent laptop posture. This is a deliberate convenience
+and security trade-off; review the defaults in `mise.toml` before adopting them on a new machine.
 
 ## How configs are deployed
 
@@ -167,8 +189,8 @@ Do not put secrets in the repository. fnox and 1Password provide values at rende
 ## Adding packages and tools
 
 Add common essential packages to the root `mise.toml` `[bootstrap.packages]` table. Add app-only
-formulas, casks, taps, fonts, or Mac App Store apps to `mise.apps.toml`. Add runtime tools to the
-root `[tools]` table. Authenticate first for private inventory, then use the targeted task or
+formulas, taps, or Mac App Store apps to `mise.apps.toml`; casks and fonts belong in their Brewfiles.
+Add runtime tools to the root `[tools]` table. Authenticate first for private inventory, then use the targeted task or
 `mise run sync`:
 
 ```bash

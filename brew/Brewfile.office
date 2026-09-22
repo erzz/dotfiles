@@ -1,0 +1,4 @@
+# Optional Microsoft Office casks; install explicitly with `mise run office`.
+cask "microsoft-auto-update"
+cask "microsoft-office"
+cask "microsoft-teams"

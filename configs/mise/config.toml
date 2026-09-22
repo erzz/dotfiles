@@ -1,12 +1,1 @@
-[tools]
-bun = "latest"
-java = "latest"
-node = "24"
-"npm:agent-browser" = "latest"
-"npm:@ingka-group-digital/skapa-design-system-mcp" = "0.5.5"
-"npm:@tarquinen/opencode-dcp" = { version = "3.1.15", trust_policy_excludes = ["effect@4.0.0-beta.83"] }
-"npm:@ingka-group-digital/workflows-mcp" = "latest"
-"npm:@playwright/mcp" = "latest"
-terraform = "latest"
-maven = "latest"
-"npm:mcp-remote" = "latest"
+../../mise.toml
