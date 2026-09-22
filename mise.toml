@@ -85,23 +85,27 @@ run = "mise bootstrap --only macos-defaults --yes"
 description = "Show pending mise bootstrap changes"
 run = "mise bootstrap status --missing"
 
-# Repository cloning provides the repeatable native setup for these integrations. Oh My Zsh uses
-# its documented default branch for now; pinning it remains a follow-up because no justified
-# repository version is present in the current configuration.
+# Repository cloning provides the repeatable native setup for these integrations. Pin repositories
+# where an upstream version tag exists; Oh My Zsh has no published stable release tag and remains
+# on its documented default branch.
 [bootstrap.repos."~/.oh-my-zsh"]
 url = "https://github.com/ohmyzsh/ohmyzsh.git"
 
 [bootstrap.repos."~/.tmux/plugins/tpm"]
 url = "https://github.com/tmux-plugins/tpm.git"
+ref = "v3.1.0"
 
 [bootstrap.repos."~/.tmux/plugins/tmux-power"]
 url = "https://github.com/wfxr/tmux-power.git"
+ref = "v1"
 
 [bootstrap.repos."~/.tmux/plugins/tmux-resurrect"]
 url = "https://github.com/tmux-plugins/tmux-resurrect.git"
+ref = "v4.0.0"
 
 [bootstrap.repos."~/.tmux/plugins/tmux-continuum"]
 url = "https://github.com/tmux-plugins/tmux-continuum.git"
+ref = "v3.1.0"
 
 [bootstrap.packages]
 "brew:git" = { os = ["macos"] }
@@ -180,9 +184,9 @@ LINEARB_API_KEY = "LINEARB_API_KEY"
 
 # Repository content is deployed through this mise-owned dotfiles table.
 [dotfiles]
-"~/.zshrc" = { source = "home/dot_zshrc", mode = "symlink" }
-"~/.gitconfig" = { source = "home/dot_gitconfig", mode = "symlink" }
-"~/.tmux.conf" = { source = "home/dot_tmux.conf", mode = "symlink" }
+"~/.zshrc" = { source = "configs/zsh/.zshrc", mode = "symlink" }
+"~/.gitconfig" = { source = "configs/git/.gitconfig", mode = "symlink" }
+"~/.tmux.conf" = { source = "configs/tmux/.tmux.conf", mode = "symlink" }
 "~/.config/mise/config.toml" = { source = "configs/mise/config.toml", mode = "symlink" }
 "~/.config/fnox" = { source = "configs/fnox", mode = "symlink" }
 "~/.config/nvim" = { source = "configs/nvim", mode = "symlink" }
@@ -190,7 +194,7 @@ LINEARB_API_KEY = "LINEARB_API_KEY"
 "~/.config/zed" = { source = "configs/zed", mode = "symlink" }
 "~/.config/ghostty" = { source = "configs/ghostty", mode = "symlink" }
 "~/.config/zellij" = { source = "configs/zellij", mode = "symlink" }
-"~/.config/starship.toml" = { source = "home/dot_config/starship.toml", mode = "symlink" }
+"~/.config/starship.toml" = { source = "configs/starship/starship.toml", mode = "symlink" }
 "~/.config/direnv" = { source = "configs/direnv", mode = "symlink" }
 "~/.config/colima/default/colima.yaml" = { source = "configs/colima/default/colima.yaml", mode = "symlink" }
 "~/.config/gh-dash" = { source = "configs/gh-dash", mode = "symlink" }

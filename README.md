@@ -239,24 +239,27 @@ Managed paths are declared in the root `mise.toml` `[dotfiles]` table and symlin
 directory into the repository. Examples:
 
 ```
-~/.zshrc                   -> home/dot_zshrc
+~/.zshrc                   -> configs/zsh/.zshrc
+~/.gitconfig               -> configs/git/.gitconfig
+~/.tmux.conf               -> configs/tmux/.tmux.conf
+~/.config/starship.toml    -> configs/starship/starship.toml
 ~/.config/nvim             -> configs/nvim
 ~/.config/opencode         -> configs/opencode
 ~/.config/mise/config.toml -> configs/mise/config.toml
 ```
 
-Edit the live symlinked file or its repository target, then inspect `git status`. The `home/` and
-`configs/` and `home/` retain the repository's content layout while deployment is owned by mise.
+Edit the live symlinked file or its repository target, then inspect `git status`. `configs/<tool>/`
+is the canonical repository content layout while deployment is owned by mise.
 Private files are rendered by `mise run render-private-config`; they are not symlinked.
 
 ## Adding configuration
 
-Declare deployment in the root `mise.toml` `[dotfiles]` table. Put whole-directory content under
-`configs/<name>/` and home files under `home/`. Then converge and commit:
+Declare deployment in the root `mise.toml` `[dotfiles]` table. Put tool-specific content under
+`configs/<tool>/`. Then converge and commit:
 
 ```bash
 mise run sync
-git add mise.toml configs home
+git add mise.toml configs
 git commit -m "feat: add newtool config"
 git push
 ```
@@ -288,7 +291,7 @@ workflow.
 The repository includes configuration for Colima, direnv, fnox, gh-dash,
 Ghostty, Git, mise, Neovim, OpenCode, prettierd, Supacode, Zed, and Zellij, plus `.zshrc`,
 `.gitconfig`, `.tmux.conf`, and `~/.config/starship.toml`. Some finalizers
-and templates. All declared home/config content is deployed by mise.
+and templates. All declared configuration content is deployed by mise.
 
 ## Acknowledgements
 
