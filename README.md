@@ -1,22 +1,39 @@
 # dotfiles
 
-macOS dotfiles with **mise as the canonical control plane** and **Git as the source of truth**.
-Home and config content is deployed by mise; native Homebrew remains the provider for the package
-declarations that use it.
+macOS dotfiles based entirely on the incredible [mise](https://mise.jdx.dev/) as the control plane
+and **Git as the source of truth**.
 
 ## Design principles
 
-1. **One convergent control plane** — the canonical common state lives in `mise.toml`; explicit
-   overlays handle applications, while safe macOS defaults are part of normal sync.
-2. **Git is synchronization** — laptops converge by pulling and pushing this repository. A mise
-   task does not pull or push for you.
-3. **Idempotent retries** — rerun mise tasks as needed; only missing or changed state is applied.
-4. **Edit live** — managed configs are symlinked from `$HOME` into the repository, so changes are
-   visible to Git without a separate add step.
-5. **No secrets in Git** — sensitive values come from 1Password/fnox or runtime authentication;
-   credentials and machine-local state do not sync through Git.
+1. **From zero to everything in one shot** - apps, configs, brews and MacOS tweaks
+1. **One convergent control plane** - the common state lives in `mise.toml`. `mise run sync` handles
+   everything
+1. **Git is synchronization** - laptops converge by pulling and pushing this repository.
+1. **Idempotent retries** - rerun mise tasks as needed; only missing or changed state is applied.
+1. **Edit live** - managed configs are symlinked from `$HOME` into the repository
+1. **No secrets in Git** — sensitive values come from 1Password/fnox integration and kept out of
+   source
 
-## First-machine bootstrap
+## Normal everyday use
+
+```bash
+cd "$HOME/dotfiles"
+git pull --rebase
+mise run sync
+```
+
+Thats it! Any changes in the mise targets will be applied whether it be config updates, brews/casks,
+MacOS settings. Changes are persisted and propagated between machines with every day git commands
+against the repo.
+
+## Adding new apps, configs etc
+
+- **Tracked files (traditional dotfiles / configs)**: Edit as normal, commit.
+- **Apps (brews, casks, mas, etc)**: Add to the mise toml or use the mise CLI commands, commit
+- **MacOS settings**: Also in the mise.toml, commit
+- **Track new files**: Also in the mise-toml (or use mise CLI), commit
+
+## New machine bootstrap
 
 On a clean Mac, run the repository-root wrapper:
 
@@ -24,173 +41,21 @@ On a clean Mac, run the repository-root wrapper:
 curl -fsSL https://raw.githubusercontent.com/erzz/dotfiles/main/bootstrap.sh | bash
 ```
 
-It verifies macOS and Apple's Command Line Tools, acquires the repository at the canonical
-`$HOME/dotfiles` path (use `BOOTSTRAP_BRANCH=<branch>` when testing a branch), ensures native
-Homebrew and mise, then runs the pre-auth `prepare` task and stops. An existing checkout is reused
-without pulling, resetting, or overwriting local changes; its origin must be the expected dotfiles
-repository, and dirty checkouts require `ALLOW_DIRTY_DOTFILES=1`. The wrapper does not automatically
-run authenticated sync.
+It verifies macOS and Apple's Command Line Tools, acquires the repository at `$HOME/dotfiles` path
+(use `BOOTSTRAP_BRANCH=<branch>` when testing a branch), ensures Homebrew and mise are installed,
+then runs the pre-auth `prepare` task and stops for the unavoidable manual steps.
 
-If the Command Line Tools are not installed, run this and complete the graphical installer:
+### Unavoidable, one-time, manual steps
 
-   ```sh
-   xcode-select --install
-   ```
+These one-time manual interventions are documented by the `prepare` task's output, but for clarity
+they are and cannot be avoided:
 
-   This installs **only the Apple Command Line Tools, not the full Xcode application**. It provides
-   the initial Git and other command-line tools needed to acquire the project. macOS opens a GUI
-   installer; accept it and wait for it to finish before continuing. If the tools are already
-   installed, `xcode-select --install` reports that instead.
+1. Sign into the App Store using your Apple ID (for later installation of apps via mas)
+2. Authenticate yourself with github using the `gh auth login` command
+3. Log into 1password and enable CLI (under developer settins)
+4. run `op signin` to authenticate the CLI
 
-The wrapper will acquire the project and ensure the native prerequisites. For a manually acquired
-checkout, the equivalent initial package preparation is:
-
-   ```sh
-   cd "$HOME/dotfiles"
-   mise -C "$HOME/dotfiles" run prepare
-   ```
-
-   The repository must be checked out at the canonical path `$HOME/dotfiles`. Do not use
-   `--adopt` or `mise dot track`; those are different workflows and would introduce another local
-   ownership/history model for paths managed by this project.
-
-Native bootstrap cannot finish private or authenticated resolution before 1Password and GitHub
-   authentication. If the current configuration requires the repository's pre-auth helper, run:
-
-   ```sh
-   mise -C "$HOME/dotfiles" run prepare
-   ```
-
-   `prepare` installs the small pre-auth control-plane set (`git`, `gh`, 1Password, and the
-   1Password CLI) and deploys the static fnox configuration. It deliberately does not install the
-   root `[tools]` table or resolve private packages. It is a first-machine helper, not part of
-   normal day-to-day sync.
-
-Open 1Password, sign in, and enable its CLI integration. Then authenticate GitHub:
-
-   ```sh
-   # `prepare` cannot change the PATH of this parent shell.
-   export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
-   gh auth login
-   ```
-
-   The PATH export is a temporary parent-shell handoff for the Homebrew-installed `gh`; it is not a
-   second persistent shell configuration. Authenticate each laptop independently. The `sync`,
-   `install`, and `apps` task bridges export `MISE_GITHUB_TOKEN` from `gh auth token` before
-   GitHub-backed mise resolution. `mise token github` is an optional diagnostic, not a configuration
-   command. The token used by mise is separate from fnox-injected 1Password/npm registry secrets.
-   The managed `.gitconfig` uses `gh auth git-credential`, so `gh auth setup-git` is normally
-   unnecessary; use it only as a recovery command if that managed configuration or helper is missing.
-
-After completing those sign-ins, run the canonical authenticated convergence command:
-
-   ```sh
-   mise -C "$HOME/dotfiles" run sync
-   ```
-
-   `sync` ensures fnox is available, replaces existing managed dotfile targets with the repository
-   versions, and invokes authenticated
-   native `mise -E apps bootstrap` through fnox. This is the complete convergence path for declared
-   tools, repositories, dotfiles, packages, casks, fonts, Mac App Store apps, OpenCode, and the
-   other declared state; macOS defaults are opt-in via `mise run macos`. It still requires the authentication steps above; native bootstrap
-   does not bypass an interactive login or private registry credentials. Once it completes, start a
-   new login shell so the managed shell configuration is loaded:
-
-   ```sh
-   exec zsh -l
-   ```
-
-Native Homebrew is ensured before mise/Homebrew phases. `mise run casks` and `mise run fonts` are
-safe standalone retries; Xcode Command Line Tools, administrator access, and network access remain
-explicit prerequisites.
-
-## Private credentials
-
-`mise run render-private-config` runs the fnox/1Password-backed renderer and owns the regular files
-`~/.local/state/secrets.env` and `~/.npmrc`. It validates required values before writing, uses
-mode `0600`, and atomically replaces the files with rollback protection. Start a new login shell
-after syncing for zsh exports to load. Secret values never belong in Git, and drift checks do not
-inspect secret content.
-
-## Canonical and targeted commands
-
-During `sync`, concise phase markers show fnox installation, configuration deployment, and
-convergence progress. Its nested app bootstrap uses a temporary empty global mise config, so the
-checked-out project configuration remains the source of truth instead of stale user/global config.
-If mise panics during the isolated tool phase, that is a mise/runtime issue, not a Homebrew Dart
-declaration.
-
-`mise run sync` is the canonical complete convergence command for declared state, including the safe macOS defaults. `mise run macos` remains a targeted retry for that defaults group. Application casks are owned by
-`brew/Brewfile.casks` and installed by `mise run casks`; fonts remain the separate
-`brew/Brewfile.fonts` manifest installed by `mise run fonts`, both via native Homebrew. Casks and fonts intentionally remain separate and run sequentially; they are not merged or parallelized. These tasks remain useful targeted
-convenience or retry commands:
-
-```bash
-mise run sync       # authenticated complete convergence
-mise run casks      # retry native application casks
-mise run apps       # retry the applications/packages/casks/fonts/MAS overlay
-mise run post-install # restore TPM plugins, gh-dash, Docker Buildx, and browser assets
-mise run install    # retry tools declared in the root mise.toml
-mise run macos      # targeted retry of the safe macOS defaults declared in mise.toml
-mise run check      # show pending mise bootstrap changes
-```
-
-Both `sync` and `apps` use native Homebrew for the application casks in `brew/Brewfile.casks` and
-for fonts. This includes Office and Teams, whose Homebrew cask installers are not represented by
-the mise package overlay.
-
-The existing manual/broken package exclusions are unchanged: DisplayLink remains manual because
-its privileged installer requires approval and a reboot; Disk Inventory X remains excluded because
-its cask is disabled and fails Gatekeeper installation; and `chromedriver`, `via`, and
-`garmin-express` remain excluded for their current Gatekeeper or compatibility issues. No new
-unsafe macOS defaults are added.
-
-DisplayLink is intentionally excluded from automatic sync because its privileged pkg requires
-interactive administrator authorization, manual macOS Screen Recording approval, and a reboot. If
-needed, install it explicitly with `brew install --cask displaylink`, then complete those steps.
-
-Disk Inventory X is intentionally excluded: Homebrew marks its cask disabled for a Gatekeeper
-failure, and its legacy app bundle causes macOS xattr/ditto installation failures. Install it
-manually only if explicitly needed; do not disable quarantine globally.
-
-The `chromedriver`, `via`, and `garmin-express` casks are intentionally excluded from automatic
-provisioning because of current Gatekeeper or compatibility issues. VIA is available as a web app
-at <https://www.usevia.app/>.
-
-`mise run setup` is retained only as a compatibility alias for `sync` if it exists in the current
-configuration. It is not the primary terminology and is not a separate complete setup phase.
-
-Useful previews and diagnostics are explicit operations; do not use `mise run sync --dry-run`,
-because the task body still executes:
-
-```bash
-MISE_GITHUB_TOKEN="$(gh auth token)" mise bootstrap --force-dotfiles --dry-run
-MISE_GITHUB_TOKEN="$(gh auth token)" mise install --dry-run
-MISE_GITHUB_TOKEN="$(gh auth token)" mise -E apps bootstrap --only packages --dry-run
-mise bootstrap --only macos-defaults --dry-run
-```
-
-Direct GitHub-backed previews need an explicit `MISE_GITHUB_TOKEN`; the task bridges perform this
-step automatically. Once the inventory stabilizes, use `mise lock` and then `mise install --locked`
-for reproducible tool versions.
-
-### Testing a non-default branch
-
-To test a non-default branch such as `switch2mise`, clone it to the canonical checkout path and
-run the same native prepare/authenticate/sync sequence:
-
-```bash
-git clone --branch switch2mise --single-branch \
-  "https://github.com/erzz/dotfiles.git" \
-  "$HOME/dotfiles"
-mise -C "$HOME/dotfiles" run prepare
-# Sign in to 1Password and GitHub, then run:
-mise -C "$HOME/dotfiles" run sync
-```
-
-The root wrapper can also select the branch directly with `BOOTSTRAP_BRANCH=switch2mise`; branch
-selection applies to a fresh clone, or to an existing checkout only when its current branch
-already matches. A detached or mismatched existing checkout is refused.
+Now you are ready and can run the following at any time:
 
 ## Keeping laptops in sync
 
@@ -198,40 +63,71 @@ Git is the synchronization mechanism; `mise run sync` applies only the checked-o
 Authenticate every laptop separately. On a laptop receiving changes, use:
 
 ```bash
+cd "$HOME/dotfiles"
 git pull --rebase
 mise run sync
 ```
 
-On the authoring laptop, run the relevant targeted task or `mise run sync`, inspect the result,
-then commit and push:
+## Private credentials
 
-```bash
-mise run check
-mise run sync
-git add mise.toml mise.apps.toml configs home
-git commit -m "describe the configuration change"
-git push
+`mise run render-private-config` (included in the sync task) runs the fnox/1Password-backed renderer
+and owns the regular files `~/.local/state/secrets.env` and `~/.npmrc`. It validates required values
+before writing, uses mode `0600`, and atomically replaces the files with rollback protection. Start
+a new login shell after syncing for zsh exports to load. Secret values never belong in Git, and
+drift checks do not inspect secret content.
+
+```mermaid
+flowchart LR
+    user[User] -->|op signin| op[1Password CLI]
+    op -.->|CLI integration| vault[(1Password vault)]
+
+    config[configs/fnox/config.toml\nsecret names + op:// references]
+    vault -->|resolve references| fnox[fnox]
+    config --> fnox
+
+    fnox -->|inject environment\ninto child process| renderer[render-private-config.sh]
+    renderer -->|validate, chmod 0600,\natomic replacement| secrets[~/.local/state/secrets.env]
+    renderer -->|render registry config\nwith token variable reference| npmrc[~/.npmrc]
+
+    fnox -->|inject only for\ncommand lifetime| commands[private mise/npm commands]
 ```
 
-Secrets, tokens, installed application state, and other machine-local state do not sync through
-Git. `prepare` is only for a first machine before authentication; existing laptops should pull
-with `git pull --rebase` and run `mise run sync`.
+1Password remains the credential store. fnox resolves the `op://...` references and injects the
+resulting values only into the command it launches. The renderer uses that short-lived environment
+to create the two local files; it does not copy credentials into the repository or normal shell
+startup. Missing values stop rendering before replacement, and failed writes restore the previous
+file pair.
+
+## Canonical and targeted commands
+
+Everyday use is simply `mise run sync`. It runs all the necessary mise tasks including the targeted
+tasks below.
+
+- `mise run sync` is the canonical complete convergence command for declared state
+- `mise run apps` installs global versions of core tools like node, maven etc (overridden by project
+  level mise configs) + App Store apps via Mas and homebrew tools
+- `mise run casks` installs `brew/Brewfile.casks`
+- `mise run fonts` installs `brew/Brewfile.fonts`
+- `mise run macos` is a targeted application of macos settings such as Finder, Dock, Login window
+  etc
+- `mise run check` shows pending mise changes
+
+Both `sync` and `apps` use native Homebrew for the application casks in `brew/Brewfile.casks` and
+for fonts. Normal homebrew tools are installed via mise's native brew handler. This is hopefully
+temporary as it seems mise can panic sometimes with casks and I just want it to be reliable.
+
+DisplayLink is intentionally excluded from automatic sync because its privileged pkg requires
+interactive administrator authorization, manual macOS Screen Recording approval, and a reboot. If
+needed, install it explicitly with `brew install --cask displaylink`, then complete those steps.
+
+Secrets, tokens, installed application state, and other machine-local state do not sync through Git.
+`prepare` is only for a first machine before authentication; existing laptops should pull with
+`git pull --rebase` and run `mise run sync`.
 
 ## Ownership and migration boundaries
 
-The root `./bootstrap.sh` is the supported normal entry point. The native mise lifecycle is the
-only supported deployment and convergence path.
-
 The root `mise.toml` owns common tools, repositories, shell activation, dotfiles, essential
 packages, safe defaults, and lifecycle tasks. `mise.apps.toml` owns the applications overlay.
-
-Imperative macOS operations — including `chflags`, `systemsetup`, process kills, and reboot — are
-intentionally excluded from the supported path. The retained macOS policy is the safe declarative
-defaults subset only; operations requiring privileged or disruptive interaction remain manual.
-
-`mise dot track` and its local history are intentionally not used for project-managed paths. They
-would create a second local history authority alongside Git and the repository's mise declarations.
-Likewise, `mise mcp` is optional experimental AI integration, not part of setup or synchronization.
 
 ## How configs are deployed
 
@@ -246,11 +142,13 @@ directory into the repository. Examples:
 ~/.config/nvim             -> configs/nvim
 ~/.config/opencode         -> configs/opencode
 ~/.config/mise/config.toml -> configs/mise/config.toml
+
+# ...etc
 ```
 
 Edit the live symlinked file or its repository target, then inspect `git status`. `configs/<tool>/`
-is the canonical repository content layout while deployment is owned by mise.
-Private files are rendered by `mise run render-private-config`; they are not symlinked.
+is the canonical repository content layout while deployment is owned by mise. Private files are
+rendered by `mise run render-private-config`; they are not symlinked.
 
 ## Adding configuration
 
@@ -281,18 +179,20 @@ git commit -m "feat: add package or tool"
 git push
 ```
 
-`brew/Brewfile.casks` is the native application cask owner, used by `mise run casks` from `sync`
-and `apps`. Fonts are owned separately by `brew/Brewfile.fonts` and installed with `mise run fonts`
-via native Homebrew. The aggregate Brewfile is no longer part of the repository or supported
-workflow.
+## Testing a non-default branch
 
-## What's included
+To test a non-default branch such as `mybranch`, clone it to the canonical checkout path and run the
+same native prepare/authenticate/sync sequence:
 
-The repository includes configuration for Colima, direnv, fnox, gh-dash,
-Ghostty, Git, mise, Neovim, OpenCode, prettierd, Supacode, Zed, and Zellij, plus `.zshrc`,
-`.gitconfig`, `.tmux.conf`, and `~/.config/starship.toml`. Some finalizers
-and templates. All declared configuration content is deployed by mise.
+```bash
+git clone --branch mybranch --single-branch \
+  "https://github.com/erzz/dotfiles.git" \
+  "$HOME/dotfiles"
+mise -C "$HOME/dotfiles" run prepare
+# Sign in to 1Password and GitHub, then run:
+mise -C "$HOME/dotfiles" run sync
+```
 
-## Acknowledgements
-
-- Original inspiration from [pkissling](https://github.com/pkissling/dotfiles/)
+The root wrapper can also select the branch directly with `BOOTSTRAP_BRANCH=mybranch`. Branch
+selection applies to a fresh clone, or to an existing checkout only when its current branch already
+matches. A detached or mismatched existing checkout is refused.
