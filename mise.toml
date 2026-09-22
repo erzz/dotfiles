@@ -1,7 +1,6 @@
 # Supported mise configuration for normal operation: tools, repositories, shell activation,
 # dotfiles, tasks, and the small control-plane package set live here. The apps overlay owns
-# the bulk of host packages. Legacy chezmoi/bootstrap/Brewfile artifacts remain only as
-# transitional fallback paths until the deletion phase; they are not authoritative.
+# the bulk of host packages. Mise is the sole supported deployment and package control plane.
 
 [settings.task]
 run_auto_install = false
@@ -30,8 +29,8 @@ run = """bash "${MISE_CONFIG_ROOT:?}/bootstrap/ensure-native-homebrew.sh""""
 
 # Ensure fnox can find 1Password's `op` on Apple Silicon or Intel Homebrew.
 [tasks.sync]
-description = "Authenticate and converge root and apps declarations through fnox (macOS defaults are opt-in)"
-run = """export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"; bash "${MISE_CONFIG_ROOT:?}/bootstrap/ensure-native-homebrew.sh" && export MISE_CONFIG_DIR="${TMPDIR:-/tmp}/mise-sync-config-$$"; mkdir -p "$MISE_CONFIG_DIR"; export MISE_GLOBAL_CONFIG_FILE="$MISE_CONFIG_DIR/global.toml"; : > "$MISE_GLOBAL_CONFIG_FILE"; trap 'rm -rf "$MISE_CONFIG_DIR"' EXIT; MISE_GITHUB_TOKEN="$(gh auth token)" && export MISE_GITHUB_TOKEN && test -n "$MISE_GITHUB_TOKEN" || { printf '%s\\n' 'GitHub authentication is required: run gh auth login.' >&2; exit 1; }; printf '%s\\n' '[sync] installing fnox'; mise install fnox@latest && printf '%s\\n' '[sync] deploying configuration'; mise bootstrap --force-dotfiles dotfiles apply --yes ~/.config/fnox && mise bootstrap --force-dotfiles dotfiles apply --yes ~/.config/mise/config.toml && renderer_path="${MISE_CONFIG_ROOT:?}/bootstrap/render-private-config.sh" && mise exec fnox -- fnox exec --replace -- /bin/bash "$renderer_path" && printf '%s\\n' '[sync] converging apps and remaining declarations' && mise exec fnox -- fnox exec --replace -- mise -E apps bootstrap --force-dotfiles --skip macos-defaults --yes && mise run casks && mise run fonts && mise run post-install"""
+description = "Authenticate and fully converge root and apps declarations through fnox"
+run = """export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"; bash "${MISE_CONFIG_ROOT:?}/bootstrap/ensure-native-homebrew.sh" && export MISE_CONFIG_DIR="${TMPDIR:-/tmp}/mise-sync-config-$$"; mkdir -p "$MISE_CONFIG_DIR"; export MISE_GLOBAL_CONFIG_FILE="$MISE_CONFIG_DIR/global.toml"; : > "$MISE_GLOBAL_CONFIG_FILE"; trap 'rm -rf "$MISE_CONFIG_DIR"' EXIT; MISE_GITHUB_TOKEN="$(gh auth token)" && export MISE_GITHUB_TOKEN && test -n "$MISE_GITHUB_TOKEN" || { printf '%s\\n' 'GitHub authentication is required: run gh auth login.' >&2; exit 1; }; printf '%s\\n' '[sync] installing fnox'; mise install fnox@latest && printf '%s\\n' '[sync] deploying configuration'; mise bootstrap --force-dotfiles dotfiles apply --yes ~/.config/fnox && mise bootstrap --force-dotfiles dotfiles apply --yes ~/.config/mise/config.toml && renderer_path="${MISE_CONFIG_ROOT:?}/bootstrap/render-private-config.sh" && mise exec fnox -- fnox exec --replace -- /bin/bash "$renderer_path" && printf '%s\\n' '[sync] converging apps and remaining declarations' && mise exec fnox -- fnox exec --replace -- mise -E apps bootstrap --force-dotfiles --yes && mise run casks && mise run fonts && mise run post-install"""
 
 [tasks.render-private-config]
 description = "Render fnox/1Password-backed private files (fnox and its config must already be installed)"
@@ -62,7 +61,7 @@ description = "Install agent-browser browser assets outside CI"
 run = "if [ -n \"${CI:-}\" ]; then printf '%s\\n' '[post-install-agent-browser] CI mode; skipping.'; exit 0; fi; if ! command -v mise >/dev/null 2>&1 || ! mise where npm:agent-browser >/dev/null 2>&1; then printf '%s\\n' '[post-install-agent-browser] agent-browser is not installed; skipping.'; exit 0; fi; mise x npm:agent-browser -- agent-browser install"
 
 [tasks.post-install]
-description = "Restore legacy post-install integrations after convergence"
+description = "Restore post-install integrations after convergence"
 run = "mise run post-install-tpm && mise run post-install-gh-dash && mise run post-install-buildx && mise run post-install-agent-browser"
 
 [tasks.install]
@@ -79,17 +78,16 @@ description = "Compatibility alias for sync"
 run = "mise run sync"
 
 [tasks.macos]
-description = "Explicitly opt in to root macOS defaults (not applied by sync/apps)"
+description = "Retry the safe root macOS defaults targeted by sync"
 run = "mise bootstrap --only macos-defaults --yes"
 
 [tasks.check]
 description = "Show pending mise bootstrap changes"
 run = "mise bootstrap status --missing"
 
-# Staged finalizer migration: repo cloning replaces the clone portion of the
-# legacy finalizers. Oh My Zsh uses its documented default branch for now;
-# pinning it remains a follow-up because no justified repository version is
-# present in the current configuration.
+# Repository cloning provides the repeatable native setup for these integrations. Oh My Zsh uses
+# its documented default branch for now; pinning it remains a follow-up because no justified
+# repository version is present in the current configuration.
 [bootstrap.repos."~/.oh-my-zsh"]
 url = "https://github.com/ohmyzsh/ohmyzsh.git"
 
@@ -109,8 +107,8 @@ url = "https://github.com/tmux-plugins/tmux-continuum.git"
 "brew:git" = { os = ["macos"] }
 "brew:gh" = { os = ["macos"] }
 
-# Explicit opt-in macOS defaults; sync/apps skip this group. Unsafe legacy
-# operations (chflags, systemsetup, process kills, and reboot) are excluded.
+# Safe declarative macOS defaults included in normal sync; `macos` remains a targeted retry.
+# Imperative operations (chflags, systemsetup, process kills, and reboot) are excluded.
 [bootstrap.macos.defaults."NSGlobalDomain"]
 "com.apple.springing.enabled" = true
 "com.apple.springing.delay" = 0.0
@@ -180,7 +178,7 @@ ARTIFACTORY_AUTH_TOKEN = "ARTIFACTORY_AUTH_TOKEN"
 NPM_TOKEN = "NPM_TOKEN"
 LINEARB_API_KEY = "LINEARB_API_KEY"
 
-# Parallel migration sources retain the current chezmoi repository layout.
+# Repository content is deployed through this mise-owned dotfiles table.
 [dotfiles]
 "~/.zshrc" = { source = "home/dot_zshrc", mode = "symlink" }
 "~/.gitconfig" = { source = "home/dot_gitconfig", mode = "symlink" }

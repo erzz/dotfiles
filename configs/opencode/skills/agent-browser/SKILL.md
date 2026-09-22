@@ -15,7 +15,7 @@ The CLI is installed by mise from `configs/mise/config.toml`:
 mise install --yes
 ```
 
-After first install, browser support is prepared by the chezmoi run script:
+After first install, browser support is prepared by the mise post-install task:
 
 ```bash
 agent-browser install

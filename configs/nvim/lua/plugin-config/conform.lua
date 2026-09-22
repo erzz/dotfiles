@@ -1,5 +1,5 @@
 -- conform.nvim: format-on-save with sensible per-language pickers.
--- Binaries installed via brew (see brew/Brewfile).
+-- Binaries installed via the native mise/Homebrew declarations.
 
 require("conform").setup({
   formatters_by_ft = {

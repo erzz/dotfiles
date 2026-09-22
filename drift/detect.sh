@@ -75,7 +75,7 @@ if [ "$BREW_AVAILABLE" -eq 1 ]; then
 		if [ -f "$ROOT/brew/$brewfile" ]; then
 			BREW_BUNDLE_STDOUT="${DRIFT_TMP}.${brewfile}.stdout"
 			BREW_BUNDLE_STDERR="${DRIFT_TMP}.${brewfile}.stderr"
-			brew bundle check --file="$ROOT/brew/$brewfile" >"$BREW_BUNDLE_STDOUT" 2>"$BREW_BUNDLE_STDERR"
+			brew bundle check --no-upgrade --file="$ROOT/brew/$brewfile" >"$BREW_BUNDLE_STDOUT" 2>"$BREW_BUNDLE_STDERR"
 			BREW_BUNDLE_CODE=$?
 			BREW_BUNDLE_OUTPUT=$(<"$BREW_BUNDLE_STDOUT")
 			BREW_BUNDLE_ERROR=$(<"$BREW_BUNDLE_STDERR")
@@ -85,12 +85,20 @@ if [ "$BREW_AVAILABLE" -eq 1 ]; then
 				Brewfile.casks) label='Cask Brewfile' ;;
 				Brewfile.fonts) label='Font Brewfile' ;;
 			esac
-			# brew bundle check normally reports missing packages on stdout and
-			# returns 1. Diagnostic stderr, no output, or another status means
-			# the check itself failed; do not turn that into a false drift result.
-			if [ "$BREW_BUNDLE_CODE" -eq 1 ] && [ -n "$BREW_BUNDLE_OUTPUT" ] && [ -z "$BREW_BUNDLE_ERROR" ]; then
+			# Homebrew may report the normal unmet-dependencies summary on stderr
+			# (alongside a verified-parameter warning) and return 1. Recognize the
+			# summary itself, rather than treating any stderr as a command failure.
+			# Keep this deliberately narrow: an unrecognized non-zero result must
+			# remain a failure so that a broken check cannot look like success.
+			BREW_BUNDLE_ALL_OUTPUT=$(printf '%s\n%s' "$BREW_BUNDLE_OUTPUT" "$BREW_BUNDLE_ERROR" | tr '\n' ' ')
+			BREW_BUNDLE_HAS_MISSING_SUMMARY=0
+			if [[ "$BREW_BUNDLE_ALL_OUTPUT" =~ [Ff]ollowing[[:space:]]+(dependencies|packages|casks|formulae|fonts).*([Nn]ot[[:space:]]+installed|[Mm]issing) ]] ||
+				[[ "$BREW_BUNDLE_ALL_OUTPUT" =~ [Mm]issing[[:space:]]+(dependencies|packages|casks|formulae|fonts) ]]; then
+				BREW_BUNDLE_HAS_MISSING_SUMMARY=1
+			fi
+			if [ "$BREW_BUNDLE_CODE" -eq 1 ] && [ "$BREW_BUNDLE_HAS_MISSING_SUMMARY" -eq 1 ]; then
 				MESSAGES+=("${COLOUR}${label} has missing packages (run: brew bundle check --file=brew/$brewfile)${NC}")
-			elif [ "$BREW_BUNDLE_CODE" -ne 0 ] || [ -n "$BREW_BUNDLE_ERROR" ]; then
+			elif [ "$BREW_BUNDLE_CODE" -ne 0 ]; then
 				CHECK_FAILURES+=("$label check failed")
 			fi
 		fi

@@ -1,14 +1,13 @@
 # dotfiles
 
-macOS dotfiles with **mise as the target canonical control plane** and **Git as the source of
-truth**. The repository is migrating from a chezmoi/Homebrew/Brewfile workflow. The legacy files
-remain available during the parallel migration, but the native mise lifecycle below is the target
-workflow.
+macOS dotfiles with **mise as the canonical control plane** and **Git as the source of truth**.
+Home and config content is deployed by mise; native Homebrew remains the provider for the package
+declarations that use it.
 
 ## Design principles
 
 1. **One convergent control plane** — the canonical common state lives in `mise.toml`; explicit
-   overlays handle applications and optional macOS defaults.
+   overlays handle applications, while safe macOS defaults are part of normal sync.
 2. **Git is synchronization** — laptops converge by pulling and pushing this repository. A mise
    task does not pull or push for you.
 3. **Idempotent retries** — rerun mise tasks as needed; only missing or changed state is applied.
@@ -121,9 +120,9 @@ checked-out project configuration remains the source of truth instead of stale u
 If mise panics during the isolated tool phase, that is a mise/runtime issue, not a Homebrew Dart
 declaration.
 
-`mise run sync` is the canonical complete convergence command for declared state; macOS defaults are intentionally opt-in via `mise run macos`. Application casks are owned by
+`mise run sync` is the canonical complete convergence command for declared state, including the safe macOS defaults. `mise run macos` remains a targeted retry for that defaults group. Application casks are owned by
 `brew/Brewfile.casks` and installed by `mise run casks`; fonts remain the separate
-`brew/Brewfile.fonts` manifest installed by `mise run fonts`, both via native Homebrew. These tasks remain useful targeted
+`brew/Brewfile.fonts` manifest installed by `mise run fonts`, both via native Homebrew. Casks and fonts intentionally remain separate and run sequentially; they are not merged or parallelized. These tasks remain useful targeted
 convenience or retry commands:
 
 ```bash
@@ -132,13 +131,19 @@ mise run casks      # retry native application casks
 mise run apps       # retry the applications/packages/casks/fonts/MAS overlay
 mise run post-install # restore TPM plugins, gh-dash, Docker Buildx, and browser assets
 mise run install    # retry tools declared in the root mise.toml
-mise run macos      # explicitly apply the macOS defaults declared in mise.toml
+mise run macos      # targeted retry of the safe macOS defaults declared in mise.toml
 mise run check      # show pending mise bootstrap changes
 ```
 
 Both `sync` and `apps` use native Homebrew for the application casks in `brew/Brewfile.casks` and
 for fonts. This includes Office and Teams, whose Homebrew cask installers are not represented by
 the mise package overlay.
+
+The existing manual/broken package exclusions are unchanged: DisplayLink remains manual because
+its privileged installer requires approval and a reboot; Disk Inventory X remains excluded because
+its cask is disabled and fails Gatekeeper installation; and `chromedriver`, `via`, and
+`garmin-express` remain excluded for their current Gatekeeper or compatibility issues. No new
+unsafe macOS defaults are added.
 
 DisplayLink is intentionally excluded from automatic sync because its privileged pkg requires
 interactive administrator authorization, manual macOS Screen Recording approval, and a reboot. If
@@ -214,18 +219,15 @@ with `git pull --rebase` and run `mise run sync`.
 
 ## Ownership and migration boundaries
 
-The root `./bootstrap.sh` is the supported normal entry point. Legacy bootstrap, chezmoi, and
-Brewfile artifacts remain rollback-only until the migration is finalized; they are not part of
-normal bootstrap.
+The root `./bootstrap.sh` is the supported normal entry point. The native mise lifecycle is the
+only supported deployment and convergence path.
 
 The root `mise.toml` owns common tools, repositories, shell activation, dotfiles, essential
 packages, safe defaults, and lifecycle tasks. `mise.apps.toml` owns the applications overlay.
 
-Unsafe legacy macOS operations — including `chflags`, `systemsetup`, process kills, and reboot —
-remain intentionally excluded from native mise bootstrap. The declarative macOS defaults are the
-safe subset only. The legacy chezmoi/bootstrap/Brewfile artifacts remain only as transitional
-fallback paths until the deletion phase; mise is the supported owner for normal operation and the
-canonical sync flow.
+Imperative macOS operations — including `chflags`, `systemsetup`, process kills, and reboot — are
+intentionally excluded from the supported path. The retained macOS policy is the safe declarative
+defaults subset only; operations requiring privileged or disruptive interaction remain manual.
 
 `mise dot track` and its local history are intentionally not used for project-managed paths. They
 would create a second local history authority alongside Git and the repository's mise declarations.
@@ -244,14 +246,13 @@ directory into the repository. Examples:
 ```
 
 Edit the live symlinked file or its repository target, then inspect `git status`. The `home/` and
-`configs/` paths retain the existing chezmoi-compatible layout while deployment responsibility
-moves to mise. Private files are rendered by `mise run render-private-config`; they are not
-symlinked or managed by chezmoi.
+`configs/` and `home/` retain the repository's content layout while deployment is owned by mise.
+Private files are rendered by `mise run render-private-config`; they are not symlinked.
 
 ## Make compatibility wrappers
 
-These Make targets remain available during migration as compatibility wrappers around the current
-mise-native operations. They are not legacy chezmoi commands or a separate synchronization path:
+These Make targets remain available as compatibility wrappers around the current mise-native
+operations. They are not a separate synchronization path:
 
 ```bash
 make apply       # mise sync wrapper
@@ -264,9 +265,8 @@ make drift       # mise drift-check wrapper
 
 ## Adding configuration
 
-Keep the existing chezmoi-compatible content layout and declare deployment in the root
-`mise.toml` `[dotfiles]` table. Put whole-directory content under `configs/<name>/` and home files
-under `home/`. Then converge and commit:
+Declare deployment in the root `mise.toml` `[dotfiles]` table. Put whole-directory content under
+`configs/<name>/` and home files under `home/`. Then converge and commit:
 
 ```bash
 mise run sync
@@ -293,16 +293,16 @@ git push
 ```
 
 `brew/Brewfile.casks` is the native application cask owner, used by `mise run casks` from `sync`
-and `apps`. `brew/Brewfile` remains a legacy comparison/fallback aggregate and is not called by
-the native path. Fonts are owned separately by `brew/Brewfile.fonts` and installed with
-`mise run fonts` via native Homebrew.
+and `apps`. Fonts are owned separately by `brew/Brewfile.fonts` and installed with `mise run fonts`
+via native Homebrew. The aggregate Brewfile is no longer part of the repository or supported
+workflow.
 
 ## What's included
 
-The existing chezmoi-compatible layout includes configuration for Colima, direnv, fnox, gh-dash,
+The repository includes configuration for Colima, direnv, fnox, gh-dash,
 Ghostty, Git, mise, Neovim, OpenCode, prettierd, Supacode, Zed, and Zellij, plus `.zshrc`,
 `.gitconfig`, `.tmux.conf`, and `~/.config/starship.toml`. Some finalizers
-and templates remain under legacy chezmoi control during migration.
+and templates. All declared home/config content is deployed by mise.
 
 ## Acknowledgements
 

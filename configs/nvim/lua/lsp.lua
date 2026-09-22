@@ -1,5 +1,5 @@
 -- LSP server configuration using vim.lsp.config + vim.lsp.enable (Neovim 0.11+).
--- Binaries installed via brew (see brew/Brewfile).
+-- Binaries installed via the native mise/Homebrew declarations.
 
 vim.diagnostic.config({
   virtual_text = { spacing = 2, prefix = "●" },

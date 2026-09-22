@@ -18,4 +18,10 @@ done
 # GUI applications, or require authentication.
 mise bootstrap status >/dev/null
 mise -E apps bootstrap status >/dev/null
+config_root="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+grep -q 'mise -E apps bootstrap --force-dotfiles --yes' "$config_root/mise.toml"
+! grep -q -- '--skip macos-defaults' "$config_root/mise.toml"
+grep -q -- '"${MISE_CONFIG_ROOT:?}/brew/Brewfile.casks"' "$config_root/mise.toml"
+grep -q -- '"${MISE_CONFIG_ROOT:?}/brew/Brewfile.fonts"' "$config_root/mise.toml"
+grep -q 'mise run casks && mise run fonts' "$config_root/mise.toml"
 echo "Validated mise task/config/status commands; idempotency is not exercised"
