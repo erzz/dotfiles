@@ -81,7 +81,7 @@ fi
 
 # Prefer the helper checked into the acquired checkout. It keeps Homebrew
 # native and scopes its shellenv to the child command.
-native_helper="$DOTFILES_DIR/bootstrap/ensure-native-homebrew.sh"
+native_helper="$DOTFILES_DIR/scripts/ensure-native-homebrew.sh"
 if [ ! -f "$native_helper" ]; then
   printf '%s\n' "Native Homebrew helper not found: $native_helper" >&2
   exit 1

@@ -5,7 +5,7 @@ set -euo pipefail
 DOTFILES_DIR="$HOME/dotfiles"
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
 
-bash "$DOTFILES_DIR/bootstrap/ensure-native-homebrew.sh"
+bash "$DOTFILES_DIR/scripts/ensure-native-homebrew.sh"
 
 # Installing so many things at once can lead to rate limit exhaustion if not
 # authenticated

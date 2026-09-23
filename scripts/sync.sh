@@ -7,7 +7,7 @@ DOTFILES_DIR="$HOME/dotfiles"
 mise -C "$DOTFILES_DIR" run preflight
 
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
-bash "$DOTFILES_DIR/bootstrap/ensure-native-homebrew.sh"
+bash "$DOTFILES_DIR/scripts/ensure-native-homebrew.sh"
 
 # Authenticate before installing tools that may need private GitHub releases.
 if ! MISE_GITHUB_TOKEN="$(gh auth token)" || [[ -z "$MISE_GITHUB_TOKEN" ]]; then

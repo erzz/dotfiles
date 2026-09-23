@@ -26,15 +26,15 @@ run = "test \"$(uname -s)\" = Darwin || { printf '%s\\n' '[preflight] macOS (Dar
 
 [tasks.prepare]
 description = "Install pre-auth packages and deploy fnox config, without project tools"
-run = """mise -C "$HOME/dotfiles" run preflight || exit $?; export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"; bash "$HOME/dotfiles/bootstrap/ensure-native-homebrew.sh" && mise --no-config -C "$HOME/dotfiles" bootstrap packages apply --yes brew:git brew:gh && bash "$HOME/dotfiles/bootstrap/ensure-native-homebrew.sh" brew install --cask 1password 1password-cli && mise -C "$HOME/dotfiles" bootstrap --force-dotfiles dotfiles apply --yes ~/.config/fnox"""
+run = """mise -C "$HOME/dotfiles" run preflight || exit $?; export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"; bash "$HOME/dotfiles/scripts/ensure-native-homebrew.sh" && mise --no-config -C "$HOME/dotfiles" bootstrap packages apply --yes brew:git brew:gh && bash "$HOME/dotfiles/scripts/ensure-native-homebrew.sh" brew install --cask 1password 1password-cli && mise -C "$HOME/dotfiles" bootstrap --force-dotfiles dotfiles apply --yes ~/.config/fnox"""
 
 [bootstrap.hooks.pre-packages]
-run = """bash "$HOME/dotfiles/bootstrap/ensure-native-homebrew.sh""""
+run = """bash "$HOME/dotfiles/scripts/ensure-native-homebrew.sh""""
 
 # Ensure fnox can find 1Password's `op` on Apple Silicon or Intel Homebrew.
 [tasks.sync]
 description = "Authenticate and fully converge root and apps declarations through fnox"
-run = "bash \"$HOME/dotfiles/bootstrap/sync.sh\""
+run = "bash \"$HOME/dotfiles/scripts/sync.sh\""
 
 [tasks.apply-private-config]
 description = "Apply fnox/1Password-backed native mise file templates"
@@ -42,15 +42,15 @@ run = """fnox exec --replace -- mise -C "$HOME/dotfiles" bootstrap files apply -
 
 [tasks.casks]
 description = "Install application casks with native Homebrew"
-run = """export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"; bash "$HOME/dotfiles/bootstrap/ensure-native-homebrew.sh" brew bundle install --no-upgrade --file="$HOME/dotfiles/brew/Brewfile.casks""""
+run = """export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"; bash "$HOME/dotfiles/scripts/ensure-native-homebrew.sh" brew bundle install --no-upgrade --file="$HOME/dotfiles/brew/Brewfile.casks""""
 
 [tasks.fonts]
 description = "Install fonts with native Homebrew"
-run = """export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"; bash "$HOME/dotfiles/bootstrap/ensure-native-homebrew.sh" brew bundle install --no-upgrade --file="$HOME/dotfiles/brew/Brewfile.fonts""""
+run = """export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"; bash "$HOME/dotfiles/scripts/ensure-native-homebrew.sh" brew bundle install --no-upgrade --file="$HOME/dotfiles/brew/Brewfile.fonts""""
 
 [tasks.office]
 description = "Opt in to installing Microsoft Office casks"
-run = "export PATH=\"/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH\"; bash \"$HOME/dotfiles/bootstrap/ensure-native-homebrew.sh\" brew bundle install --no-upgrade --file=\"$HOME/dotfiles/brew/Brewfile.office\""
+run = "export PATH=\"/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH\"; bash \"$HOME/dotfiles/scripts/ensure-native-homebrew.sh\" brew bundle install --no-upgrade --file=\"$HOME/dotfiles/brew/Brewfile.office\""
 
 [tasks.post-install-tpm]
 description = "Install configured tmux plugins through TPM"
@@ -62,7 +62,7 @@ run = "if [ -n \"${CI:-}\" ]; then printf '%s\\n' '[post-install-gh-dash] CI mod
 
 [tasks.post-install-buildx]
 description = "Link native Homebrew Docker Buildx into Docker CLI plugins"
-run = """export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"; bash "$HOME/dotfiles/bootstrap/ensure-native-homebrew.sh"; brew_prefix="$(bash "$HOME/dotfiles/bootstrap/ensure-native-homebrew.sh" brew --prefix)"; buildx="$brew_prefix/bin/docker-buildx"; if [ ! -x "$buildx" ]; then printf '%s\\n' "[post-install-buildx] Homebrew docker-buildx binary not found at $buildx; install the brew:docker-buildx package first." >&2; exit 1; fi; mkdir -p "$HOME/.docker/cli-plugins"; ln -sfn "$buildx" "$HOME/.docker/cli-plugins/docker-buildx""""
+run = """export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"; bash "$HOME/dotfiles/scripts/ensure-native-homebrew.sh"; brew_prefix="$(bash "$HOME/dotfiles/scripts/ensure-native-homebrew.sh" brew --prefix)"; buildx="$brew_prefix/bin/docker-buildx"; if [ ! -x "$buildx" ]; then printf '%s\\n' "[post-install-buildx] Homebrew docker-buildx binary not found at $buildx; install the brew:docker-buildx package first." >&2; exit 1; fi; mkdir -p "$HOME/.docker/cli-plugins"; ln -sfn "$buildx" "$HOME/.docker/cli-plugins/docker-buildx""""
 
 [tasks.post-install-agent-browser]
 description = "Install agent-browser browser assets outside CI"
@@ -79,7 +79,7 @@ run = "export PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"; MISE_GITHUB_TOKEN
 [tasks.apps]
 description = "Install applications, fonts, and Mac App Store apps"
 output = "interleave"
-run = "bash \"$HOME/dotfiles/bootstrap/apps.sh\""
+run = "bash \"$HOME/dotfiles/scripts/apps.sh\""
 
 [tasks.setup]
 description = "Compatibility alias for sync"
@@ -191,12 +191,12 @@ NPM_TOKEN = "NPM_TOKEN"
 LINEARB_API_KEY = "LINEARB_API_KEY"
 
 [bootstrap.files."~/.local/state/secrets.env"]
-source = "bootstrap/secrets.env.tmpl"
+source = "templates/secrets.env.tmpl"
 template = true
 mode = "0600"
 
 [bootstrap.files."~/.npmrc"]
-source = "bootstrap/npmrc.tmpl"
+source = "templates/npmrc.tmpl"
 template = true
 mode = "0600"
 
