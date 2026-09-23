@@ -208,6 +208,5 @@ LINEARB_API_KEY = "LINEARB_API_KEY"
 "~/.config/colima/default/colima.yaml" = { source = "configs/colima/default/colima.yaml", mode = "symlink" }
 "~/.config/gh-dash" = { source = "configs/gh-dash", mode = "symlink" }
 "~/.config/herdr" = { source = "configs/herdr", mode = "symlink" }
-"~/.supacode/settings.json" = { source = "configs/supacode/settings.json", mode = "symlink" }
 "~/.config/git" = { source = "configs/git", mode = "symlink" }
 "~/.config/prettierd" = { source = "configs/prettierd", mode = "symlink" }
