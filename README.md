@@ -23,8 +23,8 @@ mise run sync
 ```
 
 Thats it! Any changes in the mise targets will be applied whether it be config updates, brews/casks,
-MacOS settings. Changes are persisted and propagated between machines with every day git commands
-against the repo.
+MacOS settings. Changes are persisted and propagated between machines with normal everyday git
+commands against the repo.
 
 ## Adding new apps, configs etc
 
@@ -48,7 +48,7 @@ then runs the pre-auth `prepare` task and stops for the unavoidable manual steps
 ### Unavoidable, one-time, manual steps
 
 These one-time manual interventions are documented by the `prepare` task's output, but for clarity
-they are and cannot be avoided:
+they are:
 
 1. Sign into the App Store using your Apple ID (for later installation of apps via mas)
 2. Authenticate yourself with github using the `gh auth login` command
@@ -68,8 +68,8 @@ mise run sync
 
 Project-local tasks can collide with global task names. Use the deterministic fallback when needed:
 `mise -C "$HOME/dotfiles" run sync`. Avoid unqualified bootstrap commands from foreign projects;
-always scope control-plane commands to this checkout.
-Authenticate every laptop separately. On a laptop receiving changes, use:
+always scope control-plane commands to this checkout. Authenticate every laptop separately. On a
+laptop receiving changes, use:
 
 ```bash
 cd "$HOME/dotfiles"
@@ -81,11 +81,11 @@ mise run sync
 
 Full `sync` applies native mise `[bootstrap.files]` templates inside the fnox environment; the
 targeted `apps` task explicitly runs `mise run apply-private-config` after its packages-only
-bootstrap. Both use fnox/1Password values to manage the regular files
-`~/.local/state/secrets.env` and `~/.npmrc`. Mise applies them with explicit `0600` modes; this is
-not a paired transactional update and does not provide rollback protection across both files. Start
-a new login shell after syncing for zsh exports to load. Secret values never belong in Git, and
-drift checks do not inspect secret content.
+bootstrap. Both use fnox/1Password values to manage the regular files `~/.local/state/secrets.env`
+and `~/.npmrc`. Mise applies them with explicit `0600` modes; this is not a paired transactional
+update and does not provide rollback protection across both files. Start a new login shell after
+syncing for zsh exports to load. Secret values never belong in Git, and drift checks do not inspect
+secret content.
 
 ```mermaid
 flowchart LR
@@ -106,8 +106,8 @@ flowchart LR
 1Password remains the credential store. fnox resolves the `op://...` references and injects the
 resulting values only into the mise command it launches. Native mise templates use that short-lived
 environment to create the two local files; they do not copy credentials into the repository or
-normal shell startup. Mise applies each file with its declared `0600` mode, but the two-file apply is
-not transactional and does not roll back the first file if applying the second fails. The npm
+normal shell startup. Mise applies each file with its declared `0600` mode, but the two-file apply
+is not transactional and does not roll back the first file if applying the second fails. The npm
 configuration contains only a literal `${GH_TOKEN}` reference, not token bytes.
 
 ## Canonical and targeted commands
@@ -117,8 +117,8 @@ tasks below.
 
 - `mise run sync` is the canonical complete convergence command for declared state
 - `mise run apps` applies app-overlay bootstrap packages and App Store apps via Mas. With
-  `run_auto_install = false`, it does not install the root `[tools]` inventory; use `mise run install`
-  for that explicitly
+  `run_auto_install = false`, it does not install the root `[tools]` inventory; use
+  `mise run install` for that explicitly
 - `mise run casks` installs `brew/Brewfile.casks`
 - `mise run fonts` installs `brew/Brewfile.fonts`
 - `mise run macos` is a targeted application of macos settings such as Finder, Dock, Login window
@@ -129,9 +129,9 @@ tasks below.
   manifest does not uninstall already-installed Office applications.
 
 Both `sync` and `apps` use native Homebrew for application casks in `brew/Brewfile.casks` and for
-fonts in `brew/Brewfile.fonts`. Those Brewfiles own casks and fonts; normal Homebrew tools are
-installed via mise's native brew handler. This is hopefully
-temporary as it seems mise can panic sometimes with casks and I just want it to be reliable.
+fonts in `brew/Brewfile.fonts`. Normal Homebrew tools are installed via mise's native brew handler.
+This is hopefully temporary as it seems mise can panic sometimes with casks and I just want it to be
+reliable.
 
 DisplayLink is intentionally excluded from automatic sync because its privileged pkg requires
 interactive administrator authorization, manual macOS Screen Recording approval, and a reboot. If
@@ -146,13 +146,12 @@ Secrets, tokens, installed application state, and other machine-local state do n
 The root `mise.toml` owns common tools, repositories, shell activation, dotfiles, essential
 packages, safe defaults, and lifecycle tasks. `mise.apps.toml` owns the applications overlay.
 `configs/mise/config.toml` and `configs/mise/config.apps.toml` are tracked relative symlinks to
-those canonical inventories; there is no duplicate TOML inventory. Global `run_auto_install` is
-disabled. Tool versions are exact and intentionally have no `mise.lock`; update pins explicitly
-when a validated version is chosen.
+those canonical inventories. Global `run_auto_install` is disabled. Tool versions are exact and
+intentionally have no `mise.lock`; update pins explicitly when a validated version is chosen.
 
 Normal sync applies security-sensitive macOS defaults (including disabling quarantine prompts for
 LaunchServices and disk images) for a consistent laptop posture. This is a deliberate convenience
-and security trade-off; review the defaults in `mise.toml` before adopting them on a new machine.
+and security trade-off. Review the defaults in `mise.toml` before adopting them on a new machine.
 
 ## How configs are deployed
 
@@ -193,9 +192,9 @@ templates at apply time.
 ## Adding packages and tools
 
 Add common essential packages to the root `mise.toml` `[bootstrap.packages]` table. Add app-only
-formulas, taps, or Mac App Store apps to `mise.apps.toml`; casks and fonts belong in their Brewfiles.
-Add runtime tools to the root `[tools]` table. Authenticate first for private inventory, then use the targeted task or
-`mise run sync`:
+formulas, taps, or Mac App Store apps to `mise.apps.toml`; casks and fonts belong in their
+Brewfiles. Add runtime tools to the root `[tools]` table. Authenticate first for private inventory,
+then use the targeted task or `mise run sync`:
 
 ```bash
 mise run apps
