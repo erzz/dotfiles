@@ -79,9 +79,11 @@ mise run sync
 
 ## Private credentials
 
-`mise run render-private-config` (included in the sync task) runs the fnox/1Password-backed renderer
-and owns the regular files `~/.local/state/secrets.env` and `~/.npmrc`. It validates required values
-before writing, uses mode `0600`, and atomically replaces the files with rollback protection. Start
+Full `sync` applies native mise `[bootstrap.files]` templates inside the fnox environment; the
+targeted `apps` task explicitly runs `mise run apply-private-config` after its packages-only
+bootstrap. Both use fnox/1Password values to manage the regular files
+`~/.local/state/secrets.env` and `~/.npmrc`. Mise applies them with explicit `0600` modes; this is
+not a paired transactional update and does not provide rollback protection across both files. Start
 a new login shell after syncing for zsh exports to load. Secret values never belong in Git, and
 drift checks do not inspect secret content.
 
@@ -94,18 +96,19 @@ flowchart LR
     vault -->|resolve references| fnox[fnox]
     config --> fnox
 
-    fnox -->|inject environment\ninto child process| renderer[render-private-config.sh]
-    renderer -->|validate, chmod 0600,\natomic replacement| secrets[~/.local/state/secrets.env]
-    renderer -->|render registry config\nwith token variable reference| npmrc[~/.npmrc]
+    fnox -->|inject environment\ninto child process| mise[native mise file templates]
+    mise -->|template, mode 0600| secrets[~/.local/state/secrets.env]
+    mise -->|template registry config\nwith token variable reference| npmrc[~/.npmrc]
 
     fnox -->|inject only for\ncommand lifetime| commands[private mise/npm commands]
 ```
 
 1Password remains the credential store. fnox resolves the `op://...` references and injects the
-resulting values only into the command it launches. The renderer uses that short-lived environment
-to create the two local files; it does not copy credentials into the repository or normal shell
-startup. Missing values stop rendering before replacement, and failed writes restore the previous
-file pair.
+resulting values only into the mise command it launches. Native mise templates use that short-lived
+environment to create the two local files; they do not copy credentials into the repository or
+normal shell startup. Mise applies each file with its declared `0600` mode, but the two-file apply is
+not transactional and does not roll back the first file if applying the second fails. The npm
+configuration contains only a literal `${GH_TOKEN}` reference, not token bytes.
 
 ## Canonical and targeted commands
 
@@ -170,7 +173,7 @@ directory into the repository. Examples:
 
 Edit the live symlinked file or its repository target, then inspect `git status`. `configs/<tool>/`
 is the canonical repository content layout while deployment is owned by mise. Private files are
-rendered by `mise run render-private-config`; they are not symlinked.
+generated from native mise templates by `mise run apply-private-config`; they are not symlinked.
 
 ## Adding configuration
 
@@ -184,7 +187,8 @@ git commit -m "feat: add newtool config"
 git push
 ```
 
-Do not put secrets in the repository. fnox and 1Password provide values at render time.
+Do not put secrets in the repository. fnox and 1Password provide values to native mise file
+templates at apply time.
 
 ## Adding packages and tools
 

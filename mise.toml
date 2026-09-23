@@ -34,11 +34,11 @@ run = """bash "$HOME/dotfiles/bootstrap/ensure-native-homebrew.sh""""
 # Ensure fnox can find 1Password's `op` on Apple Silicon or Intel Homebrew.
 [tasks.sync]
 description = "Authenticate and fully converge root and apps declarations through fnox"
-run = """mise -C "$HOME/dotfiles" run preflight || exit $?; export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"; bash "$HOME/dotfiles/bootstrap/ensure-native-homebrew.sh"; MISE_GITHUB_TOKEN="$(gh auth token)" && export MISE_GITHUB_TOKEN && test -n "$MISE_GITHUB_TOKEN" || { printf '%s\\n' 'GitHub authentication is required: run gh auth login.' >&2; exit 1; }; printf '%s\\n' '[sync] installing fnox'; mise -C "$HOME/dotfiles" install fnox && printf '%s\\n' '[sync] deploying configuration'; mise -C "$HOME/dotfiles" bootstrap --force-dotfiles dotfiles apply --yes ~/.config/fnox && mise -C "$HOME/dotfiles" bootstrap --force-dotfiles dotfiles apply --yes ~/.config/mise/config.toml && mise -C "$HOME/dotfiles" bootstrap --force-dotfiles dotfiles apply --yes ~/.config/mise/config.apps.toml && renderer_path="$HOME/dotfiles/bootstrap/render-private-config.sh" && mise -C "$HOME/dotfiles" exec fnox -- fnox exec --replace -- /bin/bash "$renderer_path" && printf '%s\\n' '[sync] converging apps and remaining declarations' && mise -C "$HOME/dotfiles" exec fnox -- fnox exec --replace -- mise -C "$HOME/dotfiles" -E apps bootstrap --force-dotfiles --yes && mise -C "$HOME/dotfiles" run casks && mise -C "$HOME/dotfiles" run fonts && mise -C "$HOME/dotfiles" run post-install"""
+run = "bash \"$HOME/dotfiles/bootstrap/sync.sh\""
 
-[tasks.render-private-config]
-description = "Render fnox/1Password-backed private files (fnox and its config must already be installed)"
-run = """fnox exec --replace -- /bin/bash "$HOME/dotfiles/bootstrap/render-private-config.sh""""
+[tasks.apply-private-config]
+description = "Apply fnox/1Password-backed native mise file templates"
+run = """fnox exec --replace -- mise -C "$HOME/dotfiles" bootstrap files apply --yes"""
 
 [tasks.casks]
 description = "Install application casks with native Homebrew"
@@ -79,7 +79,7 @@ run = "export PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"; MISE_GITHUB_TOKEN
 [tasks.apps]
 description = "Install applications, fonts, and Mac App Store apps"
 output = "interleave"
-run = """export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"; bash "$HOME/dotfiles/bootstrap/ensure-native-homebrew.sh" && MISE_GITHUB_TOKEN="$(gh auth token)" && export MISE_GITHUB_TOKEN && test -n "$MISE_GITHUB_TOKEN" || { printf '%s\\n' 'GitHub authentication is required: run gh auth login.' >&2; exit 1; }; mise -C "$HOME/dotfiles" -E apps bootstrap packages apply --yes brew:mas && MISE_TERMINAL_PROGRESS=true mise -C "$HOME/dotfiles" -E apps bootstrap --only packages --yes && mise -C "$HOME/dotfiles" run render-private-config && mise -C "$HOME/dotfiles" run casks && mise -C "$HOME/dotfiles" run fonts && mise -C "$HOME/dotfiles" run post-install"""
+run = "bash \"$HOME/dotfiles/bootstrap/apps.sh\""
 
 [tasks.setup]
 description = "Compatibility alias for sync"
@@ -182,13 +182,23 @@ login_shell = "/bin/zsh"
 zsh = "activate"
 
 [bootstrap.secrets]
-npm_org_scope = "NPM_ORG_SCOPE"
-npm_registry_host = "NPM_REGISTRY_HOST"
-github_org_scope = "GITHUB_ORG_SCOPE"
+NPM_ORG_SCOPE = "NPM_ORG_SCOPE"
+NPM_REGISTRY_HOST = "NPM_REGISTRY_HOST"
+GITHUB_ORG_SCOPE = "GITHUB_ORG_SCOPE"
 GH_TOKEN = "GH_TOKEN"
 ARTIFACTORY_AUTH_TOKEN = "ARTIFACTORY_AUTH_TOKEN"
 NPM_TOKEN = "NPM_TOKEN"
 LINEARB_API_KEY = "LINEARB_API_KEY"
+
+[bootstrap.files."~/.local/state/secrets.env"]
+source = "bootstrap/secrets.env.tmpl"
+template = true
+mode = "0600"
+
+[bootstrap.files."~/.npmrc"]
+source = "bootstrap/npmrc.tmpl"
+template = true
+mode = "0600"
 
 # Repository content is deployed through this mise-owned dotfiles table.
 [dotfiles]

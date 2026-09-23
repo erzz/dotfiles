@@ -51,7 +51,7 @@
       // task is retrieval and summarisation, not deep reasoning.
       "librarian": {
         "model": "github-copilot/gpt-6-luna",
-        "variant": "low",
+        "variant": "medium",
         "skills": [
           "clonedeps", // clone dependency source for local inspection
         ],
@@ -90,7 +90,7 @@
       // tasks are well-scoped and do not require deep reasoning.
       "fixer": {
         "model": "github-copilot/gpt-6-luna",
-        "variant": "medium",
+        "variant": "high",
         "skills": [],
         "mcps": [],
       },
