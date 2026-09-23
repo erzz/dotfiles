@@ -11,19 +11,19 @@
       "command": "bash",
       "args": [
         "-c",
-        "$HOME/.local/share/mise/shims/mcp-remote https://mcp.linearb.io/mcp --header \"x-api-key: $(/opt/homebrew/bin/op read 'op://Employee/Dev Tokens/LINEARB_API_KEY')\""
+        "$HOME/.local/share/mise/shims/mcp-remote https://mcp.linearb.io/mcp --header \"x-api-key: $(op read 'op://Employee/Dev Tokens/LINEARB_API_KEY')\""
       ],
       "env": {}
     },
     "skapa-design-system": {
       "env": {},
       "enabled": true,
-      "command": "/opt/homebrew/bin/mise",
+      "command": "mise",
       "args": ["exec", "--", "skapa-design-system-mcp"]
     },
     "playwright": {
       "enabled": true,
-      "command": "/opt/homebrew/bin/mise",
+      "command": "mise",
       "args": ["exec", "--", "playwright-mcp"]
     }
   },

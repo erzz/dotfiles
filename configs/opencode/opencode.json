@@ -15,7 +15,7 @@
   "mcp": {
     "mise": {
       "type": "local",
-      "command": ["/opt/homebrew/bin/mise", "--cd", "/Users/sean.erswell-liljefelt/dotfiles", "mcp"],
+      "command": ["bash", "-lc", "exec mise --cd \"$HOME/dotfiles\" mcp"],
       "environment": {
         "MISE_EXPERIMENTAL": "1"
       }
