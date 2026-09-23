@@ -1,10 +1,10 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "github-copilot/gpt-5.6-terra",
+  "model": "github-copilot/gpt-6-luna",
   "plugin": [
     "@ramtinj95/opencode-tokenscope@1.7.1",
     "@tarquinen/opencode-dcp@3.1.15",
-    "oh-my-opencode-slim@2.2.22"
+    "oh-my-opencode-slim@2.2.24"
   ],
   "default_agent": "orchestrator",
   "instructions": ["~/.config/opencode/AGENTS.md"],

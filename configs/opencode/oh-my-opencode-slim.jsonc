@@ -15,7 +15,7 @@
       // Orchestrator: primary entrypoint and scheduler. Medium reasoning is enough for
       // work-graph planning and delegation; heavy thinking lives in oracle.
       "orchestrator": {
-        "model": "github-copilot/gpt-5.6-luna",
+        "model": "github-copilot/gpt-6-luna",
         "variant": "high",
         "skills": [
           "oh-my-opencode-slim", // core OMO workflow guidance
@@ -31,7 +31,7 @@
 
       // Oracle: architecture, debugging strategy, code review. High reasoning justified.
       "oracle": {
-        "model": "github-copilot/gpt-5.6-sol",
+        "model": "github-copilot/gpt-6-sol",
         "variant": "xhigh",
         "skills": [
           "simplify", // readability/complexity review
@@ -50,7 +50,7 @@
       // Librarian: external docs, changelogs, API research. Mini model is fine;
       // task is retrieval and summarisation, not deep reasoning.
       "librarian": {
-        "model": "github-copilot/gpt-5.6-luna",
+        "model": "github-copilot/gpt-6-luna",
         "variant": "low",
         "skills": [
           "clonedeps", // clone dependency source for local inspection
@@ -65,7 +65,7 @@
       // Explorer: codebase search and pattern mapping. Mini model is appropriate;
       // task is read-only file traversal and pattern matching.
       "explorer": {
-        "model": "github-copilot/gpt-5.6-luna",
+        "model": "github-copilot/gpt-6-luna",
         "variant": "low",
         "skills": [
           "codemap", // generate hierarchical codebase maps
@@ -76,7 +76,7 @@
       // Designer: UI/UX, frontend, Skapa Design System. Gemini for multimodal/visual
       // reasoning and design-system fluency. Skapa MCP is allow-listed only here.
       "designer": {
-        "model": "github-copilot/gpt-5.6-luna",
+        "model": "github-copilot/gpt-6-luna",
         "variant": "high",
         "skills": [
           "agent-browser", // browser automation for visual QA and testing
@@ -89,7 +89,7 @@
       // Fixer: bounded mechanical implementation. Mini model is intentional;
       // tasks are well-scoped and do not require deep reasoning.
       "fixer": {
-        "model": "github-copilot/gpt-5.6-luna",
+        "model": "github-copilot/gpt-6-luna",
         "variant": "medium",
         "skills": [],
         "mcps": [],
@@ -145,7 +145,7 @@
     // cicd: GitHub Actions and INGKA reusable workflows. workflows_* MCP is
     // restricted globally and allow-listed only here (see opencode.json permissions).
     "cicd": {
-      "model": "github-copilot/gpt-5.6-luna",
+      "model": "github-copilot/gpt-6-luna",
       "variant": "high",
       "skills": [],
       "mcps": [
