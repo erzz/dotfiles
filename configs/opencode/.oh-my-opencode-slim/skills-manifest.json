@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-09-23T07:12:08.368Z",
+  "updatedAt": "2026-09-24T07:58:48.950Z",
   "skills": {
     "simplify": {
       "status": "customized",
@@ -9,7 +9,7 @@
       "lastManagedHash": "",
       "lastSeenHash": "61361b7d3bb63154d622cb5c6ab32aa727180aae738307e7f1b434690ec66210",
       "stagedPath": "/Users/sean.erswell-liljefelt/.config/opencode/.oh-my-opencode-slim/skill-updates/2.2.22/simplify",
-      "updatedAt": "2026-09-23T07:12:08.362Z"
+      "updatedAt": "2026-09-24T07:58:48.939Z"
     },
     "codemap": {
       "status": "customized",
@@ -18,7 +18,7 @@
       "lastManagedHash": "",
       "lastSeenHash": "b7abed1aad2ac0fca6c87eca1ebbd16480c9fac2afa23283a4fb721434c10b97",
       "stagedPath": "/Users/sean.erswell-liljefelt/.config/opencode/.oh-my-opencode-slim/skill-updates/2.2.8/codemap",
-      "updatedAt": "2026-09-23T07:12:08.364Z"
+      "updatedAt": "2026-09-24T07:58:48.942Z"
     },
     "clonedeps": {
       "status": "customized",
@@ -27,24 +27,24 @@
       "lastManagedHash": "",
       "lastSeenHash": "a9bd26b80d28bdaa261bc78b57d6182aa99b78f98f50adcba8e3640cdb3b035c",
       "stagedPath": "/Users/sean.erswell-liljefelt/.config/opencode/.oh-my-opencode-slim/skill-updates/2.2.8/clonedeps",
-      "updatedAt": "2026-09-23T07:12:08.365Z"
+      "updatedAt": "2026-09-24T07:58:48.943Z"
     },
     "deepwork": {
       "status": "customized",
-      "packageVersion": "2.2.22",
-      "sourceHash": "bd229b4ed87b8648066d8ae55e69878ee027a8335c2b9f7c98d6509b717c1fdf",
+      "packageVersion": "2.2.24",
+      "sourceHash": "473c0f6b21e2c9fb3be4b3bd442cc5163919e6588f2912af5fcd163136e6bed8",
       "lastManagedHash": "",
       "lastSeenHash": "3dcd0e26b16f91555fe08371e0302f377dc894675ec1aaca7d6417ded88efa9b",
-      "stagedPath": "/Users/sean.erswell-liljefelt/.config/opencode/.oh-my-opencode-slim/skill-updates/2.2.22/deepwork",
-      "updatedAt": "2026-09-23T07:12:08.366Z"
+      "stagedPath": "/Users/sean.erswell-liljefelt/.config/opencode/.oh-my-opencode-slim/skill-updates/2.2.24/deepwork",
+      "updatedAt": "2026-09-24T07:58:48.944Z"
     },
     "verification-planning": {
       "status": "managed",
-      "packageVersion": "2.2.22",
+      "packageVersion": "2.2.24",
       "sourceHash": "02573c215ad476fff58a94ef7fc244f90b8e5baa1e39c2bb2bc579099592a9bf",
       "lastManagedHash": "02573c215ad476fff58a94ef7fc244f90b8e5baa1e39c2bb2bc579099592a9bf",
       "lastSeenHash": "02573c215ad476fff58a94ef7fc244f90b8e5baa1e39c2bb2bc579099592a9bf",
-      "updatedAt": "2026-09-23T07:12:08.366Z"
+      "updatedAt": "2026-09-24T07:58:48.946Z"
     },
     "reflect": {
       "status": "customized",
@@ -53,23 +53,23 @@
       "lastManagedHash": "",
       "lastSeenHash": "d6549f0261c224c300c1b2285221172cd2e44204e777dd74d4dc604766adf4b1",
       "stagedPath": "/Users/sean.erswell-liljefelt/.config/opencode/.oh-my-opencode-slim/skill-updates/2.2.22/reflect",
-      "updatedAt": "2026-09-23T07:12:08.367Z"
+      "updatedAt": "2026-09-24T07:58:48.947Z"
     },
     "oh-my-opencode-slim": {
       "status": "managed",
-      "packageVersion": "2.2.22",
-      "sourceHash": "af7bdd007125b3a913a53006588ea0d331130b5b78b6693c35c6a7c1798a5eb7",
-      "lastManagedHash": "af7bdd007125b3a913a53006588ea0d331130b5b78b6693c35c6a7c1798a5eb7",
-      "lastSeenHash": "af7bdd007125b3a913a53006588ea0d331130b5b78b6693c35c6a7c1798a5eb7",
-      "updatedAt": "2026-09-23T07:12:08.368Z"
+      "packageVersion": "2.2.24",
+      "sourceHash": "af2ad01f877626efd498249f6b9c51d8bf412cf2cddbd0f47f246798ee79e88d",
+      "lastManagedHash": "af2ad01f877626efd498249f6b9c51d8bf412cf2cddbd0f47f246798ee79e88d",
+      "lastSeenHash": "af2ad01f877626efd498249f6b9c51d8bf412cf2cddbd0f47f246798ee79e88d",
+      "updatedAt": "2026-09-24T07:58:48.949Z"
     },
     "worktrees": {
       "status": "managed",
-      "packageVersion": "2.2.22",
+      "packageVersion": "2.2.24",
       "sourceHash": "ca7d8b56244d318784c209382424a5298366d19440f6971a80166f6cf60376fd",
       "lastManagedHash": "ca7d8b56244d318784c209382424a5298366d19440f6971a80166f6cf60376fd",
       "lastSeenHash": "ca7d8b56244d318784c209382424a5298366d19440f6971a80166f6cf60376fd",
-      "updatedAt": "2026-09-23T07:12:08.368Z"
+      "updatedAt": "2026-09-24T07:58:48.950Z"
     }
   }
 }
