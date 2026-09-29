@@ -28,6 +28,13 @@ clone_repo "https://github.com/wfxr/tmux-power.git" "$HOME/.tmux/plugins/tmux-po
 clone_repo "https://github.com/tmux-plugins/tmux-resurrect.git" "$HOME/.tmux/plugins/tmux-resurrect" "v4.0.0"
 clone_repo "https://github.com/tmux-plugins/tmux-continuum.git" "$HOME/.tmux/plugins/tmux-continuum" "v3.1.0"
 
+codeburn_dir="$HOME/.config/omarchy/plugins/codeburn"
+if [ -d "$codeburn_dir" ]; then
+  omarchy plugin enable codeburn
+else
+  omarchy plugin add https://github.com/erzz/omarchy-codeburn.git --enable
+fi
+
 tpm_install="$HOME/.tmux/plugins/tpm/bin/install_plugins"
 if [ -x "$tpm_install" ] && [ -e "$HOME/.tmux.conf" ] && grep -qE '^\s*set\s+-g\s+@plugin' "$HOME/.tmux.conf" 2>/dev/null; then
   "$tpm_install"

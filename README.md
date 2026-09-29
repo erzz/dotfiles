@@ -118,6 +118,8 @@ Omarchy remains responsible for Hyprland, the Omarchy shell, desktop application
 its global `~/.config/mise/config.toml`. This repository adds a mise fragment under
 `~/.config/mise/conf.d/` and does not edit `/usr/share/omarchy`.
 
+Normal Omarchy sync installs and enables the CodeBurn plugin using Omarchy's plugin command.
+
 ## Config changes
 
 Edit the repository files directly, run the relevant sync, then inspect `git status`:
