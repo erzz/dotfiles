@@ -1,0 +1,10 @@
+[Unit]
+Description=Set keyboard backlight brightness
+After=graphical-session.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/brightnessctl -d kbd_backlight set 30%
+
+[Install]
+WantedBy=graphical-session.target

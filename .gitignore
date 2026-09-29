@@ -5,30 +5,30 @@
 token-usage-output.txt
 
 # Runtime artifacts in symlinked config directories
-configs/colima/default/daemon/
-configs/colima/default/docker.sock
-configs/colima/default/containerd.sock
-configs/colima/docker.sock
-configs/colima/ssh_config
-configs/colima/_lima/
-configs/colima/_store/
-configs/colima/_templates/
-configs/opencode/node_modules/
-configs/opencode/package.json
-configs/opencode/package-lock.json
-configs/opencode/bun.lock
-configs/opencode/antigravity-accounts.json
-configs/opencode/antigravity-accounts.json.*.tmp
-configs/opencode/antigravity-signature-cache.json
-configs/opencode/antigravity-logs/
-configs/opencode/plugins/herdr-agent-state.js
-configs/herdr/session.json
-configs/zed/.tmp*
-configs/zed/conversations/
-configs/zed/embeddings/
-configs/zed/prompts/
-configs/zed/settings_backup.json
+macos/configs/colima/default/daemon/
+macos/configs/colima/default/docker.sock
+macos/configs/colima/default/containerd.sock
+macos/configs/colima/docker.sock
+macos/configs/colima/ssh_config
+macos/configs/colima/_lima/
+macos/configs/colima/_store/
+macos/configs/colima/_templates/
+common/configs/opencode/node_modules/
+common/configs/opencode/package.json
+common/configs/opencode/package-lock.json
+common/configs/opencode/bun.lock
+common/configs/opencode/antigravity-accounts.json
+common/configs/opencode/antigravity-accounts.json.*.tmp
+common/configs/opencode/antigravity-signature-cache.json
+common/configs/opencode/antigravity-logs/
+common/configs/opencode/plugins/herdr-agent-state.js
+common/configs/herdr/session.json
+macos/configs/zed/.tmp*
+macos/configs/zed/conversations/
+macos/configs/zed/embeddings/
+macos/configs/zed/prompts/
+macos/configs/zed/settings_backup.json
 
 # Local deepwork progress state
 .slim/deepwork/
-/configs/herdr/release-notes.json
+/common/configs/herdr/release-notes.json

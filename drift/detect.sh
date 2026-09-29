@@ -23,6 +23,10 @@ fi
 cd "$ROOT" || exit 0
 
 MESSAGES=()
+IS_OMARCHY=0
+if [ "$(uname -s)" = Linux ] && [ -d /usr/share/omarchy ] && command -v omarchy >/dev/null 2>&1; then
+  IS_OMARCHY=1
+fi
 
 # Local repository state only. In particular, do not fetch or inspect a remote.
 GIT_STATUS=$(git status --short 2>/dev/null)
@@ -36,17 +40,19 @@ fi
 if command -v mise >/dev/null 2>&1; then
   # Bootstrap status is read-only. Exit 1 with normal status output means
   # drift; an error or unsupported command must remain a check failure.
-  MISE_BOOTSTRAP_STDERR="$DRIFT_TMP_DIR/bootstrap.stderr"
-  MISE_BOOTSTRAP_STATUS=$(mise bootstrap status --missing 2>"$MISE_BOOTSTRAP_STDERR")
-  MISE_BOOTSTRAP_CODE=$?
-  MISE_BOOTSTRAP_ERROR=$(<"$MISE_BOOTSTRAP_STDERR")
-  rm -f "$MISE_BOOTSTRAP_STDERR"
-  if [ "$MISE_BOOTSTRAP_CODE" -eq 0 ] && [ -n "$MISE_BOOTSTRAP_STATUS" ]; then
-    MESSAGES+=("${COLOUR}mise bootstrap items are missing or differ (run: mise run sync)${NC}")
-  elif [ "$MISE_BOOTSTRAP_CODE" -eq 1 ] && [ -n "$MISE_BOOTSTRAP_STATUS" ] && [ -z "$MISE_BOOTSTRAP_ERROR" ]; then
-    MESSAGES+=("${COLOUR}mise bootstrap items are missing or differ (run: mise run sync)${NC}")
-  elif [ "$MISE_BOOTSTRAP_CODE" -ne 0 ]; then
-    CHECK_FAILURES+=("mise bootstrap status check failed")
+  if [ "$IS_OMARCHY" -eq 0 ]; then
+    MISE_BOOTSTRAP_STDERR="$DRIFT_TMP_DIR/bootstrap.stderr"
+    MISE_BOOTSTRAP_STATUS=$(mise bootstrap status --missing 2>"$MISE_BOOTSTRAP_STDERR")
+    MISE_BOOTSTRAP_CODE=$?
+    MISE_BOOTSTRAP_ERROR=$(<"$MISE_BOOTSTRAP_STDERR")
+    rm -f "$MISE_BOOTSTRAP_STDERR"
+    if [ "$MISE_BOOTSTRAP_CODE" -eq 0 ] && [ -n "$MISE_BOOTSTRAP_STATUS" ]; then
+      MESSAGES+=("${COLOUR}mise bootstrap items are missing or differ (run: mise run sync)${NC}")
+    elif [ "$MISE_BOOTSTRAP_CODE" -eq 1 ] && [ -n "$MISE_BOOTSTRAP_STATUS" ] && [ -z "$MISE_BOOTSTRAP_ERROR" ]; then
+      MESSAGES+=("${COLOUR}mise bootstrap items are missing or differ (run: mise run sync)${NC}")
+    elif [ "$MISE_BOOTSTRAP_CODE" -ne 0 ]; then
+      CHECK_FAILURES+=("mise bootstrap status check failed")
+    fi
   fi
 
   MISE_MISSING=$(mise ls --missing 2>/dev/null)
@@ -63,17 +69,19 @@ fi
 # Casks and fonts remain dedicated native owners. The aggregate Brewfile is
 # intentionally not checked here.
 BREW_AVAILABLE=1
-if ! command -v brew >/dev/null 2>&1; then
+if [ "$IS_OMARCHY" -eq 1 ]; then
+  BREW_AVAILABLE=0
+elif ! command -v brew >/dev/null 2>&1; then
   BREW_AVAILABLE=0
   CHECK_FAILURES+=("brew is unavailable")
 fi
 
 if [ "$BREW_AVAILABLE" -eq 1 ]; then
   for brewfile in Brewfile.casks Brewfile.fonts; do
-    if [ -f "$ROOT/brew/$brewfile" ]; then
+    if [ -f "$ROOT/macos/brew/$brewfile" ]; then
       BREW_BUNDLE_STDOUT="$DRIFT_TMP_DIR/${brewfile}.stdout"
       BREW_BUNDLE_STDERR="$DRIFT_TMP_DIR/${brewfile}.stderr"
-      brew bundle check --no-upgrade --file="$ROOT/brew/$brewfile" >"$BREW_BUNDLE_STDOUT" 2>"$BREW_BUNDLE_STDERR"
+      brew bundle check --no-upgrade --file="$ROOT/macos/brew/$brewfile" >"$BREW_BUNDLE_STDOUT" 2>"$BREW_BUNDLE_STDERR"
       BREW_BUNDLE_CODE=$?
       BREW_BUNDLE_OUTPUT=$(<"$BREW_BUNDLE_STDOUT")
       BREW_BUNDLE_ERROR=$(<"$BREW_BUNDLE_STDERR")
@@ -95,7 +103,7 @@ if [ "$BREW_AVAILABLE" -eq 1 ]; then
         BREW_BUNDLE_HAS_MISSING_SUMMARY=1
       fi
       if [ "$BREW_BUNDLE_CODE" -eq 1 ] && [ "$BREW_BUNDLE_HAS_MISSING_SUMMARY" -eq 1 ]; then
-        MESSAGES+=("${COLOUR}${label} has missing packages (run: brew bundle check --file=brew/$brewfile)${NC}")
+        MESSAGES+=("${COLOUR}${label} has missing packages (run: brew bundle check --file=macos/brew/$brewfile)${NC}")
       elif [ "$BREW_BUNDLE_CODE" -ne 0 ]; then
         CHECK_FAILURES+=("$label check failed")
       fi

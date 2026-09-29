@@ -10,10 +10,13 @@ bun = "1.3.13"
 fnox = "1.35.3"
 java = "26.0.1"
 node = "24.21.0"
+"npm:markdownlint-cli" = { version = "0.49.1", os = ["linux"] }
 "npm:agent-browser" = "0.27.1"
-"npm:@ingka-group-digital/skapa-design-system-mcp" = "0.5.5"
+"npm:dockerfile-language-server-nodejs" = "0.15.0"
+"npm:@microsoft/compose-language-service" = "1.0.0"
+"npm:@ingka-group-digital/skapa-design-system-mcp" = { version = "0.5.5", os = ["macos"] }
 "npm:@tarquinen/opencode-dcp" = { version = "3.1.15", trust_policy_excludes = ["effect@4.0.0-beta.83"] }
-"npm:@ingka-group-digital/workflows-mcp" = "3.11.0"
+"npm:@ingka-group-digital/workflows-mcp" = { version = "3.11.0", os = ["macos"] }
 "npm:@playwright/mcp" = "0.0.70"
 terraform = "1.16.1"
 "aqua:terraform-linters/tflint" = "0.64.0"
@@ -26,31 +29,31 @@ run = "test \"$(uname -s)\" = Darwin || { printf '%s\\n' '[preflight] macOS (Dar
 
 [tasks.prepare]
 description = "Install pre-auth packages and deploy fnox config, without project tools"
-run = """mise -C "$HOME/dotfiles" run preflight || exit $?; export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"; bash "$HOME/dotfiles/scripts/ensure-native-homebrew.sh" && mise --no-config -C "$HOME/dotfiles" bootstrap packages apply --yes brew:git brew:gh && bash "$HOME/dotfiles/scripts/ensure-native-homebrew.sh" brew install --cask 1password 1password-cli && mise -C "$HOME/dotfiles" bootstrap --force-dotfiles dotfiles apply --yes ~/.config/fnox"""
+run = """mise -C "$HOME/dotfiles" run preflight || exit $?; export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"; bash "$HOME/dotfiles/macos/scripts/ensure-native-homebrew.sh" && mise --no-config -C "$HOME/dotfiles" bootstrap packages apply --yes brew:git brew:gh && bash "$HOME/dotfiles/macos/scripts/ensure-native-homebrew.sh" brew install --cask 1password 1password-cli && mise -C "$HOME/dotfiles" bootstrap --force-dotfiles dotfiles apply --yes ~/.config/fnox"""
 
 [bootstrap.hooks.pre-packages]
-run = """bash "$HOME/dotfiles/scripts/ensure-native-homebrew.sh""""
+run = """bash "$HOME/dotfiles/macos/scripts/ensure-native-homebrew.sh""""
 
 # Ensure fnox can find 1Password's `op` on Apple Silicon or Intel Homebrew.
 [tasks.sync]
-description = "Authenticate and fully converge root and apps declarations through fnox"
+description = "Converge dotfiles for the current supported platform"
 run = "bash \"$HOME/dotfiles/scripts/sync.sh\""
 
 [tasks.apply-private-config]
 description = "Apply fnox/1Password-backed native mise file templates"
-run = """fnox exec --replace -- mise -C "$HOME/dotfiles" bootstrap files apply --yes"""
+run = """fnox --non-interactive --no-daemon --if-missing error exec --replace -- mise -C "$HOME/dotfiles" bootstrap files apply --yes"""
 
 [tasks.casks]
 description = "Install application casks with native Homebrew"
-run = """export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"; bash "$HOME/dotfiles/scripts/ensure-native-homebrew.sh" brew bundle install --no-upgrade --file="$HOME/dotfiles/brew/Brewfile.casks""""
+run = """export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"; bash "$HOME/dotfiles/macos/scripts/ensure-native-homebrew.sh" brew bundle install --no-upgrade --file="$HOME/dotfiles/macos/brew/Brewfile.casks""""
 
 [tasks.fonts]
 description = "Install fonts with native Homebrew"
-run = """export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"; bash "$HOME/dotfiles/scripts/ensure-native-homebrew.sh" brew bundle install --no-upgrade --file="$HOME/dotfiles/brew/Brewfile.fonts""""
+run = """export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"; bash "$HOME/dotfiles/macos/scripts/ensure-native-homebrew.sh" brew bundle install --no-upgrade --file="$HOME/dotfiles/macos/brew/Brewfile.fonts""""
 
 [tasks.office]
 description = "Opt in to installing Microsoft Office casks"
-run = "export PATH=\"/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH\"; bash \"$HOME/dotfiles/scripts/ensure-native-homebrew.sh\" brew bundle install --no-upgrade --file=\"$HOME/dotfiles/brew/Brewfile.office\""
+run = "export PATH=\"/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH\"; bash \"$HOME/dotfiles/macos/scripts/ensure-native-homebrew.sh\" brew bundle install --no-upgrade --file=\"$HOME/dotfiles/macos/brew/Brewfile.office\""
 
 [tasks.post-install-tpm]
 description = "Install configured tmux plugins through TPM"
@@ -62,7 +65,7 @@ run = "if [ -n \"${CI:-}\" ]; then printf '%s\\n' '[post-install-gh-dash] CI mod
 
 [tasks.post-install-buildx]
 description = "Link native Homebrew Docker Buildx into Docker CLI plugins"
-run = """export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"; bash "$HOME/dotfiles/scripts/ensure-native-homebrew.sh"; brew_prefix="$(bash "$HOME/dotfiles/scripts/ensure-native-homebrew.sh" brew --prefix)"; buildx="$brew_prefix/bin/docker-buildx"; if [ ! -x "$buildx" ]; then printf '%s\\n' "[post-install-buildx] Homebrew docker-buildx binary not found at $buildx; install the brew:docker-buildx package first." >&2; exit 1; fi; mkdir -p "$HOME/.docker/cli-plugins"; ln -sfn "$buildx" "$HOME/.docker/cli-plugins/docker-buildx""""
+run = """export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"; bash "$HOME/dotfiles/macos/scripts/ensure-native-homebrew.sh"; brew_prefix="$(bash "$HOME/dotfiles/macos/scripts/ensure-native-homebrew.sh" brew --prefix)"; buildx="$brew_prefix/bin/docker-buildx"; if [ ! -x "$buildx" ]; then printf '%s\\n' "[post-install-buildx] Homebrew docker-buildx binary not found at $buildx; install the brew:docker-buildx package first." >&2; exit 1; fi; mkdir -p "$HOME/.docker/cli-plugins"; ln -sfn "$buildx" "$HOME/.docker/cli-plugins/docker-buildx""""
 
 [tasks.post-install-agent-browser]
 description = "Install agent-browser browser assets outside CI"
@@ -74,12 +77,12 @@ run = "mise -C \"$HOME/dotfiles\" run post-install-tpm && mise -C \"$HOME/dotfil
 
 [tasks.install]
 description = "Install all tools declared in the canonical mise.toml"
-run = "export PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"; MISE_GITHUB_TOKEN=\"$(gh auth token)\" && export MISE_GITHUB_TOKEN && test -n \"$MISE_GITHUB_TOKEN\" || { printf '%s\\n' 'GitHub authentication is required: run gh auth login.' >&2; exit 1; }; mise -C \"$HOME/dotfiles\" install fnox && mise -C \"$HOME/dotfiles\" exec fnox -- fnox exec --replace -- mise -C \"$HOME/dotfiles\" install --jobs=4"
+run = "export PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"; MISE_GITHUB_TOKEN=\"$(gh auth token)\" && export MISE_GITHUB_TOKEN && test -n \"$MISE_GITHUB_TOKEN\" || { printf '%s\\n' 'GitHub authentication is required: run gh auth login.' >&2; exit 1; }; mise -C \"$HOME/dotfiles\" --yes install fnox && mise -C \"$HOME/dotfiles\" exec fnox -- fnox --non-interactive --no-daemon --if-missing error exec --replace -- mise -C \"$HOME/dotfiles\" --yes install --jobs=4"
 
 [tasks.apps]
 description = "Install applications, fonts, and Mac App Store apps"
 output = "interleave"
-run = "bash \"$HOME/dotfiles/scripts/apps.sh\""
+run = "bash \"$HOME/dotfiles/macos/scripts/apps.sh\""
 
 [tasks.setup]
 description = "Compatibility alias for sync"
@@ -92,6 +95,34 @@ run = "mise -C \"$HOME/dotfiles\" bootstrap --only macos-defaults --yes"
 [tasks.check]
 description = "Show pending mise bootstrap changes"
 run = "mise -C \"$HOME/dotfiles\" bootstrap status --missing"
+
+[tasks.omarchy-preflight]
+description = "Check the supported Omarchy host and canonical dotfiles checkout"
+run = "bash \"$HOME/dotfiles/omarchy/scripts/omarchy-preflight.sh\""
+
+[tasks.omarchy-sync]
+description = "Converge shared tools and safe dotfiles on Omarchy"
+run = "bash \"$HOME/dotfiles/omarchy/scripts/sync-omarchy.sh\""
+
+[tasks.omarchy-install-packages]
+description = "Install the additive Arch and AUR package inventory"
+run = "bash \"$HOME/dotfiles/omarchy/scripts/packages-omarchy.sh\""
+
+[tasks.omarchy-install-apps]
+description = "Install selected additive GUI applications on Omarchy"
+run = "bash \"$HOME/dotfiles/omarchy/scripts/apps-omarchy.sh\""
+
+[tasks.omarchy-private-config]
+description = "Apply optional fnox/1Password-backed files on Omarchy"
+run = "bash \"$HOME/dotfiles/omarchy/scripts/private-config-omarchy.sh\""
+
+[tasks.omarchy-private]
+description = "Use a supplied 1Password service token to install private tools on Omarchy"
+run = "bash \"$HOME/dotfiles/omarchy/scripts/private-omarchy.sh\""
+
+[tasks.omarchy-post-install]
+description = "Restore portable tmux, gh-dash, and agent-browser integrations on Omarchy"
+run = "bash \"$HOME/dotfiles/omarchy/scripts/post-install-omarchy.sh\""
 
 # Repository cloning provides the repeatable native setup for these integrations. Pin repositories
 # where an upstream version tag exists; Oh My Zsh has no published stable release tag and remains
@@ -191,32 +222,33 @@ NPM_TOKEN = "NPM_TOKEN"
 LINEARB_API_KEY = "LINEARB_API_KEY"
 
 [bootstrap.files."~/.local/state/secrets.env"]
-source = "templates/secrets.env.tmpl"
+source = "common/templates/secrets.env.tmpl"
 template = true
 mode = "0600"
 
 [bootstrap.files."~/.npmrc"]
-source = "templates/npmrc.tmpl"
+source = "common/templates/npmrc.tmpl"
 template = true
 mode = "0600"
 
 # Repository content is deployed through this mise-owned dotfiles table.
 [dotfiles]
-"~/.zshrc" = { source = "configs/zsh/.zshrc", mode = "symlink" }
-"~/.gitconfig" = { source = "configs/git/.gitconfig", mode = "symlink" }
-"~/.tmux.conf" = { source = "configs/tmux/.tmux.conf", mode = "symlink" }
-"~/.config/mise/config.toml" = { source = "configs/mise/config.toml", mode = "symlink" }
-"~/.config/mise/config.apps.toml" = { source = "configs/mise/config.apps.toml", mode = "symlink" }
-"~/.config/fnox" = { source = "configs/fnox", mode = "symlink" }
-"~/.config/nvim" = { source = "configs/nvim", mode = "symlink" }
-"~/.config/opencode" = { source = "configs/opencode", mode = "symlink" }
-"~/.config/zed" = { source = "configs/zed", mode = "symlink" }
-"~/.config/ghostty" = { source = "configs/ghostty", mode = "symlink" }
-"~/.config/zellij" = { source = "configs/zellij", mode = "symlink" }
-"~/.config/starship.toml" = { source = "configs/starship/starship.toml", mode = "symlink" }
-"~/.config/direnv" = { source = "configs/direnv", mode = "symlink" }
-"~/.config/colima/default/colima.yaml" = { source = "configs/colima/default/colima.yaml", mode = "symlink" }
-"~/.config/gh-dash" = { source = "configs/gh-dash", mode = "symlink" }
-"~/.config/herdr" = { source = "configs/herdr", mode = "symlink" }
-"~/.config/git" = { source = "configs/git", mode = "symlink" }
-"~/.config/prettierd" = { source = "configs/prettierd", mode = "symlink" }
+"~/.zshrc" = { source = "macos/configs/zsh/.zshrc", mode = "symlink" }
+"~/.gitconfig" = { source = "macos/configs/git/.gitconfig", mode = "symlink" }
+"~/.tmux.conf" = { source = "common/configs/tmux/.tmux.conf", mode = "symlink" }
+"~/.config/mise/config.toml" = { source = "common/configs/mise/config.toml", mode = "symlink" }
+"~/.config/mise/config.apps.toml" = { source = "macos/configs/mise/config.apps.toml", mode = "symlink" }
+"~/.config/fnox" = { source = "common/configs/fnox", mode = "symlink" }
+"~/.config/nvim" = { source = "common/configs/nvim", mode = "symlink" }
+"~/.config/opencode" = { source = "common/configs/opencode", mode = "symlink" }
+"~/.config/zed" = { source = "macos/configs/zed", mode = "symlink" }
+"~/.config/ghostty" = { source = "macos/configs/ghostty", mode = "symlink" }
+"~/.config/zellij" = { source = "common/configs/zellij", mode = "symlink" }
+"~/.config/starship.toml" = { source = "common/configs/starship/starship.toml", mode = "symlink" }
+"~/.config/direnv" = { source = "common/configs/direnv", mode = "symlink" }
+"~/.config/colima/default/colima.yaml" = { source = "macos/configs/colima/default/colima.yaml", mode = "symlink" }
+"~/.config/gh-dash" = { source = "common/configs/gh-dash", mode = "symlink" }
+"~/.config/herdr" = { source = "common/configs/herdr", mode = "symlink" }
+"~/.config/git/.gitconfig" = { source = "macos/configs/git/.gitconfig", mode = "symlink" }
+"~/.config/git/ignore" = { source = "common/configs/git/ignore", mode = "symlink" }
+"~/.config/prettierd" = { source = "common/configs/prettierd", mode = "symlink" }
