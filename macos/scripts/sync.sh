@@ -9,6 +9,28 @@ mise -C "$DOTFILES_DIR" run preflight
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
 bash "$DOTFILES_DIR/macos/scripts/ensure-native-homebrew.sh"
 
+normalize_path() {
+  local path="$1"
+  local part result=""
+  local -a components
+
+  case "$path" in
+    /*) ;;
+    *) path="$PWD/$path" ;;
+  esac
+
+  IFS='/' read -r -a components <<< "$path"
+  for part in "${components[@]}"; do
+    case "$part" in
+      ''|.) ;;
+      ..) result="${result%/*}" ;;
+      *) result="$result/$part" ;;
+    esac
+  done
+
+  printf '%s\n' "${result:-/}"
+}
+
 # The pre-layout deployment linked the whole Git config directory. Retire that
 # repository-owned parent link before deploying the split platform/shared files.
 legacy_git_dir="$HOME/.config/git"
@@ -19,8 +41,9 @@ if [ -L "$legacy_git_dir" ]; then
   else
     legacy_git_target="$(dirname -- "$legacy_git_dir")/$legacy_git_link"
   fi
-  legacy_git_target="$(readlink -m -- "$legacy_git_target")"
-  if [[ "$legacy_git_target" == "$DOTFILES_DIR" || "$legacy_git_target" == "$DOTFILES_DIR/"* ]]; then
+  legacy_git_target="$(normalize_path "$legacy_git_target")"
+  dotfiles_path="$(normalize_path "$DOTFILES_DIR")"
+  if [[ "$legacy_git_target" == "$dotfiles_path" || "$legacy_git_target" == "$dotfiles_path/"* ]]; then
     legacy_git_backup="${legacy_git_dir}.dotfiles-backup.$(date +%Y%m%d%H%M%S)"
     mv -- "$legacy_git_dir" "$legacy_git_backup"
     printf '%s\n' "[sync] backed up stale repository Git config link to $legacy_git_backup"
