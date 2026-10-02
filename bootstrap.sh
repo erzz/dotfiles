@@ -1,9 +1,15 @@
 #!/usr/bin/env bash
-# bootstrap.sh — native macOS entry point for the mise dotfiles project.
+# bootstrap.sh — platform-aware entry point for the mise dotfiles project.
 set -euo pipefail
 
-if [ "$(uname -s)" != "Darwin" ]; then
-  printf '%s\n' 'This bootstrap is supported on macOS only.' >&2
+platform="$(uname -s)"
+is_omarchy=false
+if [ "$platform" = Linux ] && [ -d /usr/share/omarchy ] && command -v omarchy >/dev/null 2>&1; then
+  is_omarchy=true
+fi
+
+if [ "$platform" != Darwin ] && [ "$is_omarchy" != true ]; then
+  printf '%s\n' 'This bootstrap supports macOS and Omarchy Linux only.' >&2
   exit 1
 fi
 
@@ -17,20 +23,32 @@ if [ -L "$DOTFILES_DIR" ]; then
   exit 1
 fi
 
-printf '%s\n' '==> Preparing native macOS prerequisites'
+if [ "$platform" = Darwin ]; then
+  printf '%s\n' '==> Preparing native macOS prerequisites'
 
-# Git is supplied by the Apple Command Line Tools. Do not attempt to bypass
-# their GUI installer, since it must be accepted by the user.
-selected_developer_dir=''
-clang_path=''
-if ! selected_developer_dir=$(xcode-select -p 2>/dev/null) \
-  || [ ! -d "$selected_developer_dir" ] \
-  || ! command -v git >/dev/null 2>&1 \
-  || ! clang_path=$(xcrun --find clang 2>/dev/null) \
-  || [ ! -x "$clang_path" ]; then
-  printf '%s\n' 'Usable Xcode Command Line Tools and Git are required.' >&2
-  printf '%s\n' 'Run xcode-select --install, complete the GUI installer, then retry.' >&2
-  exit 1
+  # Git is supplied by the Apple Command Line Tools. Do not attempt to bypass
+  # their GUI installer, since it must be accepted by the user.
+  selected_developer_dir=''
+  clang_path=''
+  if ! selected_developer_dir=$(xcode-select -p 2>/dev/null) \
+    || [ ! -d "$selected_developer_dir" ] \
+    || ! command -v git >/dev/null 2>&1 \
+    || ! clang_path=$(xcrun --find clang 2>/dev/null) \
+    || [ ! -x "$clang_path" ]; then
+    printf '%s\n' 'Usable Xcode Command Line Tools and Git are required.' >&2
+    printf '%s\n' 'Run xcode-select --install, complete the GUI installer, then retry.' >&2
+    exit 1
+  fi
+else
+  printf '%s\n' '==> Preparing Omarchy Linux prerequisites'
+  command -v git >/dev/null 2>&1 || {
+    printf '%s\n' 'Git is required; install it with: omarchy pkg add git' >&2
+    exit 1
+  }
+  command -v mise >/dev/null 2>&1 || {
+    printf '%s\n' 'mise is required; Omarchy normally provides it at /usr/bin/mise.' >&2
+    exit 1
+  }
 fi
 
 if [ ! -e "$DOTFILES_DIR" ]; then
@@ -79,17 +97,21 @@ if [ -n "$(git -C "$DOTFILES_DIR" status --porcelain)" ] && [ "$ALLOW_DIRTY_DOTF
   exit 1
 fi
 
-# Prefer the helper checked into the acquired checkout. It keeps Homebrew
-# native and scopes its shellenv to the child command.
-native_helper="$DOTFILES_DIR/scripts/ensure-native-homebrew.sh"
-if [ ! -f "$native_helper" ]; then
-  printf '%s\n' "Native Homebrew helper not found: $native_helper" >&2
-  exit 1
-fi
-bash "$native_helper" true
-
 mise_cmd=''
-mise_candidates=(/opt/homebrew/bin/mise /usr/local/bin/mise)
+mise_candidates=()
+if [ "$platform" = Darwin ]; then
+  # Prefer the helper checked into the acquired checkout. It keeps Homebrew
+  # native and scopes its shellenv to the child command.
+  native_helper="$DOTFILES_DIR/macos/scripts/ensure-native-homebrew.sh"
+  if [ ! -f "$native_helper" ]; then
+    printf '%s\n' "Native Homebrew helper not found: $native_helper" >&2
+    exit 1
+  fi
+  bash "$native_helper" true
+  mise_candidates=(/opt/homebrew/bin/mise /usr/local/bin/mise)
+else
+  mise_candidates=("$(command -v mise)")
+fi
 # Tests may replace the fixed native locations only when explicitly opting into
 # the hermetic seam; normal bootstrap never accepts an arbitrary override.
 if [ "${BOOTSTRAP_TEST_MODE:-}" = 1 ]; then
@@ -105,7 +127,7 @@ for candidate in "${mise_candidates[@]}"; do
     break
   fi
 done
-if [ -z "$mise_cmd" ]; then
+if [ -z "$mise_cmd" ] && [ "$platform" = Darwin ]; then
   printf '%s\n' 'mise is not installed; installing it with native Homebrew.'
   bash "$native_helper" brew install mise
   for candidate in "${mise_candidates[@]}"; do
@@ -121,11 +143,25 @@ if [ -z "$mise_cmd" ]; then
 fi
 
 printf '%s\n' '==> Preparing the pre-auth control plane (no authenticated sync yet)'
-"$mise_cmd" -C "$DOTFILES_DIR" run prepare
+if [ "$platform" = Darwin ]; then
+  "$mise_cmd" -C "$DOTFILES_DIR" run prepare
+else
+  "$mise_cmd" -C "$DOTFILES_DIR" run omarchy-preflight
+fi
 printf '%s\n' ''
-printf '%s\n' 'Bootstrap preparation is complete. Before syncing:'
-printf '%s\n' '  1. Open 1Password, sign in, and enable CLI integration.'
-printf '%s\n' '  2. Run: gh auth login'
-printf '%s\n' '  3. Sign in to the App Store if prompted or required.'
-printf '%s\n' "  4. Run: mise -C \"$DOTFILES_DIR\" run sync"
+if [ "$platform" = Darwin ]; then
+  printf '%s\n' 'Bootstrap preparation is complete. Before syncing:'
+  printf '%s\n' '  1. Open 1Password, sign in, and enable CLI integration.'
+  printf '%s\n' '  2. Run: gh auth login'
+  printf '%s\n' '  3. Sign in to the App Store if prompted or required.'
+  printf '%s\n' "  4. Run: mise -C \"$DOTFILES_DIR\" run sync"
+else
+  printf '%s\n' 'Bootstrap preparation is complete. Run:'
+  printf '%s\n' '  1. Install the additive package inventory, including 1Password CLI:'
+  printf '%s\n' "     mise -C \"$DOTFILES_DIR\" run omarchy-install-packages"
+  printf '%s\n' '  2. Unlock 1Password desktop integration or provide OP_SERVICE_ACCOUNT_TOKEN.'
+  printf '%s\n' "  3. Run: mise -C \"$DOTFILES_DIR\" run omarchy-sync"
+  printf '%s\n' 'Optional GUI applications:'
+  printf '%s\n' "  mise -C \"$DOTFILES_DIR\" run omarchy-install-apps"
+fi
 printf '%s\n' 'The authenticated sync is intentionally not run automatically.'

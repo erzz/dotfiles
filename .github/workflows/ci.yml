@@ -41,14 +41,38 @@ jobs:
             [ -f "$file" ] && shellcheck --severity=warning "$file"
           done < <(git ls-files -- '*.sh')
 
+      - name: Validate Omarchy integration
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash -n bootstrap.sh macos/scripts/*.sh omarchy/scripts/*.sh drift/*.sh
+          test -f omarchy/configs/mise/dotfiles.toml
+          test -f omarchy/packages/omarchy.arch
+          test -f omarchy/packages/omarchy.aur
+          ! grep -nE 'ensure-native-homebrew|brew bundle|macos-defaults|mas:' \
+            omarchy/configs/mise/dotfiles.toml omarchy/scripts/omarchy-*.sh omarchy/scripts/packages-omarchy.sh
+           ! grep -nE 'op signin|sudo pacman -S|yay -S --needed$|fnox exec --' \
+             omarchy/scripts/omarchy-*.sh omarchy/scripts/packages-omarchy.sh
+
+      - name: Validate declared repository sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(readlink -f common/configs/mise/config.toml)" = "$PWD/mise.toml"
+          test "$(readlink -f macos/configs/mise/config.apps.toml)" = "$PWD/macos/mise.apps.toml"
+          test "$(readlink -f mise.apps.toml)" = "$PWD/macos/mise.apps.toml"
+          while IFS= read -r source; do
+            test -e "$source"
+          done < <(sed -nE 's/^[[:space:]]*source[[:space:]]*=[[:space:]]*"([^"]+)".*/\1/p' mise.toml)
+
       - name: Validate repository JSON syntax
         shell: bash
         run: |
           set -euo pipefail
           # Zed's keymap is JSONC despite its .json filename, so jq cannot parse it as JSON.
           while IFS= read -r file; do
-            jq empty "$file"
-          done < <(git ls-files -- '*.json' ':!configs/zed/keymap.json')
+            [ -f "$file" ] && jq empty "$file"
+          done < <(git ls-files --cached --others --exclude-standard -- '*.json' ':!macos/configs/zed/keymap.json')
 
   macos-defaults-validation:
     name: macOS defaults dry-run

@@ -1,0 +1,144 @@
+# Apps package overlay. This inherits the canonical base mise.toml and is
+# applied explicitly with: mise -E apps bootstrap --only packages --yes
+
+[bootstrap.brew.taps]
+"buo/cask-upgrade" = "https://github.com/buo/homebrew-cask-upgrade.git"
+"fsouza/prettierd" = "https://github.com/fsouza/homebrew-prettierd.git"
+"anomalyco/tap" = "https://github.com/anomalyco/homebrew-tap.git"
+"goodwithtech/r" = "https://github.com/goodwithtech/homebrew-r.git"
+"anchore/grant" = "https://github.com/anchore/homebrew-grant.git"
+"anchore/syft" = "https://github.com/anchore/homebrew-syft.git"
+"anchore/grype" = "https://github.com/anchore/homebrew-grype.git"
+
+[bootstrap.packages]
+"brew:act" = { os = ["macos"] }
+"brew:adr-tools" = { os = ["macos"] }
+"brew:aspell" = { os = ["macos"] }
+"brew:bash" = { os = ["macos"] }
+"brew:bash-completion" = { os = ["macos"] }
+"brew:bat" = { os = ["macos"] }
+"brew:bfg" = { os = ["macos"] }
+"brew:binutils" = { os = ["macos"] }
+"brew:btop" = { os = ["macos"] }
+"brew:ccache" = { os = ["macos"] }
+# Brewfile's restart_service: true has no mise package equivalent.
+"brew:colima" = { os = ["macos"] }
+"brew:coreutils" = { os = ["macos"] }
+"brew:curl" = { os = ["macos"] }
+"brew:d2" = { os = ["macos"] }
+"brew:direnv" = { os = ["macos"] }
+"brew:mas" = { os = ["macos"] }
+"brew:dive" = { os = ["macos"] }
+"brew:docker" = { os = ["macos"] }
+"brew:docker-buildx" = { os = ["macos"] }
+"brew:docker-compose" = { os = ["macos"] }
+"brew:eza" = { os = ["macos"] }
+"brew:fastfetch" = { os = ["macos"] }
+"brew:fd" = { os = ["macos"] }
+"brew:flac" = { os = ["macos"] }
+"brew:fzf" = { os = ["macos"] }
+"brew:git-delta" = { os = ["macos"] }
+"brew:git-extras" = { os = ["macos"] }
+"brew:gitleaks" = { os = ["macos"] }
+"brew:go" = { os = ["macos"] }
+"brew:gnupg" = { os = ["macos"] }
+"brew:gnuplot" = { os = ["macos"] }
+"brew:gnu-sed" = { os = ["macos"] }
+"brew:gnutls" = { os = ["macos"] }
+"brew:golangci-lint" = { os = ["macos"] }
+"brew:goodwithtech/r/dockle" = { os = ["macos"] }
+"brew:gradle" = { os = ["macos"] }
+"brew:anchore/grant/grant" = { os = ["macos"] }
+"brew:graphviz" = { os = ["macos"] }
+"brew:grep" = { os = ["macos"] }
+"brew:grype" = { os = ["macos"] }
+"brew:hadolint" = { os = ["macos"] }
+"brew:helm" = { os = ["macos"] }
+"brew:herdr" = { os = ["macos"] }
+"brew:hostess" = { os = ["macos"] }
+"brew:htop" = { os = ["macos"] }
+"brew:httpie" = { os = ["macos"] }
+"brew:hugo" = { os = ["macos"] }
+"brew:imagemagick" = { os = ["macos"] }
+"brew:inframap" = { os = ["macos"] }
+"brew:jq" = { os = ["macos"] }
+"brew:k9s" = { os = ["macos"] }
+"brew:kotlin" = { os = ["macos"] }
+"brew:kubernetes-cli" = { os = ["macos"] }
+"brew:lame" = { os = ["macos"] }
+"brew:lazygit" = { os = ["macos"] }
+"brew:libheif" = { os = ["macos"] }
+"brew:librsvg" = { os = ["macos"] }
+"brew:lima" = { os = ["macos"] }
+"brew:mise" = { os = ["macos"] }
+"brew:mongosh" = { os = ["macos"] }
+"brew:moreutils" = { os = ["macos"] }
+"brew:neovim" = { os = ["macos"] }
+# Neovim LSPs (also used by other editors / OpenCode)
+"brew:bash-language-server" = { os = ["macos"] }
+"brew:dockerfile-language-server" = { os = ["macos"] }
+"brew:docker-language-server" = { os = ["macos"] }
+"brew:gopls" = { os = ["macos"] }
+"brew:jdtls" = { os = ["macos"] }
+"brew:lua-language-server" = { os = ["macos"] }
+"brew:marksman" = { os = ["macos"] }
+"brew:pyright" = { os = ["macos"] }
+"brew:terraform-ls" = { os = ["macos"] }
+"brew:typescript-language-server" = { os = ["macos"] }
+"brew:vscode-langservers-extracted" = { os = ["macos"] }
+"brew:yaml-language-server" = { os = ["macos"] }
+# Formatters & linters used by Neovim
+"brew:black" = { os = ["macos"] }
+"brew:eslint_d" = { os = ["macos"] }
+"brew:gofumpt" = { os = ["macos"] }
+"brew:google-java-format" = { os = ["macos"] }
+"brew:markdownlint-cli" = { os = ["macos"] }
+"brew:stylua" = { os = ["macos"] }
+"brew:nuclei" = { os = ["macos"] }
+"brew:anomalyco/tap/opencode" = { os = ["macos"] }
+"brew:p7zip" = { os = ["macos"] }
+"brew:pipenv" = { os = ["macos"] }
+"brew:poetry" = { os = ["macos"] }
+"brew:prettierd" = { os = ["macos"] }
+"brew:pstree" = { os = ["macos"] }
+"brew:qemu" = { os = ["macos"] }
+# Qt is intentionally excluded: mise cannot adopt conflicting pre-existing
+# formula files, qemu does not require Qt, and qt@5 is deprecated.
+"brew:ripgrep" = { os = ["macos"] }
+"brew:rsync" = { os = ["macos"] }
+"brew:ruff" = { os = ["macos"] }
+"brew:rust" = { os = ["macos"] }
+"brew:dart-sass" = { os = ["macos"] }
+"brew:sesh" = { os = ["macos"] }
+"brew:shellcheck" = { os = ["macos"] }
+"brew:shfmt" = { os = ["macos"] }
+"brew:starship" = { os = ["macos"] }
+"brew:syft" = { os = ["macos"] }
+"brew:terraformer" = { os = ["macos"] }
+"brew:the_silver_searcher" = { os = ["macos"] }
+"brew:tmux" = { os = ["macos"] }
+"brew:tree" = { os = ["macos"] }
+"brew:tree-sitter" = { os = ["macos"] }
+"brew:tree-sitter-cli" = { os = ["macos"] }
+"brew:trivy" = { os = ["macos"] }
+"brew:vim" = { os = ["macos"] }
+"brew:wget" = { os = ["macos"] }
+"brew:xz" = { os = ["macos"] }
+"brew:yamllint" = { os = ["macos"] }
+"brew:yarn" = { os = ["macos"] }
+"brew:yq" = { os = ["macos"] }
+"brew:zellij" = { os = ["macos"] }
+"brew:zoxide" = { os = ["macos"] }
+"brew:zplug" = { os = ["macos"] }
+"brew:zsh" = { os = ["macos"] }
+"brew:zsh-autosuggestions" = { os = ["macos"] }
+"brew:zsh-syntax-highlighting" = { os = ["macos"] }
+
+# Mac App Store entries from Brewfile (requires App Store sign-in).
+"mas:1287239339" = { os = ["macos"] }
+"mas:6741814079" = { os = ["macos"] }
+"mas:1025822138" = { os = ["macos"] }
+"mas:413897608" = { os = ["macos"] }
+"mas:6445813049" = { os = ["macos"] }
+"mas:1448916662" = { os = ["macos"] }
+"mas:904280696" = { os = ["macos"] }

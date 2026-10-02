@@ -1,0 +1,7 @@
+# Private tools that require fnox-rendered npm credentials. This environment is
+# selected explicitly by authenticated install tasks and is never part of the
+# ordinary public Omarchy sync.
+
+[tools]
+"npm:@ingka-group-digital/skapa-design-system-mcp" = "0.5.5"
+"npm:@ingka-group-digital/workflows-mcp" = "3.11.0"
