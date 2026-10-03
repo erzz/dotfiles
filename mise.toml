@@ -15,7 +15,6 @@ node = "24.21.0"
 "npm:dockerfile-language-server-nodejs" = "0.15.0"
 "npm:@microsoft/compose-language-service" = "1.0.0"
 "npm:@ingka-group-digital/skapa-design-system-mcp" = { version = "0.5.5", os = ["macos"] }
-"npm:@tarquinen/opencode-dcp" = { version = "3.1.15", trust_policy_excludes = ["effect@4.0.0-beta.83"] }
 "npm:@ingka-group-digital/workflows-mcp" = { version = "3.11.0", os = ["macos"] }
 "npm:@playwright/mcp" = "0.0.70"
 terraform = "1.16.1"
@@ -54,6 +53,21 @@ run = """export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/
 [tasks.office]
 description = "Opt in to installing Microsoft Office casks"
 run = "export PATH=\"/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH\"; bash \"$HOME/dotfiles/macos/scripts/ensure-native-homebrew.sh\" brew bundle install --no-upgrade --file=\"$HOME/dotfiles/macos/brew/Brewfile.office\""
+
+[tasks.opencode-v2]
+description = "Install the macOS OpenCode v2 formula through native Homebrew"
+run = """bash -euo pipefail -c '
+dotfiles="$HOME/dotfiles"
+export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
+helper="$dotfiles/macos/scripts/ensure-native-homebrew.sh"
+bash "$helper"
+installed_formulas="$(bash "$helper" brew list --formula --full-name)"
+if printf "%s\\n" "$installed_formulas" | /usr/bin/grep -Fxq "anomalyco/tap/opencode"; then
+  printf "%s\\n" "[opencode-v2] Homebrew v1 OpenCode conflicts with opencode-v2. Manually run: brew uninstall anomalyco/tap/opencode, then rerun this task." >&2
+  exit 1
+fi
+bash "$helper" brew bundle install --no-upgrade --file="$dotfiles/macos/brew/Brewfile.opencode"
+'"""
 
 [tasks.post-install-tpm]
 description = "Install configured tmux plugins through TPM"

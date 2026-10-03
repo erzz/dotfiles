@@ -112,6 +112,10 @@ merge_tree() {
 printf '%s\n' '[omarchy-sync] installing repository mise tools'
 mise -C "$DOTFILES_DIR" --yes install --jobs=4
 
+printf '%s\n' '[omarchy-sync] converging repository Arch/AUR package inventories'
+bash "$DOTFILES_DIR/omarchy/scripts/packages-omarchy.sh"
+bash "$DOTFILES_DIR/omarchy/scripts/apps-omarchy.sh"
+
 printf '%s\n' '[omarchy-sync] linking additive mise fragment'
 link_path "$MISE_FRAGMENT_SOURCE" "$MISE_FRAGMENT_TARGET"
 

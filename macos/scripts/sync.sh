@@ -66,6 +66,7 @@ mise -C "$DOTFILES_DIR" bootstrap --force-dotfiles dotfiles apply --yes ~/.confi
 mise -C "$DOTFILES_DIR" bootstrap --force-dotfiles dotfiles apply --yes ~/.config/mise/config.apps.toml
 
 printf '%s\n' '[sync] converging apps and remaining declarations'
+mise -C "$DOTFILES_DIR" run opencode-v2
 mise -C "$DOTFILES_DIR" exec fnox -- fnox --non-interactive --no-daemon --if-missing error exec --replace -- \
   mise -C "$DOTFILES_DIR" -E apps bootstrap --force-dotfiles --yes
 mise -C "$DOTFILES_DIR" run casks

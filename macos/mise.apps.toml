@@ -4,7 +4,6 @@
 [bootstrap.brew.taps]
 "buo/cask-upgrade" = "https://github.com/buo/homebrew-cask-upgrade.git"
 "fsouza/prettierd" = "https://github.com/fsouza/homebrew-prettierd.git"
-"anomalyco/tap" = "https://github.com/anomalyco/homebrew-tap.git"
 "goodwithtech/r" = "https://github.com/goodwithtech/homebrew-r.git"
 "anchore/grant" = "https://github.com/anchore/homebrew-grant.git"
 "anchore/syft" = "https://github.com/anchore/homebrew-syft.git"
@@ -95,7 +94,6 @@
 "brew:markdownlint-cli" = { os = ["macos"] }
 "brew:stylua" = { os = ["macos"] }
 "brew:nuclei" = { os = ["macos"] }
-"brew:anomalyco/tap/opencode" = { os = ["macos"] }
 "brew:p7zip" = { os = ["macos"] }
 "brew:pipenv" = { os = ["macos"] }
 "brew:poetry" = { os = ["macos"] }

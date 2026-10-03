@@ -16,6 +16,7 @@ fi
 export MISE_GITHUB_TOKEN
 
 mise -C "$DOTFILES_DIR" -E apps bootstrap packages apply --yes brew:mas
+mise -C "$DOTFILES_DIR" run opencode-v2
 MISE_TERMINAL_PROGRESS=true mise -C "$DOTFILES_DIR" -E apps bootstrap --only packages --yes
 mise -C "$DOTFILES_DIR" run apply-private-config
 mise -C "$DOTFILES_DIR" run casks

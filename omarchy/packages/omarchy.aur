@@ -3,6 +3,7 @@ git-extras
 google-cloud-cli
 grype
 hadolint
+opencode-beta
 
 # Additive AUR packages used by the shared editor configuration.
 google-java-format

@@ -45,24 +45,23 @@ To test another branch, set `BOOTSTRAP_BRANCH` before running the bootstrap.
 
 **Note:** The omarchy version is barely tested from an end-to-end, fresh machine perspective due to lack of opportunity at the moment.
 
-Omarchy already provides mise and owns the desktop setup. Clone the Omarchy branch and run the
-preflight before syncing:
+Omarchy already provides mise and owns the desktop setup. Clone the Omarchy branch, then run the
+normal sync to apply the repository's package inventories and configuration:
 
 ```bash
 git clone --branch omarchy --single-branch \
   https://github.com/erzz/dotfiles.git "$HOME/dotfiles"
-
-mise run omarchy-preflight
-mise run omarchy-install-packages
+cd "$HOME/dotfiles"
+sudo -v
 mise run sync
 ```
 
-The package task is optional, but installs the extra CLI/editor tooling tracked by this repository.
-Selected GUI applications are separate:
+Sync installs the core Arch/AUR packages and selected GUI Arch/AUR applications declared by the
+repository. These installs are additive: sync does not remove packages that are already installed.
+Package installation is non-interactive and requires pre-authorized `sudo` access; AUR packages
+also require `yay` to be installed.
 
-```bash
-mise -C "$HOME/dotfiles" run omarchy-install-apps
-```
+The package tasks remain available as standalone retries in Useful tasks below.
 
 ## 1Password and fnox
 
@@ -98,14 +97,17 @@ mise -C "$HOME/dotfiles" run macos  # retry macOS defaults
 
 ### Omarchy
 
+Use these to retry either package inventory independently of `mise run sync`:
+
 ```bash
 mise -C "$HOME/dotfiles" run omarchy-install-packages
 mise -C "$HOME/dotfiles" run omarchy-install-apps
 mise -C "$HOME/dotfiles" run omarchy-post-install
 ```
 
-Omarchy package installation is additive. It does not remove packages, and it fails rather than
-prompting when passwordless `sudo` or AUR access is unavailable.
+Omarchy package installation is additive. It does not remove packages, and package tasks fail rather
+than prompting if pre-authorized non-interactive `sudo` is unavailable. AUR inventories also require
+`yay`.
 
 ## Ownership
 

@@ -1,55 +1,33 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "theme": "system",
-  "autoupdate": false,
+  "update": "disable",
   "model": "github-copilot/gpt-6-luna",
-  "plugin": [
-    "@ramtinj95/opencode-tokenscope@1.7.1",
-    "@tarquinen/opencode-dcp@3.1.15",
-    "oh-my-opencode-slim@2.2.24"
-  ],
+  "plugins": ["oh-my-opencode-slim@3.0.2"],
   "default_agent": "orchestrator",
-  "instructions": ["~/.config/opencode/AGENTS.md"],
-  "permission": {
-    "skapa_*": "deny",
-    "workflows_*": "deny"
-  },
+  "permissions": [
+    { "action": "skapa_*", "resource": "*", "effect": "allow" },
+    { "action": "workflows_*", "resource": "*", "effect": "allow" }
+  ],
   "mcp": {
-    "mise": {
-      "type": "local",
-      "command": ["bash", "-lc", "exec mise --cd \"$HOME/dotfiles\" mcp"],
-      "environment": {
-        "MISE_EXPERIMENTAL": "1"
+    "servers": {
+      "mise": {
+        "type": "local",
+        "command": ["bash", "-lc", "exec mise --cd \"$HOME/dotfiles\" mcp"],
+        "environment": {
+          "MISE_EXPERIMENTAL": "1"
+        }
+      },
+      "skapa": {
+        "type": "local",
+        "command": ["bash", "-lc", "exec mise --cd \"$HOME/dotfiles\" -E private exec -- skapa-design-system-mcp"],
+        "disabled": false
+      },
+      "workflows": {
+        "type": "local",
+        "command": ["bash", "-lc", "exec mise --cd \"$HOME/dotfiles\" -E private exec -- workflows-mcp"],
+        "disabled": false
       }
-    },
-    "skapa": {
-      "type": "local",
-      "command": ["bash", "-lc", "exec mise --cd \"$HOME/dotfiles\" -E private exec -- skapa-design-system-mcp"]
-    },
-    "workflows": {
-      "type": "local",
-      "command": ["bash", "-lc", "exec mise --cd \"$HOME/dotfiles\" -E private exec -- workflows-mcp"]
-    }
-  },
-  "agent": {
-    "cicd": {
-      "permission": {
-        "question": "deny",
-        "skapa_*": "deny",
-        "workflows_*": "allow"
-      }
-    },
-    "designer": {
-      "permission": {
-        "skapa_*": "allow",
-        "mise": "deny"
-      }
-    },
-    "explore": {
-      "disable": true
-    },
-    "general": {
-      "disable": true
     }
   },
   "lsp": true

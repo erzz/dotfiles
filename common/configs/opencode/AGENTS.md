@@ -6,8 +6,7 @@ user-level `AGENTS.md` and as merged instructions in any project that has its ow
 This setup uses **oh-my-opencode-slim** as the primary agent harness. The source of truth lives in:
 
 - `opencode.json` — OpenCode configuration, MCP servers, and plugin registration
-- `oh-my-opencode-slim.json` — plugin preset, model, skill, and MCP routing configuration
-- `agents/*.md` — supplementary local specialists that sit alongside plugin agents
+- `oh-my-opencode-slim.jsonc` — plugin preset, model, skill, and MCP routing configuration
 - `skills/**/SKILL.md` — reusable workflow guidance
 - `commands/*.md` — native planning, review, and orchestration shortcuts
 
@@ -21,7 +20,7 @@ oh-my-opencode-slim provides native OpenCode agents and delegation tools. Use na
 normal work; the Orchestrator decides when to delegate. You can also delegate manually with
 `@agentName <task>`.
 
-### OMO v2 Scheduler Model
+### OMO v3 Scheduler Model
 
 For non-trivial coding work, treat the Orchestrator as a workflow manager rather than the default
 implementation worker:
@@ -35,22 +34,19 @@ implementation worker:
   conflicting, or explicitly requested.
 - Reconcile all completed specialist and terminal results before final responses.
 - Use `@explorer` for broad codebase discovery, `@librarian` for external/current docs,
-  `@fixer` for bounded mechanical implementation, `@designer` for visible UI/UX, `@oracle` for
-  architecture/review/debugging strategy, and `@cicd` for reusable workflow pipelines.
+  `@fixer` for bounded mechanical implementation, `@designer` for visible UI/UX, and `@oracle` for
+  architecture/review/debugging strategy.
 - Use `deepwork` for large, risky, or multi-phase implementation sessions.
 - Use `worktrees` for isolated risky or parallel coding lanes.
 - Use `reflect` when repeated workflow friction should become a reusable rule, skill, command, or
   config improvement.
 
-### Available Custom Specialists
+### Standard OMO Agents
 
-The plugin provides `@explorer`, `@librarian`, `@oracle`, `@designer`, `@fixer`, and `@council`
-agents. These local agents remain available alongside the plugin agents for domain-specific MCP
-workflows:
-
-- `@designer` — UI/UX design, frontend implementation, and Skapa Design System compliance (has
-  `skapa_*` MCP tools)
-- `@cicd` — INGKA reusable workflow pipelines (has `workflows_*` MCP tools)
+The shared configuration uses the six standard oh-my-opencode-slim agents: `@orchestrator`,
+`@oracle`, `@librarian`, `@explorer`, `@designer`, and `@fixer`. Domain integrations such as Skapa
+or INGKA workflows are host-configured and are not part of the shared base; only use their tools
+when the current host explicitly provides them.
 
 ## Information Gathering
 
@@ -137,11 +133,9 @@ path, and let the agent read those on demand.
 
 ## Delegation
 
-The Orchestrator handles orchestration and delegation internally using the oh-my-opencode-slim
-specialist agents. For domain-specific work with MCP tools, use the custom specialists:
-
-- **Frontend/UI work needing Skapa** → `@designer`
-- **CI/CD pipelines needing INGKA workflows** → `@cicd`
+The Orchestrator handles orchestration and delegation internally using the standard
+oh-my-opencode-slim specialist agents. For domain-specific CI/CD or design-system work, inspect the
+current host and project for available integrations and conventions before relying on them.
 
 ## Handoff Standard
 
@@ -166,17 +160,10 @@ assumption, and continue.
 
 ## MCP Servers
 
-Two domain-specific MCP servers are configured globally:
-
-- **skapa** — Skapa Design System component documentation, usage examples, and styling guidance
-- **workflows** — INGKA reusable GitHub Actions workflow search, details, and YAML generation
-
-These are globally defined but intentionally restricted by permission and routing:
-
-- `skapa_*` tools are for `@designer` only. Other agents must hand off UI/design-system work to
-  `@designer` rather than calling Skapa tools directly.
-- `workflows_*` tools are for `@cicd` only. Other agents must hand off CI/CD reusable-workflow work
-  to `@cicd` rather than calling workflows tools directly.
+The shared OpenCode configuration provides the mise MCP server and uses oh-my-opencode-slim's
+built-in `context7` and `gh_grep` integrations. Other MCP servers are host-configured and are not
+assumed to exist in the shared base. Check which tools are actually available before claiming access
+to or relying on a host-specific integration.
 
 ## Project-Specific Rules
 
