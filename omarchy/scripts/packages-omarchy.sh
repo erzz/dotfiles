@@ -32,7 +32,7 @@ mapfile -t official_packages < <(read_packages "$OFFICIAL_FILE")
 if [ "${#official_packages[@]}" -gt 0 ]; then
   if [ "${OMARCHY_DOTFILES_SYSTEM_UPDATED:-0}" != 1 ]; then
     printf '%s\n' '[omarchy-install-packages] updating Omarchy before installing repository packages'
-    omarchy update -y
+    OMARCHY_UPDATE_LOGGED=1 omarchy update -y
   fi
   sudo -n pacman -S --needed --noconfirm "${official_packages[@]}" </dev/null
 fi

@@ -1,6 +1,5 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "theme": "system",
   "update": "disable",
   "model": "github-copilot/gpt-6-luna",
   "plugins": ["oh-my-opencode-slim@3.0.2"],

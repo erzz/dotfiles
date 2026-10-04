@@ -13,6 +13,31 @@ bash "$DOTFILES_DIR/omarchy/scripts/omarchy-preflight.sh"
 # Keep sudo authorized across the long mise install and later package phases.
 source omarchy-sudo-keepalive
 
+# Omarchy's global config historically installed OpenCode v1 through mise.
+# The repository inventory installs the ARM64 v2 package instead.
+if mise config get tools.opencode --global >/dev/null 2>&1; then
+  printf '%s\n' '[omarchy-sync] removing the legacy mise-managed OpenCode entry'
+  mise -y unuse --global opencode
+fi
+
+# Authenticate mise before it resolves GitHub-backed tools. GH_TOKEN is the
+# repository's normal credential name, while mise reads MISE_GITHUB_TOKEN.
+if [ -z "${MISE_GITHUB_TOKEN:-}" ]; then
+  if [ -n "${GITHUB_TOKEN:-}" ]; then
+    export MISE_GITHUB_TOKEN="$GITHUB_TOKEN"
+  elif [ -n "${GH_TOKEN:-}" ]; then
+    export MISE_GITHUB_TOKEN="$GH_TOKEN"
+  elif command -v gh >/dev/null 2>&1; then
+    MISE_GITHUB_TOKEN="$(gh auth token 2>/dev/null || true)"
+    export MISE_GITHUB_TOKEN
+  fi
+fi
+if [ -n "${MISE_GITHUB_TOKEN:-}" ]; then
+  printf '%s\n' '[omarchy-sync] using authenticated GitHub API access for mise'
+else
+  printf '%s\n' '[omarchy-sync] no GitHub token found; mise may hit the anonymous API rate limit.' >&2
+fi
+
 if [ ! -f "$MISE_FRAGMENT_SOURCE" ]; then
   printf '%s\n' "[omarchy-sync] mise fragment is missing: $MISE_FRAGMENT_SOURCE" >&2
   exit 1
@@ -116,12 +141,21 @@ printf '%s\n' '[omarchy-sync] installing repository mise tools'
 mise -C "$DOTFILES_DIR" --yes install --jobs=4
 
 printf '%s\n' '[omarchy-sync] updating Omarchy and system packages'
-omarchy update -y
+# Omarchy normally wraps updates in `script`, creating a second terminal and
+# therefore a second sudo timestamp under the default tty-based sudo policy.
+# Sync already owns the outer terminal and transcript, so keep the update in it.
+OMARCHY_UPDATE_LOGGED=1 omarchy update -y
 export OMARCHY_DOTFILES_SYSTEM_UPDATED=1
 
 printf '%s\n' '[omarchy-sync] converging repository Arch/AUR package inventories'
 bash "$DOTFILES_DIR/omarchy/scripts/packages-omarchy.sh"
 bash "$DOTFILES_DIR/omarchy/scripts/apps-omarchy.sh"
+
+# opencode-beta provides the v2 command as `opencode` and ships `opencode2`
+# only as a compatibility wrapper. Keep the v2 command name unambiguous.
+if pacman -Q opencode-beta >/dev/null 2>&1 && [ -e /usr/bin/opencode2 ]; then
+  sudo -n rm -f /usr/bin/opencode2
+fi
 
 printf '%s\n' '[omarchy-sync] linking additive mise fragment'
 link_path "$MISE_FRAGMENT_SOURCE" "$MISE_FRAGMENT_TARGET"
