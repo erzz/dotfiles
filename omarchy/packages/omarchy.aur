@@ -1,13 +1,6 @@
 # Additive CLI tools with no official Arch package.
 git-extras
-google-cloud-cli
-grype
-hadolint
 opencode-beta
 
 # Additive AUR packages used by the shared editor configuration.
-google-java-format
 jdtls
-marksman
-prettierd
-terraform-ls

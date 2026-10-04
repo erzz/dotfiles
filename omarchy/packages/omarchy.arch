@@ -25,7 +25,6 @@ shfmt
 stylua
 trivy
 typescript-language-server
-vscode-langservers-extracted
 wget
 yaml-language-server
 yq

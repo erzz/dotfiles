@@ -11,6 +11,8 @@ fnox = "1.35.3"
 java = "26.0.1"
 node = "24.21.0"
 "npm:markdownlint-cli" = { version = "0.49.1", os = ["linux"] }
+"npm:vscode-langservers-extracted" = { version = "4.10.0", os = ["linux"] }
+"npm:@fsouza/prettierd" = { version = "0.29.0", os = ["linux"] }
 "npm:agent-browser" = "0.27.1"
 "npm:dockerfile-language-server-nodejs" = "0.15.0"
 "npm:@microsoft/compose-language-service" = "1.0.0"
@@ -19,6 +21,11 @@ node = "24.21.0"
 "npm:@playwright/mcp" = "0.0.70"
 terraform = "1.16.1"
 "aqua:terraform-linters/tflint" = "0.64.0"
+"aqua:artempyanykh/marksman" = { version = "2026-02-08", os = ["linux"] }
+"aqua:anchore/grype" = { version = "0.120.0", os = ["linux"] }
+"aqua:hadolint/hadolint" = { version = "2.15.1", os = ["linux"] }
+"aqua:hashicorp/terraform-ls" = { version = "0.39.0", os = ["linux"] }
+"aqua:google/google-java-format" = { version = "1.37.0", os = ["linux"] }
 maven = "3.9.15"
 "npm:mcp-remote" = "0.1.38"
 

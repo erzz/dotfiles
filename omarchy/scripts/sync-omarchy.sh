@@ -10,6 +10,9 @@ AUTHORITATIVE=0
 
 bash "$DOTFILES_DIR/omarchy/scripts/omarchy-preflight.sh"
 
+# Keep sudo authorized across the long mise install and later package phases.
+source omarchy-sudo-keepalive
+
 if [ ! -f "$MISE_FRAGMENT_SOURCE" ]; then
   printf '%s\n' "[omarchy-sync] mise fragment is missing: $MISE_FRAGMENT_SOURCE" >&2
   exit 1
@@ -111,6 +114,10 @@ merge_tree() {
 
 printf '%s\n' '[omarchy-sync] installing repository mise tools'
 mise -C "$DOTFILES_DIR" --yes install --jobs=4
+
+printf '%s\n' '[omarchy-sync] updating Omarchy and system packages'
+omarchy update -y
+export OMARCHY_DOTFILES_SYSTEM_UPDATED=1
 
 printf '%s\n' '[omarchy-sync] converging repository Arch/AUR package inventories'
 bash "$DOTFILES_DIR/omarchy/scripts/packages-omarchy.sh"
