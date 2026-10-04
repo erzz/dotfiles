@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "erzz.scratchpad-indicator",
+  "name": "Scratchpad Indicator",
+  "version": "1.1.1",
+  "author": "Erzz",
+  "license": "MIT",
+  "description": "Shows a compact red label while the Hyprland scratchpad workspace is active/open.",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "ScratchpadIndicator.qml"
+  },
+  "barWidget": {
+    "displayName": "Scratchpad",
+    "description": "Shows a red label while the scratchpad workspace is active/open.",
+    "category": "Workspaces",
+    "allowMultiple": false,
+    "defaultSection": "left"
+  }
+}

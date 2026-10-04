@@ -35,6 +35,38 @@ else
   omarchy plugin add https://github.com/erzz/omarchy-codeburn.git --enable
 fi
 
+scratchpad_plugin_source="$DOTFILES_DIR/omarchy/plugins/erzz.scratchpad-indicator"
+scratchpad_plugin_root="$HOME/.config/omarchy/plugins"
+scratchpad_plugin_link="$scratchpad_plugin_root/erzz.scratchpad-indicator"
+
+if [ ! -d "$scratchpad_plugin_source" ]; then
+  printf '[omarchy-post-install] scratchpad indicator plugin source is missing: %s\n' "$scratchpad_plugin_source" >&2
+  exit 1
+fi
+
+mkdir -p "$scratchpad_plugin_root"
+if [ -L "$scratchpad_plugin_link" ]; then
+  scratchpad_link_target="$(readlink "$scratchpad_plugin_link")"
+  if [ "$scratchpad_link_target" != "$scratchpad_plugin_source" ]; then
+    printf '[omarchy-post-install] refusing to replace plugin symlink pointing elsewhere: %s -> %s\n' \
+      "$scratchpad_plugin_link" "$scratchpad_link_target" >&2
+    exit 1
+  fi
+elif [ -e "$scratchpad_plugin_link" ]; then
+  printf '[omarchy-post-install] refusing to replace existing plugin path: %s\n' "$scratchpad_plugin_link" >&2
+  exit 1
+else
+  if ! ln -s "$scratchpad_plugin_source" "$scratchpad_plugin_link"; then
+    printf '[omarchy-post-install] failed to create plugin symlink: %s -> %s\n' \
+      "$scratchpad_plugin_link" "$scratchpad_plugin_source" >&2
+    exit 1
+  fi
+fi
+
+omarchy-shell shell rescanPlugins
+omarchy plugin enable erzz.scratchpad-indicator
+omarchy bar move erzz.scratchpad-indicator --after omarchy.workspaces
+
 tpm_install="$HOME/.tmux/plugins/tpm/bin/install_plugins"
 if [ -x "$tpm_install" ] && [ -e "$HOME/.tmux.conf" ] && grep -qE '^\s*set\s+-g\s+@plugin' "$HOME/.tmux.conf" 2>/dev/null; then
   "$tpm_install"
