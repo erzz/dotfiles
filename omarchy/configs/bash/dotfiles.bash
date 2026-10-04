@@ -22,8 +22,4 @@ alias ll="eza -al --icons --group-directories-first"
 alias ls="eza -alf --icons --color=always --sort=size | grep -v /"
 alias lT="eza -T --icons"
 
-oc() {
-  local port
-  port=$(shuf -i 49152-65535 -n 1)
-  OPENCODE_PORT="$port" opencode --port "$port" "$@"
-}
+alias oc=opencode

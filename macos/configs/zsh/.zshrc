@@ -144,14 +144,6 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 export OPENCODE_EXPERIMENTAL_BACKGROUND_SUBAGENTS=true
 # <<< oh-my-opencode-slim background subagents <<<
 
-# >>> oh-my-opencode-slim multiplexer launcher >>>
-oc() {
-  local port
-  if command -v jot >/dev/null 2>&1; then
-    port=$(jot -r 1 49152 65535)
-  else
-    port=$(shuf -i 49152-65535 -n 1)
-  fi
-  OPENCODE_PORT="$port" opencode --port "$port" "$@"
-}
-# <<< oh-my-opencode-slim multiplexer launcher <<<
+# >>> opencode shorthand >>>
+alias oc=opencode
+# <<< opencode shorthand <<<
