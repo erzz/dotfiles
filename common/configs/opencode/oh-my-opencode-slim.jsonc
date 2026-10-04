@@ -20,7 +20,8 @@
           "reflect",
           "worktrees",
           "source-control",
-          "verification-planning"
+          "verification-planning",
+          "omarchy"
         ],
         "mcps": ["gh_grep"]
       },
