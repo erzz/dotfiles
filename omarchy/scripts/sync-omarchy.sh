@@ -159,6 +159,8 @@ fi
 
 printf '%s\n' '[omarchy-sync] linking additive mise fragment'
 link_path "$MISE_FRAGMENT_SOURCE" "$MISE_FRAGMENT_TARGET"
+printf '%s\n' '[omarchy-sync] applying the native mise-managed Hyprland input dotfile'
+mise -C "$DOTFILES_DIR" bootstrap dotfiles apply --yes "$HOME/.config/hypr/input.lua"
 
 printf '%s\n' '[omarchy-sync] linking portable user configuration where targets are absent'
 link_path "$DOTFILES_DIR/omarchy/configs/bash/dotfiles.bash" "$HOME/.config/dotfiles/bashrc"

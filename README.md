@@ -116,10 +116,12 @@ than prompting if pre-authorized non-interactive `sudo` is unavailable. AUR inve
 - `omarchy/` contains Arch/AUR inventories, Omarchy scripts, and small user-level additions.
 - `mise.toml` at the repository root is the shared control plane.
 
-Omarchy remains responsible for Hyprland, the Omarchy shell, desktop applications, fonts, Docker, and
-its global `~/.config/mise/config.toml`. This repository adds a mise fragment under
-`~/.config/mise/conf.d/`; sync removes the legacy global OpenCode v1 entry so the Omarchy package
-inventory can own the v2 `opencode` command. It does not edit `/usr/share/omarchy`.
+Omarchy remains responsible for Hyprland's packaged defaults, the Omarchy shell, desktop applications,
+fonts, Docker, and its global `~/.config/mise/config.toml`. This repository manages only the user input
+override at `~/.config/hypr/input.lua`, declared in Omarchy's mise fragment and applied by target during
+Omarchy sync; the rest of the Hyprland configuration remains Omarchy-owned. The sync also adds a mise
+fragment under `~/.config/mise/conf.d/` and removes the legacy global OpenCode v1 entry so the Omarchy
+package inventory can own the v2 `opencode` command. It does not edit `/usr/share/omarchy`.
 
 Normal Omarchy sync installs and enables the CodeBurn plugin using Omarchy's plugin command.
 

@@ -54,3 +54,7 @@ run = "bash \"$HOME/dotfiles/omarchy/scripts/private-omarchy.sh\""
 [tasks.omarchy-post-install]
 description = "Restore portable tmux, gh-dash, and agent-browser integrations on Omarchy"
 run = "bash \"$HOME/dotfiles/omarchy/scripts/post-install-omarchy.sh\""
+
+[dotfiles."~/.config/hypr/input.lua"]
+source = "~/dotfiles/omarchy/configs/hypr/input.lua"
+mode = "symlink"
