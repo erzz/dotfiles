@@ -66,6 +66,7 @@ fi
 omarchy-shell shell rescanPlugins
 omarchy plugin enable erzz.scratchpad-indicator
 omarchy bar move erzz.scratchpad-indicator --after omarchy.workspaces
+omarchy bar set omarchy.clock format 'ddd d MMM HH:mm'
 
 tpm_install="$HOME/.tmux/plugins/tpm/bin/install_plugins"
 if [ -x "$tpm_install" ] && [ -e "$HOME/.tmux.conf" ] && grep -qE '^\s*set\s+-g\s+@plugin' "$HOME/.tmux.conf" 2>/dev/null; then
