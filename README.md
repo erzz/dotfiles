@@ -17,7 +17,8 @@ git pull --rebase
 mise run sync
 ```
 
-If for some reason you have a local or project-scoped mise target that clashes with `sync`, then use `mise -C "$HOME/dotfiles"` to be specific.
+If for some reason you have a local or project-scoped mise target that clashes with `sync`, then use
+`mise -C "$HOME/dotfiles"` to be specific.
 
 ## Bootstrap New Machines
 
@@ -43,10 +44,11 @@ To test another branch, set `BOOTSTRAP_BRANCH` before running the bootstrap.
 
 ### Omarchy
 
-**Note:** The omarchy version is barely tested from an end-to-end, fresh machine perspective due to lack of opportunity at the moment.
+**Note:** The omarchy version is barely tested from an end-to-end, fresh machine perspective due to
+lack of opportunity at the moment.
 
-Omarchy already provides mise and owns the desktop setup. Clone the Omarchy branch, then run the
-normal sync to apply the repository's package inventories and configuration:
+Omarchy already provides mise and owns the desktop setup. Clone the repo, then run the normal sync
+to apply the repository's package inventories and configuration:
 
 ```bash
 git clone --branch omarchy --single-branch \
@@ -58,23 +60,24 @@ mise run sync
 
 Sync installs the core Arch/AUR packages and selected GUI Arch/AUR applications declared by the
 repository. These installs are additive: sync does not remove packages that are already installed.
-Package installation is non-interactive and requires pre-authorized `sudo` access; AUR packages
-also require `yay` to be installed.
+Package installation is non-interactive and requires pre-authorized `sudo` access; AUR packages also
+require `yay` to be installed.
 
 The package tasks remain available as standalone retries in Useful tasks below.
 
 ## 1Password and fnox
 
-Private npm credentials and MCP packages are handled by 1Password and [fnox](https://github.com/jdx/fnox).
-fnox resolves the references in `common/configs/fnox/config.toml` and injects the values into the
-mise command that needs them. The sync renders these local, mode `0600` files:
+Private npm credentials and MCP packages are handled by 1Password and
+[fnox](https://github.com/jdx/fnox). fnox resolves the references in
+`common/configs/fnox/config.toml` and injects the values into the mise command that needs them. The
+sync renders these local, mode `0600` files:
 
 - `~/.npmrc`
 - `~/.local/state/secrets.env`
 
-Secrets are not committed to Git. On Omarchy, use either an unlocked 1Password desktop CLI integration
-or set `OP_SERVICE_ACCOUNT_TOKEN` before running `sync`. The automated flow is non-interactive:
-it does not run `op signin` or prompt for a password.
+Secrets are not committed to Git. On Omarchy, use either an unlocked 1Password desktop CLI
+integration or set `OP_SERVICE_ACCOUNT_TOKEN` before running `sync`. The automated flow is
+non-interactive: it does not run `op signin` or prompt for a password.
 
 To retry only the private phase on Omarchy:
 
@@ -116,12 +119,13 @@ than prompting if pre-authorized non-interactive `sudo` is unavailable. AUR inve
 - `omarchy/` contains Arch/AUR inventories, Omarchy scripts, and small user-level additions.
 - `mise.toml` at the repository root is the shared control plane.
 
-Omarchy remains responsible for Hyprland's packaged defaults, the Omarchy shell, desktop applications,
-fonts, Docker, and its global `~/.config/mise/config.toml`. This repository manages only the user input
-override at `~/.config/hypr/input.lua`, declared in Omarchy's mise fragment and applied by target during
-Omarchy sync; the rest of the Hyprland configuration remains Omarchy-owned. The sync also adds a mise
-fragment under `~/.config/mise/conf.d/` and removes the legacy global OpenCode v1 entry so the Omarchy
-package inventory can own the v2 `opencode` command. It does not edit `/usr/share/omarchy`.
+Omarchy remains responsible for Hyprland's packaged defaults, the Omarchy shell, desktop
+applications, fonts, Docker, and its global `~/.config/mise/config.toml`. This repository manages
+only the user input override at `~/.config/hypr/input.lua`, declared in Omarchy's mise fragment and
+applied by target during Omarchy sync; the rest of the Hyprland configuration remains Omarchy-owned.
+The sync also adds a mise fragment under `~/.config/mise/conf.d/` and removes the legacy global
+OpenCode v1 entry so the Omarchy package inventory can own the v2 `opencode` command. It does not
+edit `/usr/share/omarchy`.
 
 Normal Omarchy sync installs and enables the CodeBurn plugin using Omarchy's plugin command.
 
@@ -139,7 +143,7 @@ git push
 Put shared files in `common/`, macOS files in `macos/`, and Omarchy-specific files in `omarchy/`.
 Keep secrets out of the repository.
 
-On Omarchy, Neovim and OpenCode are merged with the existing configuration. Repository files win when
-the same path is managed by both, while Omarchy-only files are preserved. Conflicts are backed up
-before replacement. Set `OMARCHY_DOTFILES_FORCE=1` only when you intentionally want to replace other
-conflicting user configuration.
+On Omarchy, Neovim and OpenCode are merged with the existing configuration. Repository files win
+when the same path is managed by both, while Omarchy-only files are preserved. Conflicts are backed
+up before replacement. Set `OMARCHY_DOTFILES_FORCE=1` only when you intentionally want to replace
+other conflicting user configuration.

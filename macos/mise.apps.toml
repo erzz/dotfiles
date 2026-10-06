@@ -73,6 +73,8 @@
 "brew:mongosh" = { os = ["macos"] }
 "brew:moreutils" = { os = ["macos"] }
 "brew:neovim" = { os = ["macos"] }
+"brew:tuios" = { os = ["macos"] }
+
 # Neovim LSPs (also used by other editors / OpenCode)
 "brew:bash-language-server" = { os = ["macos"] }
 "brew:dockerfile-language-server" = { os = ["macos"] }

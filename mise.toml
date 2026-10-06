@@ -265,6 +265,7 @@ mode = "0600"
 "~/.config/zed" = { source = "macos/configs/zed", mode = "symlink" }
 "~/.config/ghostty" = { source = "macos/configs/ghostty", mode = "symlink" }
 "~/.config/zellij" = { source = "common/configs/zellij", mode = "symlink" }
+"~/.config/tuios" = { source = "common/configs/tuios", mode = "symlink" }
 "~/.config/starship.toml" = { source = "common/configs/starship/starship.toml", mode = "symlink" }
 "~/.config/direnv" = { source = "common/configs/direnv", mode = "symlink" }
 "~/.config/colima/default/colima.yaml" = { source = "macos/configs/colima/default/colima.yaml", mode = "symlink" }
