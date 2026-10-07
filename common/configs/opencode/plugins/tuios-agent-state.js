@@ -307,3 +307,8 @@ export const TuiosAgentState = async (ctx) => {
     },
   };
 };
+
+export default {
+  id: "tuios-agent-state",
+  setup: TuiosAgentState,
+};
