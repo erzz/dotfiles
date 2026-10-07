@@ -178,16 +178,16 @@ cursor_bg = ''
 cursor_fg = ''
 
 [appearance.sidebar]
-position = 'right'
+position = 'left'
 width = 24
 workspaces = ''
 marquee = true
-sections = ''
+sections = 'sessions:30,terminals,agents:39'
 folder_click = 'navigate'
 file_actions = true
 file_delete = ''
 background = ''
-agent_rest_fold = ''
+agent_rest_fold = 'off'
 
 [notifications]
 duration = 0
