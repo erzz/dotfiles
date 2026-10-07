@@ -17,6 +17,8 @@ common/configs/opencode/node_modules/
 common/configs/opencode/package.json
 common/configs/opencode/package-lock.json
 common/configs/opencode/bun.lock
+# Local OpenCode service credentials
+common/configs/opencode/service.json
 common/configs/opencode/antigravity-accounts.json
 common/configs/opencode/antigravity-accounts.json.*.tmp
 common/configs/opencode/antigravity-signature-cache.json
