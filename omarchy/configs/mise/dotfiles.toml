@@ -23,6 +23,9 @@ terraform = "1.16.1"
 maven = "3.9.15"
 "npm:mcp-remote" = "0.1.38"
 
+[bootstrap.packages]
+"aur:brave-origin-bin" = { os = ["linux"] }
+
 [tasks.omarchy-preflight]
 description = "Check the Omarchy host and canonical dotfiles checkout"
 run = "bash \"$HOME/dotfiles/omarchy/scripts/omarchy-preflight.sh\""

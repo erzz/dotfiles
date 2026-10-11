@@ -159,6 +159,8 @@ fi
 
 printf '%s\n' '[omarchy-sync] linking additive mise fragment'
 link_path "$MISE_FRAGMENT_SOURCE" "$MISE_FRAGMENT_TARGET"
+printf '%s\n' '[omarchy-sync] installing declared Brave Origin browser'
+mise -C "$DOTFILES_DIR" bootstrap packages apply --yes aur:brave-origin-bin
 printf '%s\n' '[omarchy-sync] applying the native mise-managed Hyprland input dotfile'
 mise -C "$DOTFILES_DIR" bootstrap dotfiles apply --yes "$HOME/.config/hypr/input.lua"
 
