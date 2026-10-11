@@ -1,3 +1,0 @@
-# OpenCode v2 is managed by native Homebrew because mise cannot fetch this tap's metadata.
-tap "anomalyco/tap"
-brew "anomalyco/tap/opencode-v2"

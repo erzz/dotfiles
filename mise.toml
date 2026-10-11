@@ -61,21 +61,6 @@ run = """export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/
 description = "Opt in to installing Microsoft Office casks"
 run = "export PATH=\"/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH\"; bash \"$HOME/dotfiles/macos/scripts/ensure-native-homebrew.sh\" brew bundle install --no-upgrade --file=\"$HOME/dotfiles/macos/brew/Brewfile.office\""
 
-[tasks.opencode-v2]
-description = "Install the macOS OpenCode v2 formula through native Homebrew"
-run = """bash -euo pipefail -c '
-dotfiles="$HOME/dotfiles"
-export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
-helper="$dotfiles/macos/scripts/ensure-native-homebrew.sh"
-bash "$helper"
-installed_formulas="$(bash "$helper" brew list --formula --full-name)"
-if printf "%s\\n" "$installed_formulas" | /usr/bin/grep -Fxq "anomalyco/tap/opencode"; then
-  printf "%s\\n" "[opencode-v2] Homebrew v1 OpenCode conflicts with opencode-v2. Manually run: brew uninstall anomalyco/tap/opencode, then rerun this task." >&2
-  exit 1
-fi
-bash "$helper" brew bundle install --no-upgrade --file="$dotfiles/macos/brew/Brewfile.opencode"
-'"""
-
 [tasks.post-install-tpm]
 description = "Install configured tmux plugins through TPM"
 run = "tpm_install=\"$HOME/.tmux/plugins/tpm/bin/install_plugins\"; if [ ! -x \"$tpm_install\" ]; then printf '%s\\n' '[post-install-tpm] TPM installer not found; skipping.'; exit 0; fi; if [ ! -e \"$HOME/.tmux.conf\" ] || ! grep -qE '^\\s*set\\s+-g\\s+@plugin' \"$HOME/.tmux.conf\" 2>/dev/null; then printf '%s\\n' '[post-install-tpm] no configured tmux plugins; skipping.'; exit 0; fi; \"$tpm_install\""

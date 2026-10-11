@@ -8,6 +8,7 @@
 "anchore/grant" = "https://github.com/anchore/homebrew-grant.git"
 "anchore/syft" = "https://github.com/anchore/homebrew-syft.git"
 "anchore/grype" = "https://github.com/anchore/homebrew-grype.git"
+"anomalyco/tap" = "https://github.com/anomalyco/homebrew-tap.git"
 
 [bootstrap.packages]
 "brew:act" = { os = ["macos"] }
@@ -27,6 +28,7 @@
 "brew:d2" = { os = ["macos"] }
 "brew:direnv" = { os = ["macos"] }
 "brew:mas" = { os = ["macos"] }
+"brew:anomalyco/tap/opencode-v2" = { os = ["macos"] }
 "brew:dive" = { os = ["macos"] }
 "brew:docker" = { os = ["macos"] }
 "brew:docker-buildx" = { os = ["macos"] }
