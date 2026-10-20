@@ -1,12 +1,12 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "update": "disable",
-  "model": "github-copilot/gpt-6-luna",
-  "plugins": ["oh-my-opencode-slim@3.0.2"],
+  "update": "auto",
+  "model": "github-copilot/gpt-6.1-luna",
+  "plugins": ["oh-my-opencode-slim@3.0.2", "@tarquinen/opencode-dcp@3.2.0"],
   "default_agent": "orchestrator",
   "permissions": [
-    { "action": "skapa_*", "resource": "*", "effect": "allow" },
-    { "action": "workflows_*", "resource": "*", "effect": "allow" }
+    {"action": "skapa_*", "resource": "*", "effect": "allow"},
+    {"action": "workflows_*", "resource": "*", "effect": "allow"}
   ],
   "mcp": {
     "servers": {
@@ -19,12 +19,20 @@
       },
       "skapa": {
         "type": "local",
-        "command": ["bash", "-lc", "exec mise --cd \"$HOME/dotfiles\" -E private exec -- skapa-design-system-mcp"],
+        "command": [
+          "bash",
+          "-lc",
+          "exec mise --cd \"$HOME/dotfiles\" -E private exec -- skapa-design-system-mcp"
+        ],
         "disabled": false
       },
       "workflows": {
         "type": "local",
-        "command": ["bash", "-lc", "exec mise --cd \"$HOME/dotfiles\" -E private exec -- workflows-mcp"],
+        "command": [
+          "bash",
+          "-lc",
+          "exec mise --cd \"$HOME/dotfiles\" -E private exec -- workflows-mcp"
+        ],
         "disabled": false
       }
     }

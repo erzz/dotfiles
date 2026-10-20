@@ -6,7 +6,7 @@
   "multiplexer": {
     "type": "auto",
     "layout": "main-vertical",
-    "main_pane_size": 65
+    "main_pane_size": 65,
   },
 
   "presets": {
@@ -21,40 +21,40 @@
           "worktrees",
           "source-control",
           "verification-planning",
-          "omarchy"
+          "omarchy",
         ],
-        "mcps": ["gh_grep"]
+        "mcps": ["gh_grep"],
       },
       "oracle": {
-        "model": "github-copilot/gpt-6-sol",
+        "model": "github-copilot/gpt-6.1-sol",
         "variant": "max",
         "skills": ["simplify"],
-        "mcps": []
+        "mcps": [],
       },
       "librarian": {
         "model": "github-copilot/gpt-6-luna",
         "variant": "medium",
         "skills": ["clonedeps"],
-        "mcps": ["context7", "gh_grep"]
+        "mcps": ["context7", "gh_grep"],
       },
       "explorer": {
         "model": "github-copilot/gpt-6-luna",
         "variant": "low",
         "skills": ["codemap"],
-        "mcps": ["gh_grep"]
+        "mcps": ["gh_grep"],
       },
       "designer": {
         "model": "github-copilot/gpt-6-luna",
         "variant": "high",
         "skills": ["agent-browser"],
-        "mcps": []
+        "mcps": [],
       },
       "fixer": {
         "model": "github-copilot/gpt-6-luna",
         "variant": "high",
         "skills": [],
-        "mcps": []
-      }
-    }
-  }
+        "mcps": [],
+      },
+    },
+  },
 }

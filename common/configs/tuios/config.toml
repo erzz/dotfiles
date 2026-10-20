@@ -121,7 +121,7 @@ hide_window_buttons = false
 window_button_style = 'dots'
 window_button_position = 'left'
 hide_scrollbar = false
-scrollback_lines = 10000
+scrollback_lines = 40000
 scroll_lines = 3
 kitty_placeholders = ''
 auto_enter_terminal_on_focus = 'off'
@@ -560,9 +560,9 @@ resume_agents = 'ask'
 [startup]
 open_default_window = false
 tiled = true
-start_in_terminal_mode = false
+start_in_terminal_mode = true
 layout = ''
-daemon = false
+daemon = true
 
 [tape]
 autorun = 'ask'
@@ -596,3 +596,6 @@ shake = false
 
 [dock]
 [dock.clock]
+
+[agents]
+enabled = true

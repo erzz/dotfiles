@@ -3,7 +3,7 @@
 // and `tuios integration uninstall opencode` removes it. Put your own plugins
 // beside it instead of editing it.
 // TUIOS_INTEGRATION_ID=opencode
-// TUIOS_INTEGRATION_VERSION=4
+// TUIOS_INTEGRATION_VERSION=5
 //
 // Reports opencode's session state to the tuios pane it runs in, through
 // `tuios agent-hook opencode`. The event names are opencode's bus events
@@ -32,7 +32,7 @@
 import { spawn } from "node:child_process";
 
 const TUIOS = "tuios";
-const ARGS = ["agent-hook", "opencode", "--integration", "4"];
+const ARGS = ["agent-hook", "opencode", "--integration", "5"];
 // The daemon ends a hold within 300 seconds; this only guards against a hook
 // that never exits.
 const HOLD_LIMIT_MS = 310000;
@@ -43,7 +43,7 @@ const children = new Set();
 // The Inbox only offers a request whose call it can show whole.
 const calls = new Map();
 const CALLS_MAX = 256;
-const STATUS_ARGS = ["agent-statusline", "opencode", "--integration", "4"];
+const STATUS_ARGS = ["agent-statusline", "opencode", "--integration", "5"];
 // usage maps a session id to its assistant messages' cost by message id, the
 // model last named, and what was last sent.
 const usage = new Map();
@@ -130,7 +130,7 @@ function sendUsage(sessionID, turnEnd) {
 // ask runs the hook for a permission request and resolves to the reply it
 // printed, or null for anything else: no output, output that is not a reply,
 // an error, or a hook that outlived HOLD_LIMIT_MS.
-function ask(event, sessionID, extra) {
+function ask(event, sessionID, extra, signal) {
   return new Promise((resolve) => {
     let out = "";
     let settled = false;
@@ -139,9 +139,18 @@ function ask(event, sessionID, extra) {
       if (settled) return;
       settled = true;
       if (timer) clearTimeout(timer);
+      signal?.removeEventListener("abort", abort);
       resolve(value);
     };
     let child;
+    const abort = () => {
+      try { child?.kill(); } catch {}
+      done(null);
+    };
+    if (signal?.aborted) {
+      done(null);
+      return;
+    }
     try {
       child = spawn(TUIOS, ARGS, {
         stdio: ["pipe", "pipe", "ignore"],
@@ -151,6 +160,7 @@ function ask(event, sessionID, extra) {
       done(null);
       return;
     }
+    signal?.addEventListener("abort", abort, { once: true });
     timer = setTimeout(() => {
       try {
         child.kill();
@@ -290,7 +300,7 @@ export const TuiosAgentState = async (ctx) => {
             extra.always = props.always.filter((p) => typeof p === "string");
           }
           // Not awaited: opencode's event loop must not wait on the person.
-          ask(type, sessionID, extra).then((answer) => {
+          ask(type, sessionID, extra, ctx?.signal).then((answer) => {
             if (answer) return reply(client, sessionID, requestID, answer);
           }).catch(() => {});
           break;
@@ -309,6 +319,7 @@ export const TuiosAgentState = async (ctx) => {
 };
 
 export default {
-  id: "tuios-agent-state",
-  setup: TuiosAgentState,
+  id: "tuios-agent-state-v1",
+  server: TuiosAgentState,
+  setup() {},
 };
