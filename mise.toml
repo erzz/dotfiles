@@ -247,6 +247,7 @@ mode = "0600"
 "~/.config/fnox" = { source = "common/configs/fnox", mode = "symlink" }
 "~/.config/nvim" = { source = "common/configs/nvim", mode = "symlink" }
 "~/.config/opencode" = { source = "common/configs/opencode", mode = "symlink" }
+"~/.config/rex/init.lua" = { source = "common/configs/rex/init.lua", mode = "symlink" }
 "~/.config/zed" = { source = "macos/configs/zed", mode = "symlink" }
 "~/.config/ghostty" = { source = "macos/configs/ghostty", mode = "symlink" }
 "~/.config/zellij" = { source = "common/configs/zellij", mode = "symlink" }

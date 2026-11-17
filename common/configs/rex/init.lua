@@ -1,0 +1,5 @@
+rex.unbind("ctrl+b>g", "session.switch")
+rex.unbind("ctrl+a>c", "client.tab.new")
+rex.unbind("ctrl+b>c", "client.tab.new")
+rex.unbind("ctrl+b>n", "client.tab.next")
+rex.unbind("ctrl+b>p", "client.tab.previous")
